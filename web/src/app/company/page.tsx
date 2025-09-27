@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Header from "@/components/Header";
 
 type Company = { id: string; name: string; email: string; industry: string; location: string };
 type Job = { id: string; title: string; description: string; requiredSkills: string[]; location: string; minExperience: number };
@@ -142,24 +143,25 @@ export default function CompanyDashboard() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
+    <div className="ds-background min-h-screen">
+      <Header title="Unternehmen Dashboard" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <header className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/" className="inline-flex items-center gap-2 text-[#1E2A38] hover:text-[#06C755] transition-colors duration-300">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               <span className="text-sm font-medium">Zurück zur Startseite</span>
             </Link>
             <div className="h-6 w-px bg-gray-300"></div>
-            <h1 className="text-3xl font-bold text-gray-900">Firmen-Dashboard</h1>
+            <h1 className="text-3xl font-extrabold text-[#1E2A38] font-inter">Firmen-Dashboard</h1>
           </div>
           {company ? (
             <button 
               type="button" 
               onClick={logout} 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#1E2A38] bg-white border border-gray-300 rounded-[12px] hover:bg-gray-50 transition-all duration-300"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -386,8 +388,20 @@ export default function CompanyDashboard() {
                           )}
                         </div>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        {isSelected ? 'Klicken zum Abwählen' : 'Klicken zum Auswählen und Bewerber anzeigen'}
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-gray-600">
+                          {isSelected ? 'Klicken zum Abwählen' : 'Klicken zum Auswählen und Bewerber anzeigen'}
+                        </div>
+                        <Link 
+                          href={`/company/edit-job/${job.id}`}
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Bearbeiten
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -437,22 +451,22 @@ export default function CompanyDashboard() {
               </div>
 
             {/* Filters */}
-            <div className="bg-gray-50 rounded-xl p-6 mb-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Filter</h4>
+            <div className="ds-card p-6 mb-6">
+              <h4 className="text-lg ds-subheading mb-4">Filter</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">Skills filtern:</label>
-                  <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                  <label className="ds-label mb-3">Skills filtern:</label>
+                  <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-[var(--border-radius-input)] p-3">
                     <div className="grid grid-cols-2 gap-2">
                       {availableSkills.map(skill => (
                         <button
                           key={skill}
                           type="button"
                           onClick={() => filterSkills.includes(skill) ? removeFilterSkill(skill) : addFilterSkill(skill)}
-                          className={`text-xs px-2 py-1 rounded transition-colors ${
+                          className={`text-xs px-2 py-1 rounded-[var(--border-radius-input)] transition-all duration-300 ${
                             filterSkills.includes(skill) 
-                              ? 'bg-blue-100 border-blue-300 text-blue-700 border' 
-                              : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 border'
+                              ? 'ds-skill-tag-green' 
+                              : 'ds-skill-tag-default'
                           }`}
                         >
                           {skill}
@@ -462,14 +476,14 @@ export default function CompanyDashboard() {
                   </div>
                   {filterSkills.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-xs text-gray-600 mb-2">Ausgewählt:</p>
+                      <p className="text-xs ds-body-light mb-2">Ausgewählt:</p>
                       <div className="flex flex-wrap gap-1">
                         {filterSkills.map(skill => (
-                          <span key={skill} className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
+                          <span key={skill} className="inline-flex items-center gap-1 ds-skill-tag-green">
                             {skill}
                             <button 
                               onClick={() => removeFilterSkill(skill)}
-                              className="hover:text-blue-900"
+                              className="hover:text-[var(--accent-green-dark)] transition-colors duration-300"
                             >
                               ×
                             </button>
@@ -481,9 +495,9 @@ export default function CompanyDashboard() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Standort:</label>
+                  <label className="ds-label mb-2">Standort:</label>
                   <select 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="ds-input ds-input-focus-green"
                     value={filterLocation}
                     onChange={(e) => setFilterLocation(e.target.value)}
                   >
@@ -495,9 +509,9 @@ export default function CompanyDashboard() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Min. Erfahrung:</label>
+                  <label className="ds-label mb-2">Min. Erfahrung:</label>
                   <select 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="ds-input ds-input-focus-green"
                     value={filterMinExperience}
                     onChange={(e) => setFilterMinExperience(Number(e.target.value))}
                   >
@@ -515,7 +529,7 @@ export default function CompanyDashboard() {
                     setFilterLocation("");
                     setFilterMinExperience(0);
                   }}
-                  className="text-sm text-gray-600 hover:text-gray-800 underline"
+                  className="ds-link-green text-sm hover:underline"
                 >
                   Filter zurücksetzen
                 </button>

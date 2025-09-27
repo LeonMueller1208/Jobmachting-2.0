@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { computeMatchingScore } from "@/lib/matching";
+import Header from "@/components/Header";
 
 type Applicant = { id: string; name: string; email: string; skills: string[]; location: string; experience: number; bio?: string | null };
 type Job = { id: string; title: string; description: string; requiredSkills: string[]; location: string; minExperience: number; company: { id: string; name: string; location: string } };
@@ -115,23 +116,24 @@ export default function ApplicantDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="ds-background min-h-screen">
+      <Header title="Bewerber Dashboard" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <header className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/" className="inline-flex items-center gap-2 text-[#1E2A38] hover:text-[#3A86FF] transition-colors duration-300">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               <span className="text-sm font-medium">Zurück zur Startseite</span>
             </Link>
             <div className="h-6 w-px bg-gray-300"></div>
-            <h1 className="text-3xl font-bold text-gray-900">Bewerber-Dashboard</h1>
+            <h1 className="text-3xl font-extrabold text-[#1E2A38] font-inter">Bewerber-Dashboard</h1>
           </div>
           {applicant ? (
             <button 
               onClick={logout} 
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#1E2A38] bg-white border border-gray-300 rounded-[12px] hover:bg-gray-50 transition-all duration-300"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -144,15 +146,15 @@ export default function ApplicantDashboard() {
       {!applicant ? (
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Login Section */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+          <div className="bg-white rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.08)] border border-gray-100 p-8">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-[#3A86FF]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-[#3A86FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Anmelden</h2>
-              <p className="text-gray-600">Bereits registriert? Mit E-Mail anmelden</p>
+              <h2 className="text-2xl font-bold text-[#1E2A38] mb-2">Anmelden</h2>
+              <p className="text-[#1E2A38]/70">Bereits registriert? Mit E-Mail anmelden</p>
             </div>
             
             <div className="space-y-6">
@@ -307,29 +309,40 @@ export default function ApplicantDashboard() {
       ) : (
         <div className="space-y-8">
           {/* Welcome Card */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Willkommen, {applicant.name}!</h2>
-                <p className="text-gray-600 mt-1">{applicant.location} • {applicant.experience} Jahre Erfahrung</p>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {applicant.skills.slice(0, 5).map(skill => (
-                    <span key={skill} className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
-                      {skill}
-                    </span>
-                  ))}
-                  {applicant.skills.length > 5 && (
-                    <span className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
-                      +{applicant.skills.length - 5} weitere
-                    </span>
-                  )}
+          <div className="ds-card p-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 ds-icon-container-blue rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 ds-icon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-2xl ds-subheading">Willkommen, {applicant.name}!</h2>
+                  <p className="ds-body-light mt-1">{applicant.location} • {applicant.experience} Jahre Erfahrung</p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {applicant.skills.slice(0, 5).map(skill => (
+                      <span key={skill} className="ds-skill-tag-blue text-sm px-3 py-1 rounded-full">
+                        {skill}
+                      </span>
+                    ))}
+                    {applicant.skills.length > 5 && (
+                      <span className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
+                        +{applicant.skills.length - 5} weitere
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
+              <Link 
+                href="/applicant/edit"
+                className="ds-button-secondary"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Profil bearbeiten
+              </Link>
             </div>
           </div>
 

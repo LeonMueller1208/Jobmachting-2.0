@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Header from "@/components/Header";
 
 export default function ApplicantLogin() {
   const [email, setEmail] = useState("");
@@ -38,7 +39,8 @@ export default function ApplicantLogin() {
   }
 
   return (
-    <div className="bg-gradient-to-b from-white to-gray-50 min-h-screen">
+    <div className="ds-background min-h-screen">
+      <Header title="Bewerber Anmeldung" showBackButton={true} backHref="/applicant/choose" />
       <main className="mx-auto max-w-md px-6 py-16">
         <div className="text-center mb-8">
           <Link href="/applicant/choose" className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-6">

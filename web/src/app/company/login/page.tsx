@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Header from "@/components/Header";
 
 export default function CompanyLogin() {
   const [email, setEmail] = useState("");
@@ -38,7 +39,8 @@ export default function CompanyLogin() {
   }
 
   return (
-    <div className="bg-gradient-to-b from-white to-gray-50 min-h-screen">
+    <div className="ds-background min-h-screen">
+      <Header title="Unternehmen Anmeldung" showBackButton={true} backHref="/company/choose" />
       <main className="mx-auto max-w-md px-6 py-16">
         <div className="text-center mb-8">
           <Link href="/company/choose" className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-6">

@@ -1,54 +1,114 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 
 type Company = { id: string; name: string; email: string; industry: string; location: string };
+type Job = { 
+  id: string; 
+  title: string; 
+  description: string; 
+  requiredSkills: string[]; 
+  location: string; 
+  minExperience: number;
+  industry?: string | null;
+  companyId: string;
+};
 
-export default function CreateJobPage() {
+export default function EditJobPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [company, setCompany] = useState<Company | null>(null);
+  const [job, setJob] = useState<Job | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
   const [jobLocation, setJobLocation] = useState("");
   const [minExperience, setMinExperience] = useState(0);
   const [industry, setIndustry] = useState("");
-  const [creating, setCreating] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
-  const [availableSkills] = useState([
+  const availableSkills = [
     "JavaScript", "TypeScript", "React", "Vue.js", "Angular", "Node.js", "Python", "Java", "C#", "PHP",
     "SQL", "MongoDB", "PostgreSQL", "AWS", "Docker", "Kubernetes", "Git", "Agile", "Scrum", "DevOps",
     "UI/UX Design", "Figma", "Photoshop", "Marketing", "Sales", "Project Management", "Leadership",
     "Communication", "Analytics", "Data Science", "Machine Learning", "AI", "Cybersecurity"
-  ]);
+  ];
 
-  const [availableIndustries] = useState([
+  const availableIndustries = [
     "IT & Software", "Finanzwesen", "Gesundheitswesen", "Bildung", "E-Commerce", "Marketing & Werbung",
     "Beratung", "Ingenieurwesen", "Medien & Entertainment", "Immobilien", "Automotive", "Telekommunikation",
     "Energie", "Logistik", "Einzelhandel", "Gastronomie", "Recht", "Non-Profit", "Sonstiges"
-  ]);
+  ];
 
   useEffect(() => {
     const session = localStorage.getItem("companySession");
     if (session) {
-      setCompany(JSON.parse(session));
+      try {
+        const companyData = JSON.parse(session);
+        setCompany(companyData);
+      } catch (error) {
+        console.error("Error parsing company session:", error);
+        router.push("/company");
+        return;
+      }
+    } else {
+      router.push("/company");
+      return;
     }
-  }, []);
 
-  async function createJob() {
-    if (!company || !title || !jobLocation || requiredSkills.length === 0) {
+    // Load job data
+    console.log("Loading job with ID:", params.id);
+    fetch(`/api/jobs/${params.id}`)
+      .then(res => {
+        console.log("Response status:", res.status);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(jobData => {
+        console.log("Job data received:", jobData);
+        if (jobData.error) {
+          throw new Error(jobData.error);
+        }
+        setJob(jobData);
+        setTitle(jobData.title);
+        setDescription(jobData.description);
+        setRequiredSkills(jobData.requiredSkills || []);
+        setJobLocation(jobData.location);
+        setMinExperience(jobData.minExperience);
+        setIndustry(jobData.industry || "");
+      })
+      .catch(error => {
+        console.error("Error loading job:", error);
+        alert(`Fehler beim Laden der Stelle: ${error.message}`);
+        router.push("/company");
+      });
+  }, [params.id, router]);
+
+  function addSkill(skill: string) {
+    if (!requiredSkills.includes(skill)) {
+      setRequiredSkills([...requiredSkills, skill]);
+    }
+  }
+
+  function removeSkill(skill: string) {
+    setRequiredSkills(requiredSkills.filter(s => s !== skill));
+  }
+
+  async function handleUpdate() {
+    if (!title || !jobLocation || requiredSkills.length === 0) {
       alert("Bitte alle Pflichtfelder ausfüllen");
       return;
     }
+
     try {
-      setCreating(true);
-      const res = await fetch("/api/jobs", {
-        method: "POST",
+      setLoading(true);
+      const res = await fetch(`/api/jobs/${params.id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
@@ -57,51 +117,64 @@ export default function CreateJobPage() {
           location: jobLocation,
           minExperience,
           industry,
-          companyId: company.id,
         }),
       });
-      if (!res.ok) throw new Error(`Server error ${res.status}: ${await res.text()}`);
-      await res.json();
       
-      // Formular zurücksetzen
-      setTitle("");
-      setDescription("");
-      setRequiredSkills([]);
-      setJobLocation("");
-      setMinExperience(0);
-      setIndustry("");
+      if (!res.ok) {
+        const errorData = await res.text();
+        throw new Error(`Server error: ${res.status} - ${errorData}`);
+      }
       
-      // Erfolgsmeldung anzeigen
       setShowSuccess(true);
-      
-      // Nach 2 Sekunden zum Dashboard weiterleiten
       setTimeout(() => {
         router.push("/company");
       }, 2000);
-    } catch (e) {
-      setErrorMessage((e as Error).message);
-      setShowError(true);
+    } catch (error) {
+      console.error("Update error:", error);
+      alert(`Fehler beim Aktualisieren: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
     } finally {
-      setCreating(false);
+      setLoading(false);
     }
   }
 
-  if (!company) {
+  async function handleDelete() {
+    if (!confirm("Sind Sie sicher, dass Sie diese Stelle löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/jobs/${params.id}`, {
+        method: "DELETE",
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.text();
+        throw new Error(`Server error: ${res.status} - ${errorData}`);
+      }
+      
+      router.push("/company");
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert(`Fehler beim Löschen: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!company || !job) {
     return (
       <div className="min-h-screen ds-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl ds-heading mb-4">Nicht angemeldet</h1>
-          <Link href="/company/login" className="ds-link-blue">
-            Zur Anmeldung
-          </Link>
+          <h1 className="text-2xl ds-heading mb-4">Lade Stelle...</h1>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen ds-background">
-      <Header title="Stelle erstellen" showBackButton={true} backHref="/company" />
+    <div className="ds-background min-h-screen">
+      <Header title="Stelle bearbeiten" showBackButton={true} backHref="/company" />
       {/* Success Modal */}
       {showSuccess && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -111,7 +184,7 @@ export default function CreateJobPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-2xl ds-heading mb-2">Stelle erfolgreich erstellt!</h2>
+            <h2 className="text-2xl ds-heading mb-2">Stelle erfolgreich aktualisiert!</h2>
             <p className="ds-body-light mb-6">Sie werden automatisch zum Dashboard weitergeleitet...</p>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div className="bg-[var(--accent-green)] h-2 rounded-full animate-pulse" style={{width: '100%'}}></div>
@@ -120,62 +193,19 @@ export default function CreateJobPage() {
         </div>
       )}
 
-      {/* Error Modal */}
-      {showError && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="ds-card p-8 max-w-md mx-4 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-            <h2 className="text-2xl ds-heading mb-2">Fehler beim Erstellen</h2>
-            <p className="ds-body-light mb-6">{errorMessage}</p>
-            <button 
-              onClick={() => setShowError(false)}
-              className="ds-button-primary-blue"
-            >
-              Erneut versuchen
-            </button>
-          </div>
+      <main className="mx-auto max-w-2xl px-6 py-12 lg:py-16">
+        <div className="text-center mb-8">
+          <Link href="/company" className="inline-flex items-center ds-link-green mb-6">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Zurück zum Dashboard
+          </Link>
+          <h1 className="text-3xl lg:text-4xl ds-heading mb-3">Stelle bearbeiten</h1>
+          <p className="text-base lg:text-lg font-light ds-body">Aktualisieren Sie die Stellenausschreibung</p>
         </div>
-      )}
-      
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-        <header className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Link href="/company" className="inline-flex items-center gap-2 ds-link-green">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              <span className="text-sm font-medium">Zurück zum Dashboard</span>
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm ds-body-light">Angemeldet als: {company.name}</span>
-            <button
-              onClick={() => {
-                localStorage.removeItem("companySession");
-                window.location.href = "/";
-              }}
-              className="text-sm ds-link underline"
-            >
-              Abmelden
-            </button>
-          </div>
-        </header>
 
         <div className="ds-card p-8">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 ds-icon-container-blue rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 ds-icon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </div>
-            <h1 className="text-3xl ds-heading mb-2">Neue Stelle erstellen</h1>
-            <p className="ds-body-light">Erstellen Sie eine neue Stellenausschreibung für Ihr Unternehmen</p>
-          </div>
-          
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -216,29 +246,29 @@ export default function CreateJobPage() {
                 </select>
               </div>
               <div>
-                <label className="ds-label mb-2">Stellenbeschreibung</label>
-                <textarea 
+                <label className="ds-label mb-2">Branche</label>
+                <select 
                   className="ds-input ds-input-focus-blue"
-                  placeholder="Kurze Beschreibung der Stelle..."
-                  rows={3}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                >
+                  <option value="">Branche wählen (optional)</option>
+                  {availableIndustries.map(ind => 
+                    <option key={ind} value={ind}>{ind}</option>
+                  )}
+                </select>
               </div>
             </div>
 
             <div>
-              <label className="ds-label mb-2">Branche</label>
-              <select 
+              <label className="ds-label mb-2">Stellenbeschreibung</label>
+              <textarea 
                 className="ds-input ds-input-focus-blue"
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-              >
-                <option value="">Branche wählen (optional)</option>
-                {availableIndustries.map(ind => 
-                  <option key={ind} value={ind}>{ind}</option>
-                )}
-              </select>
+                placeholder="Kurze Beschreibung der Stelle..."
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </div>
 
             <div>
@@ -249,7 +279,7 @@ export default function CreateJobPage() {
                     <button
                       key={skill}
                       type="button"
-                      onClick={() => requiredSkills.includes(skill) ? setRequiredSkills(requiredSkills.filter(s => s !== skill)) : setRequiredSkills([...requiredSkills, skill])}
+                      onClick={() => requiredSkills.includes(skill) ? removeSkill(skill) : addSkill(skill)}
                       className={`ds-skill-tag ${
                         requiredSkills.includes(skill) 
                           ? 'ds-skill-tag-blue' 
@@ -269,7 +299,7 @@ export default function CreateJobPage() {
                       <span key={skill} className="inline-flex items-center gap-1 ds-skill-tag-blue text-sm px-3 py-1 rounded-full">
                         {skill}
                         <button 
-                          onClick={() => setRequiredSkills(requiredSkills.filter(s => s !== skill))}
+                          onClick={() => removeSkill(skill)}
                           className="hover:text-blue-900 ml-1"
                         >
                           ×
@@ -284,11 +314,19 @@ export default function CreateJobPage() {
             <div className="flex gap-4 pt-4">
               <button 
                 type="button" 
-                onClick={createJob} 
-                disabled={creating}
+                onClick={handleUpdate} 
+                disabled={loading}
                 className="flex-1 ds-button-primary-blue"
               >
-                {creating ? "Erstelle..." : "Stelle erstellen"}
+                {loading ? "Aktualisiere..." : "Stelle aktualisieren"}
+              </button>
+              <button 
+                type="button" 
+                onClick={handleDelete} 
+                disabled={loading}
+                className="flex-1 bg-red-600 text-white py-3 rounded-[12px] font-medium hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                {loading ? "Lösche..." : "Stelle löschen"}
               </button>
               <Link 
                 href="/company"
@@ -299,7 +337,7 @@ export default function CreateJobPage() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
