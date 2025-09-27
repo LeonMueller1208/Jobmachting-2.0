@@ -104,7 +104,8 @@ body {
 }
 
 .ds-body-light {
-  @apply text-[var(--foreground)]/70;
+  @apply text-[var(--foreground)];
+  opacity: 0.7;
 }
 
 .ds-label {
