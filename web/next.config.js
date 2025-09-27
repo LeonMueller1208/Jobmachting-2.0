@@ -11,22 +11,8 @@ const nextConfig = {
     externalDir: true,
   },
   
-  // Ensure proper path resolution for the build
-  webpack: (config, { isServer }) => {
-    // Handle path resolution for the monorepo structure
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': require('path').resolve(__dirname),
-    };
-    
-    return config;
-  },
-  
   // Output configuration for deployment
   output: 'standalone',
-  
-  // Ensure proper asset prefix if needed
-  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
   
   // Disable x-powered-by header
   poweredByHeader: false,
