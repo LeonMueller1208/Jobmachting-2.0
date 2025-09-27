@@ -255,6 +255,3 @@ export function getMatchingBreakdown({ applicant, job }: MatchingInput) {
     total: computeMatchingScore({ applicant, job })
   };
 }
-
-
-
