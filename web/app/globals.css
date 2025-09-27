@@ -125,11 +125,11 @@ body {
 }
 
 .ds-icon-container-blue {
-  @apply bg-[var(--accent-blue)]/10;
+  background-color: rgba(58, 134, 255, 0.1);
 }
 
 .ds-icon-container-green {
-  @apply bg-[var(--accent-green)]/10;
+  background-color: rgba(6, 199, 85, 0.1);
 }
 
 .ds-icon-blue {
@@ -151,11 +151,15 @@ body {
 }
 
 .ds-skill-tag-blue {
-  @apply bg-[var(--accent-blue)]/10 border-[var(--accent-blue)]/30 text-[var(--accent-blue)];
+  @apply text-[var(--accent-blue)];
+  background-color: rgba(58, 134, 255, 0.1);
+  border-color: rgba(58, 134, 255, 0.3);
 }
 
 .ds-skill-tag-green {
-  @apply bg-[var(--accent-green)]/10 border-[var(--accent-green)]/30 text-[var(--accent-green)];
+  @apply text-[var(--accent-green)];
+  background-color: rgba(6, 199, 85, 0.1);
+  border-color: rgba(6, 199, 85, 0.3);
 }
 
 .ds-skill-tag-default {
