@@ -91,7 +91,8 @@ body {
 }
 
 .ds-heading {
-  @apply font-extrabold text-[var(--foreground)] font-inter;
+  @apply font-extrabold text-[var(--foreground)];
+  font-family: var(--font-primary);
 }
 
 .ds-subheading {
