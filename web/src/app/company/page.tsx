@@ -4,8 +4,8 @@ import Link from "next/link";
 import Header from "@/components/Header";
 
 type Company = { id: string; name: string; email: string; industry: string; location: string };
-type Job = { id: string; title: string; description: string; requiredSkills: string[]; location: string; minExperience: number };
-type Interest = { id: string; applicant: { id: string; name: string; skills: string[]; experience: number; location: string; bio?: string | null }; job: { id: string; title: string }; status: "INTERESTED" | "NOT_INTERESTED"; matchScore: number };
+type Job = { id: string; title: string; description: string; requiredSkills: string[]; location: string; minExperience: number; industry?: string | null };
+type Interest = { id: string; applicant: { id: string; name: string; skills: string[]; experience: number; location: string; bio?: string | null; industry?: string | null }; job: { id: string; title: string; industry?: string | null }; status: "INTERESTED" | "NOT_INTERESTED"; matchScore: number };
 
 export default function CompanyDashboard() {
   const [company, setCompany] = useState<Company | null>(null);

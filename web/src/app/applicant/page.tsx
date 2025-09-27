@@ -4,8 +4,8 @@ import Link from "next/link";
 import { computeMatchingScore } from "@/lib/matching";
 import Header from "@/components/Header";
 
-type Applicant = { id: string; name: string; email: string; skills: string[]; location: string; experience: number; bio?: string | null };
-type Job = { id: string; title: string; description: string; requiredSkills: string[]; location: string; minExperience: number; company: { id: string; name: string; location: string } };
+type Applicant = { id: string; name: string; email: string; skills: string[]; location: string; experience: number; bio?: string | null; industry?: string | null };
+type Job = { id: string; title: string; description: string; requiredSkills: string[]; location: string; minExperience: number; industry?: string | null; company: { id: string; name: string; location: string } };
 
 export default function ApplicantDashboard() {
   const [applicant, setApplicant] = useState<Applicant | null>(null);
