@@ -1,0 +1,260 @@
+export type MatchingInput = {
+  applicant: { 
+    skills: string[]; 
+    experience: number; 
+    location: string;
+    bio?: string;
+    industry?: string;
+  };
+  job: { 
+    requiredSkills: string[]; 
+    minExperience: number; 
+    location: string;
+    title: string;
+    description?: string;
+    industry?: string;
+  };
+};
+
+// Skill categories for better matching
+const SKILL_CATEGORIES = {
+  'programming': ['javascript', 'typescript', 'python', 'java', 'c#', 'php', 'go', 'rust', 'swift', 'kotlin'],
+  'frontend': ['react', 'vue', 'angular', 'html', 'css', 'sass', 'tailwind', 'bootstrap'],
+  'backend': ['node.js', 'express', 'django', 'flask', 'spring', 'laravel', 'rails', 'asp.net'],
+  'database': ['sql', 'mysql', 'postgresql', 'mongodb', 'redis', 'elasticsearch', 'dynamodb'],
+  'cloud': ['aws', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'serverless'],
+  'mobile': ['react native', 'flutter', 'ios', 'android', 'swift', 'kotlin'],
+  'data': ['python', 'r', 'sql', 'pandas', 'numpy', 'tensorflow', 'pytorch', 'machine learning', 'ai'],
+  'design': ['figma', 'sketch', 'adobe', 'photoshop', 'illustrator', 'ui/ux', 'wireframing'],
+  'management': ['agile', 'scrum', 'kanban', 'project management', 'leadership', 'team management'],
+  'communication': ['english', 'german', 'presentation', 'writing', 'negotiation']
+};
+
+// Location proximity scoring
+const LOCATION_PROXIMITY = {
+  'berlin': ['brandenburg', 'potsdam'],
+  'münchen': ['bayern', 'augsburg', 'nürnberg'],
+  'hamburg': ['schleswig-holstein', 'bremen'],
+  'köln': ['düsseldorf', 'essen', 'dortmund', 'nrw'],
+  'frankfurt': ['wiesbaden', 'mainz', 'darmstadt'],
+  'stuttgart': ['baden-württemberg', 'karlsruhe', 'freiburg'],
+  'remote': ['berlin', 'münchen', 'hamburg', 'köln', 'frankfurt', 'stuttgart']
+};
+
+// Remote work flexibility scoring
+const REMOTE_FLEXIBILITY = {
+  'hybrid': 0.8,      // Hybrid work is flexible
+  'flexible': 0.9,    // Flexible work arrangements
+  'home office': 0.85, // Home office preference
+  'teilzeit': 0.7     // Part-time can be remote-friendly
+};
+
+export function computeMatchingScore({ applicant, job }: MatchingInput): number {
+  // 1. Skills Matching (Enhanced with categories and partial matches)
+  const skillsScore = computeSkillsScore(applicant.skills, job.requiredSkills);
+  
+  // 2. Experience Matching (More nuanced)
+  const experienceScore = computeExperienceScore(applicant.experience, job.minExperience);
+  
+  // 3. Location Matching (Enhanced with proximity)
+  const locationScore = computeLocationScore(applicant.location, job.location);
+  
+  // 4. Industry Alignment (New)
+  const industryScore = computeIndustryScore(applicant.industry, job.industry);
+  
+  // 5. Role-Specific Keywords (New)
+  const keywordScore = computeKeywordScore(applicant.bio, job.title, job.description);
+  
+  // 6. Experience Level Alignment (New)
+  const levelScore = computeLevelScore(applicant.experience, job.minExperience, job.title);
+  
+  // Weighted combination with refined weights
+  const total = 
+    skillsScore * 0.35 +      // Skills are most important
+    experienceScore * 0.25 +   // Experience matters a lot
+    locationScore * 0.15 +     // Location is important
+    industryScore * 0.10 +     // Industry alignment
+    keywordScore * 0.10 +      // Keyword relevance
+    levelScore * 0.05;         // Experience level fit
+  
+  return Math.round(total * 1000) / 10; // percentage with 0.1 precision
+}
+
+function computeSkillsScore(applicantSkills: string[], requiredSkills: string[]): number {
+  const aSkills = new Set(applicantSkills.map(s => s.trim().toLowerCase()).filter(Boolean));
+  const jSkills = new Set(requiredSkills.map(s => s.trim().toLowerCase()).filter(Boolean));
+  
+  if (jSkills.size === 0) return 1;
+  
+  let exactMatches = 0;
+  let categoryMatches = 0;
+  let partialMatches = 0;
+  
+  for (const requiredSkill of jSkills) {
+    if (aSkills.has(requiredSkill)) {
+      exactMatches++;
+    } else {
+      // Check for category matches
+      const categoryMatch = findCategoryMatch(requiredSkill, aSkills);
+      if (categoryMatch) {
+        categoryMatches++;
+      } else {
+        // Check for partial matches (substring)
+        const partialMatch = findPartialMatch(requiredSkill, aSkills);
+        if (partialMatch) {
+          partialMatches++;
+        }
+      }
+    }
+  }
+  
+  // Weighted scoring: exact matches = 1.0, category = 0.7, partial = 0.4
+  const totalScore = exactMatches + (categoryMatches * 0.7) + (partialMatches * 0.4);
+  return Math.min(totalScore / jSkills.size, 1);
+}
+
+function findCategoryMatch(skill: string, applicantSkills: Set<string>): boolean {
+  for (const [category, skills] of Object.entries(SKILL_CATEGORIES)) {
+    if (skills.includes(skill)) {
+      return skills.some(s => applicantSkills.has(s));
+    }
+  }
+  return false;
+}
+
+function findPartialMatch(skill: string, applicantSkills: Set<string>): boolean {
+  for (const applicantSkill of applicantSkills) {
+    if (skill.includes(applicantSkill) || applicantSkill.includes(skill)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function computeExperienceScore(applicantExp: number, minExp: number): number {
+  if (applicantExp >= minExp) {
+    // Bonus for having more experience than required (up to a point)
+    const excessExp = Math.min(applicantExp - minExp, 5); // Cap bonus at 5 years
+    return Math.min(1 + (excessExp * 0.1), 1.3); // Max 30% bonus
+  } else {
+    // Penalty for insufficient experience
+    return Math.max(applicantExp / Math.max(1, minExp), 0.1);
+  }
+}
+
+function computeLocationScore(applicantLocation: string, jobLocation: string): number {
+  const applicant = applicantLocation.trim().toLowerCase();
+  const job = jobLocation.trim().toLowerCase();
+  
+  if (applicant === job) return 1;
+  
+  // Check for proximity
+  for (const [city, nearby] of Object.entries(LOCATION_PROXIMITY)) {
+    if (job === city && nearby.some(n => applicant.includes(n))) {
+      return 0.8; // Nearby location
+    }
+    if (applicant === city && nearby.some(n => job.includes(n))) {
+      return 0.8;
+    }
+  }
+  
+  // Remote work compatibility
+  if (job === 'remote' && applicant === 'remote') {
+    return 1.0; // Perfect match - both want remote
+  }
+  if (job === 'remote' || applicant === 'remote') {
+    return 0.9; // One is remote - still very compatible
+  }
+  
+  // Check for remote work flexibility keywords
+  for (const [keyword, score] of Object.entries(REMOTE_FLEXIBILITY)) {
+    if (applicant.includes(keyword) || job.includes(keyword)) {
+      return Math.max(score, 0.7); // At least 70% for remote-friendly terms
+    }
+  }
+  
+  return 0.1; // Different locations
+}
+
+function computeIndustryScore(applicantIndustry?: string, jobIndustry?: string): number {
+  if (!applicantIndustry || !jobIndustry) return 0.5; // Neutral if unknown
+  
+  const applicant = applicantIndustry.toLowerCase();
+  const job = jobIndustry.toLowerCase();
+  
+  if (applicant === job) return 1;
+  
+  // Related industries
+  const relatedIndustries: { [key: string]: string[] } = {
+    'it & software': ['fintech', 'e-commerce', 'gaming', 'telekommunikation'],
+    'finanzwesen': ['fintech', 'banking', 'insurance', 'cryptocurrency'],
+    'gesundheitswesen': ['pharma', 'biotech', 'medical devices'],
+    'e-commerce': ['retail', 'logistics', 'marketing'],
+    'automotive': ['manufacturing', 'engineering', 'logistics']
+  };
+  
+  for (const [industry, related] of Object.entries(relatedIndustries)) {
+    if ((applicant === industry && related.includes(job)) || 
+        (job === industry && related.includes(applicant))) {
+      return 0.7;
+    }
+  }
+  
+  return 0.3; // Different industries
+}
+
+function computeKeywordScore(bio?: string, jobTitle?: string, jobDescription?: string): number {
+  if (!bio || (!jobTitle && !jobDescription)) return 0.5;
+  
+  const bioWords = bio.toLowerCase().split(/\s+/);
+  const jobText = `${jobTitle || ''} ${jobDescription || ''}`.toLowerCase();
+  const jobWords = jobText.split(/\s+/);
+  
+  // Find common meaningful words (longer than 3 characters)
+  const meaningfulWords = jobWords.filter(word => word.length > 3);
+  const matches = meaningfulWords.filter(word => bioWords.includes(word));
+  
+  return Math.min(matches.length / Math.max(meaningfulWords.length, 1), 1);
+}
+
+function computeLevelScore(applicantExp: number, minExp: number, jobTitle: string): number {
+  if (!jobTitle) return 0.5; // Neutral score if no title
+  const title = jobTitle.toLowerCase();
+  
+  // Determine expected experience level from job title
+  let expectedLevel = minExp;
+  if (title.includes('senior') || title.includes('lead') || title.includes('principal')) {
+    expectedLevel = Math.max(minExp, 5);
+  } else if (title.includes('junior') || title.includes('entry') || title.includes('trainee')) {
+    expectedLevel = Math.max(minExp, 0);
+  } else if (title.includes('manager') || title.includes('director') || title.includes('head')) {
+    expectedLevel = Math.max(minExp, 7);
+  }
+  
+  // Score based on how well experience matches expected level
+  if (applicantExp >= expectedLevel) {
+    return 1;
+  } else {
+    return Math.max(applicantExp / Math.max(1, expectedLevel), 0.2);
+  }
+}
+
+export function isPassing(scorePercent: number): boolean {
+  return scorePercent >= 50; // Lowered threshold for better matching
+}
+
+// New function to get detailed matching breakdown
+export function getMatchingBreakdown({ applicant, job }: MatchingInput) {
+  return {
+    skills: computeSkillsScore(applicant.skills, job.requiredSkills),
+    experience: computeExperienceScore(applicant.experience, job.minExperience),
+    location: computeLocationScore(applicant.location, job.location),
+    industry: computeIndustryScore(applicant.industry, job.industry),
+    keywords: computeKeywordScore(applicant.bio, job.title, job.description),
+    level: computeLevelScore(applicant.experience, job.minExperience, job.title),
+    total: computeMatchingScore({ applicant, job })
+  };
+}
+
+
+
