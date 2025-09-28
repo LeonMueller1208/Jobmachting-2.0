@@ -31,6 +31,10 @@ export default function ApplicantDashboard() {
   const [applicant, setApplicant] = useState<Applicant | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const session = localStorage.getItem("applicantSession");
@@ -63,10 +67,23 @@ export default function ApplicantDashboard() {
       });
       
       if (res.ok) {
-        alert(status === "INTERESTED" ? "Interesse bekundet!" : "Interesse zurückgezogen!");
+        const message = status === "INTERESTED" ? "Interesse erfolgreich bekundet!" : "Interesse zurückgezogen!";
+        setSuccessMessage(message);
+        setShowSuccess(true);
+        
+        // Modal nach 3 Sekunden automatisch schließen
+        setTimeout(() => {
+          setShowSuccess(false);
+        }, 3000);
+      } else {
+        const errorData = await res.json();
+        setErrorMessage(errorData.error || "Fehler beim Aktualisieren des Interesses");
+        setShowError(true);
       }
     } catch (error) {
       console.error("Error updating interest:", error);
+      setErrorMessage("Netzwerkfehler beim Aktualisieren des Interesses");
+      setShowError(true);
     }
   }
 
@@ -99,7 +116,7 @@ export default function ApplicantDashboard() {
 
   return (
     <div className="ds-background min-h-screen">
-      <Header title="Bewerber Dashboard" />
+      <Header title="Bewerber Dashboard" showLogout={true} userType="applicant" />
       
       <main className="max-w-6xl mx-auto px-6 py-8">
         {/* Welcome Card */}
@@ -109,29 +126,15 @@ export default function ApplicantDashboard() {
               <h1 className="text-2xl ds-heading mb-2">Willkommen, {applicant.name}!</h1>
               <p className="ds-body-light">Hier sind Ihre passenden Stellenangebote</p>
             </div>
-            <div className="flex gap-3">
-              <Link 
-                href="/applicant/edit"
-                className="ds-button-secondary"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Profil bearbeiten
-              </Link>
-              <button
-                onClick={() => {
-                  localStorage.removeItem("applicantSession");
-                  window.location.href = "/";
-                }}
-                className="ds-button-secondary"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Abmelden
-              </button>
-            </div>
+            <Link 
+              href="/applicant/edit"
+              className="ds-button-secondary"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Profil bearbeiten
+            </Link>
           </div>
         </div>
 
@@ -184,6 +187,48 @@ export default function ApplicantDashboard() {
           ))}
         </div>
       </main>
+
+      {/* Success Modal */}
+      {showSuccess && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="ds-card p-8 max-w-md mx-4 text-center">
+            <div className="w-16 h-16 ds-icon-container-blue rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 ds-icon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-2xl ds-heading mb-2">Erfolgreich!</h2>
+            <p className="ds-body-light mb-6">{successMessage}</p>
+            <button 
+              onClick={() => setShowSuccess(false)}
+              className="ds-button-primary-blue"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {showError && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="ds-card p-8 max-w-md mx-4 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h2 className="text-2xl ds-heading mb-2">Fehler</h2>
+            <p className="ds-body-light mb-6">{errorMessage}</p>
+            <button 
+              onClick={() => setShowError(false)}
+              className="ds-button-primary-blue"
+            >
+              Erneut versuchen
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

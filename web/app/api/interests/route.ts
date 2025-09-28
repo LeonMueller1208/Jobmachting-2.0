@@ -3,18 +3,35 @@ import { prisma } from "@/lib/prisma";
 import { computeMatchingScore, isPassing } from "@/lib/matching";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const companyId = searchParams.get("companyId");
-  if (companyId) {
-    const interests = await prisma.interest.findMany({
-      where: { job: { companyId }, status: "INTERESTED" },
-      include: { applicant: true, job: true },
-      orderBy: { createdAt: "desc" },
+  try {
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get("companyId");
+    
+    if (companyId) {
+      const interests = await prisma.interest.findMany({
+        where: { 
+          job: { companyId }, 
+          status: "INTERESTED" 
+        },
+        include: { 
+          applicant: true, 
+          job: true 
+        },
+        orderBy: { createdAt: "desc" },
+      });
+      return NextResponse.json(interests);
+    }
+    
+    // Fallback: alle Interests zurückgeben
+    const interests = await prisma.interest.findMany({ 
+      include: { applicant: true, job: true }, 
+      orderBy: { createdAt: "desc" } 
     });
     return NextResponse.json(interests);
+  } catch (error) {
+    console.error("GET interests error:", error);
+    return NextResponse.json({ error: "internal", details: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
   }
-  const interests = await prisma.interest.findMany({ include: { applicant: true, job: true }, orderBy: { createdAt: "desc" } });
-  return NextResponse.json(interests);
 }
 
 export async function POST(request: Request) {

@@ -61,9 +61,12 @@ export default function CompanyDashboard() {
 
   async function fetchData() {
     try {
+      const session = localStorage.getItem("companySession");
+      const company = session ? JSON.parse(session) : null;
+      
       const [jobsRes, interestsRes] = await Promise.all([
-        fetch("/api/jobs"),
-        fetch("/api/interests")
+        fetch(company ? `/api/jobs?companyId=${company.id}` : "/api/jobs"),
+        fetch(company ? `/api/interests?companyId=${company.id}` : "/api/interests")
       ]);
       
       const jobsData = await jobsRes.json();
@@ -83,7 +86,7 @@ export default function CompanyDashboard() {
 
   return (
     <div className="ds-background min-h-screen">
-      <Header title="Unternehmen Dashboard" />
+      <Header title="Unternehmen Dashboard" showLogout={true} userType="company" />
       
       <main className="max-w-6xl mx-auto px-6 py-8">
         {/* Welcome Card */}
@@ -93,26 +96,12 @@ export default function CompanyDashboard() {
               <h1 className="text-2xl ds-heading mb-2">Willkommen, {company.name}!</h1>
               <p className="ds-body-light">Verwalten Sie Ihre Stellenangebote und Bewerbungen</p>
             </div>
-            <div className="flex gap-3">
-              <Link href="/company/create-job" className="ds-button-primary-green">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Neue Stelle erstellen
-              </Link>
-              <button
-                onClick={() => {
-                  localStorage.removeItem("companySession");
-                  window.location.href = "/";
-                }}
-                className="ds-button-secondary"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Abmelden
-              </button>
-            </div>
+            <Link href="/company/create-job" className="ds-button-primary-green">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Neue Stelle erstellen
+            </Link>
           </div>
         </div>
 
@@ -155,9 +144,20 @@ export default function CompanyDashboard() {
         {/* Interests List */}
         <div>
           <h2 className="text-xl ds-subheading mb-4">Bewerbungen</h2>
-          <div className="grid gap-4">
-            {interests.map(interest => (
-              <div key={interest.id} className="ds-card p-6 hover:shadow-lg transition-all duration-300">
+          {interests.length === 0 ? (
+            <div className="ds-card p-8 text-center">
+              <div className="w-16 h-16 ds-icon-container-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 ds-icon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg ds-subheading mb-2">Noch keine Bewerbungen</h3>
+              <p className="ds-body-light">Bewerber können sich für Ihre Stellenangebote interessieren. Die Bewerbungen erscheinen dann hier.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {interests.map(interest => (
+                <div key={interest.id} className="ds-card p-6 hover:shadow-lg transition-all duration-300">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-lg ds-subheading mb-2">{interest.applicant.name}</h3>
@@ -191,9 +191,11 @@ export default function CompanyDashboard() {
                     </button>
                   </div>
                 </div>
+                </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
