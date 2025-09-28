@@ -93,12 +93,26 @@ export default function CompanyDashboard() {
               <h1 className="text-2xl ds-heading mb-2">Willkommen, {company.name}!</h1>
               <p className="ds-body-light">Verwalten Sie Ihre Stellenangebote und Bewerbungen</p>
             </div>
-            <Link href="/company/create-job" className="ds-button-primary-green">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Neue Stelle erstellen
-            </Link>
+            <div className="flex gap-3">
+              <Link href="/company/create-job" className="ds-button-primary-green">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Neue Stelle erstellen
+              </Link>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("companySession");
+                  window.location.href = "/";
+                }}
+                className="ds-button-secondary"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Abmelden
+              </button>
+            </div>
           </div>
         </div>
 
@@ -116,7 +130,8 @@ export default function CompanyDashboard() {
                   </div>
                   <Link 
                     href={`/company/edit-job/${job.id}`}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="ds-button-secondary text-sm px-3 py-2"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

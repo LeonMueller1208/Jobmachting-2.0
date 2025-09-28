@@ -109,15 +109,29 @@ export default function ApplicantDashboard() {
               <h1 className="text-2xl ds-heading mb-2">Willkommen, {applicant.name}!</h1>
               <p className="ds-body-light">Hier sind Ihre passenden Stellenangebote</p>
             </div>
-            <Link 
-              href="/applicant/edit"
-              className="ds-button-secondary"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              Profil bearbeiten
-            </Link>
+            <div className="flex gap-3">
+              <Link 
+                href="/applicant/edit"
+                className="ds-button-secondary"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Profil bearbeiten
+              </Link>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("applicantSession");
+                  window.location.href = "/";
+                }}
+                className="ds-button-secondary"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Abmelden
+              </button>
+            </div>
           </div>
         </div>
 
