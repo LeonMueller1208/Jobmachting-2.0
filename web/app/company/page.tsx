@@ -191,7 +191,6 @@ export default function CompanyDashboard() {
                     </button>
                   </div>
                 </div>
-                </div>
               </div>
               ))}
             </div>
