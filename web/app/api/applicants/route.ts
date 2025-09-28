@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-
-// Temporary in-memory storage for demo purposes
-let applicants: any[] = [];
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
@@ -9,10 +7,13 @@ export async function GET(request: Request) {
     const email = searchParams.get("email");
     
     if (email) {
-      const existing = applicants.find(a => a.email === email);
+      const existing = await prisma.applicant.findUnique({ where: { email } });
       return NextResponse.json(existing ?? null);
     }
     
+    const applicants = await prisma.applicant.findMany({ 
+      orderBy: { createdAt: "desc" } 
+    });
     return NextResponse.json(applicants);
   } catch (e) {
     console.error("GET applicants error:", e);
@@ -29,31 +30,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
     }
     
-    // Check if applicant already exists
-    const existingIndex = applicants.findIndex(a => a.email === email);
+    const upserted = await prisma.applicant.upsert({
+      where: { email },
+      update: { 
+        name, 
+        skills, 
+        location, 
+        experience: Number(experience) || 0, 
+        bio: bio || null, 
+        industry: industry || null 
+      },
+      create: { 
+        email, 
+        name, 
+        skills, 
+        location, 
+        experience: Number(experience) || 0, 
+        bio: bio || null, 
+        industry: industry || null 
+      },
+    });
     
-    const applicantData = {
-      id: existingIndex >= 0 ? applicants[existingIndex].id : `applicant_${Date.now()}`,
-      email,
-      name,
-      skills,
-      location,
-      experience: Number(experience) || 0,
-      bio: bio || null,
-      industry: industry || null,
-      createdAt: existingIndex >= 0 ? applicants[existingIndex].createdAt : new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    if (existingIndex >= 0) {
-      // Update existing
-      applicants[existingIndex] = applicantData;
-    } else {
-      // Create new
-      applicants.push(applicantData);
-    }
-    
-    return NextResponse.json(applicantData, { status: 201 });
+    return NextResponse.json(upserted, { status: 201 });
   } catch (e) {
     console.error("Applicant creation error:", e);
     return NextResponse.json({ error: "internal", details: e instanceof Error ? e.message : "Unknown error" }, { status: 500 });

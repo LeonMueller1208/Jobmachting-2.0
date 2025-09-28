@@ -1,11 +1,8 @@
 {
-  "buildCommand": "cd web && npm run build",
+  "buildCommand": "cd web && npx prisma generate && npm run build",
   "outputDirectory": "web/.next",
   "installCommand": "cd web && npm install",
   "framework": "nextjs",
-  "env": {
-    "DATABASE_URL": "file:./dev.db"
-  },
   "functions": {
     "web/app/api/**/*.ts": {
       "runtime": "nodejs18.x"
