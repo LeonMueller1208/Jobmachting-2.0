@@ -6,8 +6,12 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
     
+    console.log("GET companies API called with email:", email); // Debug log
+    
     if (email) {
+      console.log("Searching for company with email:", email); // Debug log
       const existing = await prisma.company.findUnique({ where: { email } });
+      console.log("Found company:", existing); // Debug log
       return NextResponse.json(existing ?? null);
     }
     
@@ -15,6 +19,7 @@ export async function GET(request: Request) {
       include: { jobs: true }, 
       orderBy: { createdAt: "desc" } 
     });
+    console.log("Found all companies:", companies.length); // Debug log
     return NextResponse.json(companies);
   } catch (e) {
     console.error("GET companies error:", e);
