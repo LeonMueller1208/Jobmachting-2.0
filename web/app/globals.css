@@ -164,6 +164,29 @@ body {
   border-color: rgba(6, 199, 85, 0.3);
 }
 
-.ds-skill-tag-default {
-  @apply bg-gray-50 border-gray-200 text-[var(--foreground)] hover:bg-gray-100;
-}
+    .ds-skill-tag-default {
+      @apply bg-gray-50 border-gray-200 text-[var(--foreground)] hover:bg-gray-100;
+    }
+
+    /* Mobile-optimized utilities */
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Touch-friendly buttons */
+    .ds-button-primary-blue,
+    .ds-button-primary-green,
+    .ds-button-secondary {
+      min-height: 44px; /* iOS touch target minimum */
+      @apply touch-manipulation;
+    }
+
+    /* Mobile card adjustments */
+    @media (max-width: 640px) {
+      .ds-card {
+        @apply mx-2;
+      }
+    }

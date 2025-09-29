@@ -118,17 +118,17 @@ export default function ApplicantDashboard() {
     <div className="ds-background min-h-screen">
       <Header title="Bewerber Dashboard" showLogout={true} userType="applicant" />
       
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        {/* Welcome Card */}
-        <div className="ds-card p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl ds-heading mb-2">Willkommen, {applicant.name}!</h1>
-              <p className="ds-body-light">Hier sind Ihre passenden Stellenangebote</p>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+        {/* Welcome Card - Mobile Optimized */}
+        <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl ds-heading mb-2 truncate">Willkommen, {applicant.name}!</h1>
+              <p className="ds-body-light text-sm sm:text-base">Hier sind Ihre passenden Stellenangebote</p>
             </div>
             <Link 
               href="/applicant/edit"
-              className="ds-button-secondary"
+              className="ds-button-secondary text-sm sm:text-base shrink-0 justify-center sm:justify-start"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -138,46 +138,46 @@ export default function ApplicantDashboard() {
           </div>
         </div>
 
-        {/* Jobs List */}
-        <div className="grid gap-6">
+        {/* Jobs List - Mobile Optimized */}
+        <div className="grid gap-4 sm:gap-6">
           {matchedJobs.map(job => (
-            <div key={job.id} className="ds-card p-6 hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-xl ds-subheading mb-2">{job.title}</h3>
-                  <p className="ds-body-light mb-2">{job.company.name} • {job.location}</p>
-                  <p className="ds-body-light text-sm">{job.description}</p>
+            <div key={job.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-lg sm:text-xl ds-subheading mb-2 break-words">{job.title}</h3>
+                  <p className="ds-body-light mb-2 text-sm sm:text-base">{job.company.name} • {job.location}</p>
+                  <p className="ds-body-light text-sm sm:text-base line-clamp-3">{job.description}</p>
                 </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold ds-link-blue mb-1">{job.matchScore}%</div>
-                  <div className="text-sm ds-body-light">Match Score</div>
+                <div className="text-center sm:text-right shrink-0">
+                  <div className="text-2xl sm:text-3xl font-bold ds-link-blue mb-1">{job.matchScore}%</div>
+                  <div className="text-xs sm:text-sm ds-body-light">Match Score</div>
                 </div>
               </div>
               
               <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
                   {job.requiredSkills.map(skill => (
-                    <span key={skill} className="ds-skill-tag-blue">
+                    <span key={skill} className="ds-skill-tag-blue text-xs sm:text-sm">
                       {skill}
                     </span>
                   ))}
                 </div>
               </div>
               
-              <div className="flex items-center justify-between">
-                <div className="text-sm ds-body-light">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="text-xs sm:text-sm ds-body-light">
                   {job.minExperience} Jahre Erfahrung erforderlich
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => handleInterest(job.id, "INTERESTED")}
-                    className="ds-button-primary-blue"
+                    className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
                   >
                     Interesse bekunden
                   </button>
                   <button
                     onClick={() => handleInterest(job.id, "NOT_INTERESTED")}
-                    className="ds-button-secondary"
+                    className="ds-button-secondary text-sm sm:text-base flex-1 sm:flex-initial"
                   >
                     Nicht interessiert
                   </button>
