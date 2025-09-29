@@ -55,9 +55,17 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    
+    // First delete all interests/applications for this job
+    await prisma.interest.deleteMany({
+      where: { jobId: id },
+    });
+    
+    // Then delete the job itself
     await prisma.job.delete({
       where: { id },
     });
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete job error:", error);
