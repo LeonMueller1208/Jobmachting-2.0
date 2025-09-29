@@ -56,7 +56,13 @@ export default function CompanyDashboard() {
   useEffect(() => {
     const session = localStorage.getItem("companySession");
     if (session) {
-      setCompany(JSON.parse(session));
+      try {
+        const companyData = JSON.parse(session);
+        setCompany(companyData);
+      } catch (error) {
+        console.error("Error parsing company session:", error);
+        localStorage.removeItem("companySession");
+      }
     }
     fetchData();
   }, []);
@@ -66,19 +72,34 @@ export default function CompanyDashboard() {
       const session = localStorage.getItem("companySession");
       const company = session ? JSON.parse(session) : null;
       
+      if (!company || !company.id) {
+        console.error("No company session found");
+        setLoading(false);
+        return;
+      }
+      
       const [jobsRes, interestsRes] = await Promise.all([
-        fetch(company ? `/api/jobs?companyId=${company.id}` : "/api/jobs"),
-        fetch(company ? `/api/interests?companyId=${company.id}` : "/api/interests")
+        fetch(`/api/jobs?companyId=${company.id}`),
+        fetch(`/api/interests?companyId=${company.id}`)
       ]);
+      
+      if (!jobsRes.ok || !interestsRes.ok) {
+        throw new Error(`API error: jobs=${jobsRes.status}, interests=${interestsRes.status}`);
+      }
       
       const jobsData = await jobsRes.json();
       const interestsData = await interestsRes.json();
       
-      setJobs(jobsData);
-      setInterests(interestsData);
-      setFilteredInterests(interestsData); // Initially show all interests
+      // Ensure data is an array
+      setJobs(Array.isArray(jobsData) ? jobsData : []);
+      setInterests(Array.isArray(interestsData) ? interestsData : []);
+      setFilteredInterests(Array.isArray(interestsData) ? interestsData : []);
     } catch (error) {
       console.error("Error fetching data:", error);
+      // Set empty arrays on error to prevent map errors
+      setJobs([]);
+      setInterests([]);
+      setFilteredInterests([]);
     } finally {
       setLoading(false);
     }
