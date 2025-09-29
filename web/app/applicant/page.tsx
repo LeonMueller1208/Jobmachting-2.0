@@ -90,20 +90,24 @@ export default function ApplicantDashboard() {
   const matchedJobs = jobs.map(job => {
     if (!applicant) return { ...job, matchScore: 0 };
     
+    // Safety checks for data integrity
+    const applicantSkills = Array.isArray(applicant.skills) ? applicant.skills : [];
+    const jobSkills = Array.isArray(job.requiredSkills) ? job.requiredSkills : [];
+    
     const score = computeMatchingScore({
       applicant: { 
-        skills: applicant.skills, 
-        experience: applicant.experience, 
-        location: applicant.location,
+        skills: applicantSkills, 
+        experience: applicant.experience || 0, 
+        location: applicant.location || "",
         bio: applicant.bio || undefined,
         industry: applicant.industry || undefined
       },
       job: { 
-        requiredSkills: job.requiredSkills, 
-        minExperience: job.minExperience, 
-        location: job.location,
-        title: job.title,
-        description: job.description,
+        requiredSkills: jobSkills, 
+        minExperience: job.minExperience || 0, 
+        location: job.location || "",
+        title: job.title || "",
+        description: job.description || "",
         industry: job.industry || undefined
       },
     });
