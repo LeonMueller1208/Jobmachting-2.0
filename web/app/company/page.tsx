@@ -94,6 +94,16 @@ export default function CompanyDashboard() {
     }
   }
 
+  // Update filtered interests when interests change
+  useEffect(() => {
+    if (selectedJobId === null) {
+      setFilteredInterests(interests);
+    } else {
+      const filtered = interests.filter(interest => interest.job.id === selectedJobId);
+      setFilteredInterests(filtered);
+    }
+  }, [interests, selectedJobId]);
+
   if (loading) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Lade...</div></div>;
   if (!company) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Bitte melden Sie sich an</div></div>;
 
@@ -211,26 +221,51 @@ export default function CompanyDashboard() {
 
         {/* Interests List - Filtered */}
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
             <h2 className="text-lg sm:text-xl ds-subheading">
               Bewerbungen
-              {selectedJobId && (
-                <span className="text-sm ds-body-light ml-2">
-                  (gefiltert nach Stelle)
-                </span>
-              )}
+              <span className="text-sm ds-body-light ml-2">
+                ({filteredInterests.length} von {interests.length})
+                {selectedJobId && " • gefiltert"}
+              </span>
             </h2>
-            {selectedJobId && (
-              <button
-                onClick={() => filterInterestsByJob(null)}
-                className="ds-button-secondary text-xs sm:text-sm px-3 py-2"
-              >
-                <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Filter zurücksetzen
-              </button>
-            )}
+            
+            {/* Filter Controls */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              {/* Job Filter Dropdown */}
+              <div className="relative">
+                <select
+                  value={selectedJobId || ""}
+                  onChange={(e) => filterInterestsByJob(e.target.value || null)}
+                  className="ds-input text-xs sm:text-sm pr-8"
+                >
+                  <option value="">Alle Stellen anzeigen</option>
+                  {jobs.map(job => (
+                    <option key={job.id} value={job.id}>
+                      {job.title}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg className="w-4 h-4 ds-body-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              
+              {/* Reset Button (only show when filtered) */}
+              {selectedJobId && (
+                <button
+                  onClick={() => filterInterestsByJob(null)}
+                  className="ds-button-secondary text-xs sm:text-sm px-3 py-2 whitespace-nowrap"
+                >
+                  <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Zurücksetzen
+                </button>
+              )}
+            </div>
           </div>
           {filteredInterests.length === 0 ? (
             <div className="ds-card p-6 sm:p-8 text-center">
