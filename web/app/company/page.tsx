@@ -237,7 +237,7 @@ export default function CompanyDashboard() {
                 <select
                   value={selectedJobId || ""}
                   onChange={(e) => filterInterestsByJob(e.target.value || null)}
-                  className="ds-input text-xs sm:text-sm pr-8"
+                  className="ds-input text-xs sm:text-sm appearance-none pr-8"
                 >
                   <option value="">Alle Stellen anzeigen</option>
                   {jobs.map(job => (
