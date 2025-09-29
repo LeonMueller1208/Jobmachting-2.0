@@ -174,7 +174,7 @@ export default function CompanyDashboard() {
                   <div className="flex flex-col sm:flex-row gap-2 shrink-0">
                     <button
                       onClick={() => filterInterestsByJob(selectedJobId === job.id ? null : job.id)}
-                      className={`text-xs sm:text-sm px-3 py-2 rounded-lg border transition-all duration-300 ${
+                      className={`text-xs sm:text-sm px-3 py-2 transition-all duration-300 ${
                         selectedJobId === job.id 
                           ? 'ds-button-primary-green' 
                           : 'ds-button-secondary'
