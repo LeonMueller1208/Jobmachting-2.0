@@ -48,9 +48,17 @@ export default function ApplicantDashboard() {
     try {
       const res = await fetch("/api/jobs");
       const data = await res.json();
-      setJobs(data);
+      
+      // Safety check: ensure data is an array
+      if (Array.isArray(data)) {
+        setJobs(data);
+      } else {
+        console.error("Jobs API returned non-array:", data);
+        setJobs([]); // Set empty array instead of error object
+      }
     } catch (error) {
       console.error("Error fetching jobs:", error);
+      setJobs([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
