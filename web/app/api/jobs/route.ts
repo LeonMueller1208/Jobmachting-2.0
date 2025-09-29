@@ -6,15 +6,12 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const companyId = searchParams.get("companyId");
     
-    console.log("GET jobs API called with companyId:", companyId); // Debug log
-    
     if (companyId) {
       const jobs = await prisma.job.findMany({
         where: { companyId },
         include: { company: true },
         orderBy: { createdAt: "desc" },
       });
-      console.log("Found jobs for companyId", companyId, ":", jobs.length, "jobs"); // Debug log
       return NextResponse.json(jobs);
     }
     
@@ -22,7 +19,6 @@ export async function GET(request: Request) {
       include: { company: true }, 
       orderBy: { createdAt: "desc" } 
     });
-    console.log("Found all jobs:", jobs.length, "jobs"); // Debug log
     return NextResponse.json(jobs);
   } catch (e) {
     console.error("GET jobs error:", e);

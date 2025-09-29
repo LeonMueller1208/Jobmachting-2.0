@@ -20,14 +20,10 @@ export default function CompanyLogin() {
       const res = await fetch(`/api/companies?email=${encodeURIComponent(email)}`);
       const data = await res.json();
       
-      console.log("Company login response:", data); // Debug log
-      
       if (data && data.id) {
-        console.log("Saving company session:", data); // Debug log
         localStorage.setItem("companySession", JSON.stringify(data));
         router.push("/company");
       } else {
-        console.log("No company found for email:", email); // Debug log
         alert("Unternehmen nicht gefunden. Bitte registrieren Sie sich.");
       }
     } catch (error) {
