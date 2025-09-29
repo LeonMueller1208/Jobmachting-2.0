@@ -5,11 +5,10 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 
 const availableSkills = [
-  // Programmier-Skills (8)
-  "JavaScript", "Python", "Java", "React", "SQL", "HTML/CSS", "Node.js", "TypeScript",
-  // Allgemeine Skills (12)
-  "Projektmanagement", "Teamführung", "Kommunikation", "Kundenbetreuung", "Marketing", "Verkauf",
-  "Buchhaltung", "Datenanalyse", "Präsentationen", "MS Office", "Qualitätssicherung", "Logistik"
+  "JavaScript", "TypeScript", "React", "Node.js", "Python", "Java", "C#", "PHP", "Go", "Rust",
+  "HTML", "CSS", "Vue.js", "Angular", "Express", "Django", "Flask", "Spring", "Laravel", "Rails",
+  "SQL", "MongoDB", "PostgreSQL", "MySQL", "Redis", "Docker", "Kubernetes", "AWS", "Azure", "GCP",
+  "Git", "Linux", "DevOps", "CI/CD", "Testing", "Agile", "Scrum", "UI/UX", "Figma", "Adobe"
 ];
 
 const availableIndustries = [
