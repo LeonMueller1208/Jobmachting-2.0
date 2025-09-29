@@ -49,6 +49,8 @@ export default function CompanyDashboard() {
   const [company, setCompany] = useState<Company | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [interests, setInterests] = useState<Interest[]>([]);
+  const [filteredInterests, setFilteredInterests] = useState<Interest[]>([]);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,10 +76,21 @@ export default function CompanyDashboard() {
       
       setJobs(jobsData);
       setInterests(interestsData);
+      setFilteredInterests(interestsData); // Initially show all interests
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  function filterInterestsByJob(jobId: string | null) {
+    setSelectedJobId(jobId);
+    if (jobId === null) {
+      setFilteredInterests(interests);
+    } else {
+      const filtered = interests.filter(interest => interest.job.id === jobId);
+      setFilteredInterests(filtered);
     }
   }
 
@@ -117,7 +130,7 @@ export default function CompanyDashboard() {
                     <div className="flex items-start gap-3 mb-3">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 ds-icon-container-green rounded-xl flex items-center justify-center shrink-0">
                         <svg className="w-5 h-5 sm:w-6 sm:h-6 ds-icon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 112 2v6a2 2 0 11-2 2V6z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                       </div>
                       <div className="min-w-0 flex-1">
@@ -148,16 +161,31 @@ export default function CompanyDashboard() {
                     </div>
                     <p className="ds-body-light text-sm sm:text-base line-clamp-3 mb-4">{job.description}</p>
                   </div>
-                  <Link 
-                    href={`/company/edit-job/${job.id}`}
-                    className="ds-button-secondary text-xs sm:text-sm px-4 py-2 shrink-0 justify-center sm:justify-start"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Bearbeiten
-                  </Link>
+                  <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <button
+                      onClick={() => filterInterestsByJob(selectedJobId === job.id ? null : job.id)}
+                      className={`text-xs sm:text-sm px-3 py-2 rounded-lg border transition-all duration-300 ${
+                        selectedJobId === job.id 
+                          ? 'ds-button-primary-green' 
+                          : 'ds-button-secondary'
+                      }`}
+                    >
+                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      {selectedJobId === job.id ? 'Alle anzeigen' : 'Bewerbungen'}
+                    </button>
+                    <Link 
+                      href={`/company/edit-job/${job.id}`}
+                      className="ds-button-secondary text-xs sm:text-sm px-3 py-2 justify-center sm:justify-start"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      Bearbeiten
+                    </Link>
+                  </div>
                 </div>
                 
                 {/* Skills Section */}
@@ -181,22 +209,49 @@ export default function CompanyDashboard() {
           </div>
         </div>
 
-        {/* Interests List - Mobile Optimized */}
+        {/* Interests List - Filtered */}
         <div>
-          <h2 className="text-lg sm:text-xl ds-subheading mb-4">Bewerbungen</h2>
-          {interests.length === 0 ? (
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg sm:text-xl ds-subheading">
+              Bewerbungen
+              {selectedJobId && (
+                <span className="text-sm ds-body-light ml-2">
+                  (gefiltert nach Stelle)
+                </span>
+              )}
+            </h2>
+            {selectedJobId && (
+              <button
+                onClick={() => filterInterestsByJob(null)}
+                className="ds-button-secondary text-xs sm:text-sm px-3 py-2"
+              >
+                <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Filter zurücksetzen
+              </button>
+            )}
+          </div>
+          {filteredInterests.length === 0 ? (
             <div className="ds-card p-6 sm:p-8 text-center">
               <div className="w-12 h-12 sm:w-16 sm:h-16 ds-icon-container-green rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-6 h-6 sm:w-8 sm:h-8 ds-icon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <h3 className="text-base sm:text-lg ds-subheading mb-2">Noch keine Bewerbungen</h3>
-              <p className="ds-body-light text-sm sm:text-base">Bewerber können sich für Ihre Stellenangebote interessieren. Die Bewerbungen erscheinen dann hier.</p>
+              <h3 className="text-base sm:text-lg ds-subheading mb-2">
+                {selectedJobId ? 'Keine Bewerbungen für diese Stelle' : 'Noch keine Bewerbungen'}
+              </h3>
+              <p className="ds-body-light text-sm sm:text-base">
+                {selectedJobId 
+                  ? 'Für diese Stelle sind noch keine Bewerbungen eingegangen.' 
+                  : 'Bewerber können sich für Ihre Stellenangebote interessieren. Die Bewerbungen erscheinen dann hier.'
+                }
+              </p>
             </div>
           ) : (
             <div className="grid gap-4">
-              {interests.map(interest => (
+              {filteredInterests.map(interest => (
                 <div key={interest.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
                   <div className="min-w-0 flex-1">
