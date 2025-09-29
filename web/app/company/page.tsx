@@ -72,16 +72,22 @@ export default function CompanyDashboard() {
       const session = localStorage.getItem("companySession");
       const company = session ? JSON.parse(session) : null;
       
+      console.log("Fetching data for company:", company); // Debug log
+      
       if (!company || !company.id) {
-        console.error("No company session found");
+        console.error("No company session found or invalid company data:", company);
         setLoading(false);
         return;
       }
+      
+      console.log("Fetching jobs for companyId:", company.id); // Debug log
       
       const [jobsRes, interestsRes] = await Promise.all([
         fetch(`/api/jobs?companyId=${company.id}`),
         fetch(`/api/interests?companyId=${company.id}`)
       ]);
+      
+      console.log("API responses - Jobs:", jobsRes.status, "Interests:", interestsRes.status); // Debug log
       
       if (!jobsRes.ok || !interestsRes.ok) {
         throw new Error(`API error: jobs=${jobsRes.status}, interests=${interestsRes.status}`);
@@ -89,6 +95,8 @@ export default function CompanyDashboard() {
       
       const jobsData = await jobsRes.json();
       const interestsData = await interestsRes.json();
+      
+      console.log("Fetched data - Jobs:", jobsData, "Interests:", interestsData); // Debug log
       
       // Ensure data is an array
       setJobs(Array.isArray(jobsData) ? jobsData : []);
