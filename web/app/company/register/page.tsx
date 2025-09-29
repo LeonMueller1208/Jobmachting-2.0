@@ -33,11 +33,14 @@ export default function CompanyRegister() {
 
       if (res.ok) {
         const data = await res.json();
+        console.log("Company registration response:", data); // Debug log
+        console.log("Saving company session:", data); // Debug log
         localStorage.setItem("companySession", JSON.stringify(data));
         alert("Unternehmen erfolgreich registriert!");
         router.push("/company");
       } else {
         const error = await res.json();
+        console.log("Registration error response:", error); // Debug log
         alert(`Fehler: ${error.error || "Unbekannter Fehler"}`);
       }
     } catch (error) {

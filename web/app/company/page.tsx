@@ -58,6 +58,7 @@ export default function CompanyDashboard() {
     if (session) {
       try {
         const companyData = JSON.parse(session);
+        console.log("Parsed company session:", companyData); // Debug log
         setCompany(companyData);
       } catch (error) {
         console.error("Error parsing company session:", error);
