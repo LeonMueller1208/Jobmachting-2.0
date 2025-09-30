@@ -18,10 +18,10 @@ export default function Home() {
       {/* Hero Section */}
       <main className="mx-auto max-w-4xl px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
         <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading tracking-tight mb-3">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl ds-heading tracking-tight mb-3">
             Intelligente Jobvermittlung
           </h1>
-          <p className="text-sm sm:text-base lg:text-lg font-light ds-body max-w-xl mx-auto leading-relaxed px-4 sm:px-0">
+          <p className="text-base sm:text-lg lg:text-xl font-light ds-body max-w-xl mx-auto leading-relaxed px-4 sm:px-0">
             Intelligente Jobvermittlung mit KI-gestütztem Matching. 
             Finde den perfekten Job oder den idealen Kandidaten.
           </p>
@@ -42,10 +42,10 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <h2 className="text-base sm:text-lg lg:text-xl ds-subheading mb-2 sm:mb-3 group-hover:text-[var(--accent-blue)] transition-all duration-500 ease-out">
+              <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-2 sm:mb-3 group-hover:text-[var(--accent-blue)] transition-all duration-500 ease-out">
                 Job suchen
               </h2>
-              <p className="ds-body-light text-xs sm:text-sm leading-relaxed font-light">
+              <p className="ds-body-light text-sm sm:text-base leading-relaxed font-light">
                 Als Bewerber passende Stellen finden und sich mit unserem intelligenten Matching-System bewerben
               </p>
             </div>
@@ -62,10 +62,10 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h2 className="text-base sm:text-lg lg:text-xl ds-subheading mb-2 sm:mb-3 group-hover:text-[var(--accent-green)] transition-all duration-500 ease-out">
+              <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-2 sm:mb-3 group-hover:text-[var(--accent-green)] transition-all duration-500 ease-out">
                 Stellen anbieten
               </h2>
-              <p className="ds-body-light text-xs sm:text-sm leading-relaxed font-light">
+              <p className="ds-body-light text-sm sm:text-base leading-relaxed font-light">
                 Als Unternehmen Talente finden und Stellen mit unserem erweiterten Matching-Algorithmus ausschreiben
               </p>
             </div>
