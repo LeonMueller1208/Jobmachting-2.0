@@ -130,8 +130,8 @@ export default function CompanyDashboard() {
         <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl ds-heading mb-2 truncate">Willkommen, {company.name}!</h1>
-              <p className="ds-body-light text-sm sm:text-base">Verwalten Sie Ihre Stellenangebote und Bewerbungen</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2 truncate">Willkommen, {company.name}!</h1>
+              <p className="ds-body-light text-sm sm:text-base lg:text-lg">Verwalten Sie Ihre Stellenangebote und Bewerbungen</p>
             </div>
             <Link href="/company/create-job" className="ds-button-primary-green text-sm sm:text-base shrink-0 justify-center sm:justify-start">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,7 +144,7 @@ export default function CompanyDashboard() {
 
         {/* Jobs List - Enhanced Design */}
         <div className="mb-6 sm:mb-8">
-          <h2 className="text-lg sm:text-xl ds-subheading mb-4">Ihre Stellenangebote</h2>
+          <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Stellenangebote</h2>
           <div className="grid gap-4 sm:gap-5">
             {jobs.map(job => (
               <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)]">
@@ -236,7 +236,7 @@ export default function CompanyDashboard() {
         {/* Interests List - Filtered */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-            <h2 className="text-lg sm:text-xl ds-subheading">
+            <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading">
               Bewerbungen
               <span className="text-sm ds-body-light ml-2">
                 ({filteredInterests.length} von {interests.length})

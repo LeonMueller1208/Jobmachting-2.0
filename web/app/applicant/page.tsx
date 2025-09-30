@@ -135,8 +135,8 @@ export default function ApplicantDashboard() {
         <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl ds-heading mb-2 truncate">Willkommen, {applicant.name}!</h1>
-              <p className="ds-body-light text-sm sm:text-base">Hier sind Ihre passenden Stellenangebote</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2 truncate">Willkommen, {applicant.name}!</h1>
+              <p className="ds-body-light text-sm sm:text-base lg:text-lg">Hier sind Ihre passenden Stellenangebote</p>
             </div>
             <Link 
               href="/applicant/edit"
