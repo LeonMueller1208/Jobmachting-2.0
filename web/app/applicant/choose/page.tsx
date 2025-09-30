@@ -10,8 +10,8 @@ export default function ApplicantChoose() {
       
       <main className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-3xl ds-heading mb-4">Bewerber Bereich</h1>
-          <p className="text-lg ds-body-light">Wählen Sie eine Option aus</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl ds-heading mb-4">Bewerber Bereich</h1>
+          <p className="text-base sm:text-lg lg:text-xl ds-body-light">Wählen Sie eine Option aus</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -21,8 +21,8 @@ export default function ApplicantChoose() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
             </div>
-            <h2 className="text-xl ds-subheading mb-4">Neues Profil erstellen</h2>
-            <p className="ds-body-light">Erstellen Sie ein neues Bewerberprofil und finden Sie passende Stellen</p>
+            <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Neues Profil erstellen</h2>
+            <p className="ds-body-light text-sm sm:text-base lg:text-lg">Erstellen Sie ein neues Bewerberprofil und finden Sie passende Stellen</p>
           </Link>
           
           <Link href="/applicant/login" className="ds-card ds-card-hover p-8 text-center group">
@@ -31,8 +31,8 @@ export default function ApplicantChoose() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               </svg>
             </div>
-            <h2 className="text-xl ds-subheading mb-4">Anmelden</h2>
-            <p className="ds-body-light">Melden Sie sich mit Ihrem bestehenden Profil an</p>
+            <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Anmelden</h2>
+            <p className="ds-body-light text-sm sm:text-base lg:text-lg">Melden Sie sich mit Ihrem bestehenden Profil an</p>
           </Link>
         </div>
       </main>
