@@ -108,8 +108,8 @@ export default function EditApplicant() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </div>
-            <h1 className="text-2xl ds-heading mb-2">Profil bearbeiten</h1>
-            <p className="ds-body-light">Aktualisieren Sie Ihre Bewerberdaten</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2">Profil bearbeiten</h1>
+            <p className="ds-body-light text-sm sm:text-base lg:text-lg">Aktualisieren Sie Ihre Bewerberdaten</p>
           </div>
 
           <div className="space-y-6">

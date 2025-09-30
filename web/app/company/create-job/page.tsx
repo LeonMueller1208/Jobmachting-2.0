@@ -106,8 +106,8 @@ export default function CreateJob() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <h1 className="text-2xl ds-heading mb-2">Neue Stelle erstellen</h1>
-            <p className="ds-body-light">Erstellen Sie eine neue Stellenausschreibung</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2">Neue Stelle erstellen</h1>
+            <p className="ds-body-light text-sm sm:text-base lg:text-lg">Erstellen Sie eine neue Stellenausschreibung</p>
           </div>
 
           <div className="space-y-6">

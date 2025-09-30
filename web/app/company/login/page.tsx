@@ -46,8 +46,8 @@ export default function CompanyLogin() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               </svg>
             </div>
-            <h1 className="text-2xl ds-heading mb-2">Anmelden</h1>
-            <p className="ds-body-light">Melden Sie sich mit Ihrer Unternehmens-E-Mail an</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2">Anmelden</h1>
+            <p className="ds-body-light text-sm sm:text-base lg:text-lg">Melden Sie sich mit Ihrer Unternehmens-E-Mail an</p>
           </div>
 
           <div className="space-y-6">

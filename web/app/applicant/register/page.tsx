@@ -79,8 +79,8 @@ export default function ApplicantRegister() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
             </div>
-            <h1 className="text-2xl ds-heading mb-2">Registrierung</h1>
-            <p className="ds-body-light">Erstellen Sie Ihr Bewerberprofil</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2">Registrierung</h1>
+            <p className="ds-body-light text-sm sm:text-base lg:text-lg">Erstellen Sie Ihr Bewerberprofil</p>
           </div>
 
           <div className="space-y-6">
