@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma';
 // GET /api/chats/[id]/messages - Get messages for a chat
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const chatId = params.id;
+    const { id } = await params;
+    const chatId = id;
 
     const messages = await prisma.message.findMany({
       where: { chatId },
@@ -24,10 +25,11 @@ export async function GET(
 // POST /api/chats/[id]/messages - Send a new message
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const chatId = params.id;
+    const { id } = await params;
+    const chatId = id;
     const { senderId, senderType, content } = await request.json();
 
     if (!senderId || !senderType || !content) {
