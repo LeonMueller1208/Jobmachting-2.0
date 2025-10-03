@@ -35,39 +35,59 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const { applicantId, jobId, status } = body ?? {} as { applicantId: string; jobId: string; status: "INTERESTED" | "NOT_INTERESTED" };
-  const [applicant, job] = await Promise.all([
-    prisma.applicant.findUnique({ where: { id: applicantId } }),
-    prisma.job.findUnique({ where: { id: jobId } }),
-  ]);
-  if (!applicant || !job) return NextResponse.json({ error: "Invalid applicant or job" }, { status: 400 });
+  try {
+    const body = await request.json();
+    const { applicantId, jobId, status } = body ?? {} as { applicantId: string; jobId: string; status: "INTERESTED" | "NOT_INTERESTED" };
+    
+    if (!applicantId || !jobId || !status) {
+      return NextResponse.json({ error: "Fehlende Parameter: applicantId, jobId oder status" }, { status: 400 });
+    }
+    
+    const [applicant, job] = await Promise.all([
+      prisma.applicant.findUnique({ where: { id: applicantId } }),
+      prisma.job.findUnique({ where: { id: jobId } }),
+    ]);
+    
+    if (!applicant) {
+      return NextResponse.json({ error: "Bewerber nicht gefunden" }, { status: 404 });
+    }
+    
+    if (!job) {
+      return NextResponse.json({ error: "Job nicht gefunden" }, { status: 404 });
+    }
 
-  const score = computeMatchingScore({
-    applicant: { 
-      skills: applicant.skills as string[], 
-      experience: applicant.experience, 
-      location: applicant.location,
-      bio: applicant.bio || undefined,
-      industry: applicant.industry || undefined
-    },
-    job: { 
-      requiredSkills: job.requiredSkills as string[], 
-      minExperience: job.minExperience, 
-      location: job.location,
-      title: job.title,
-      description: job.description,
-      industry: job.industry || undefined
-    },
-  });
+    const score = computeMatchingScore({
+      applicant: { 
+        skills: applicant.skills as string[], 
+        experience: applicant.experience, 
+        location: applicant.location,
+        bio: applicant.bio || undefined,
+        industry: applicant.industry || undefined
+      },
+      job: { 
+        requiredSkills: job.requiredSkills as string[], 
+        minExperience: job.minExperience, 
+        location: job.location,
+        title: job.title,
+        description: job.description,
+        industry: job.industry || undefined
+      },
+    });
 
-  const passes = isPassing(score);
+    const passes = isPassing(score);
 
-  const updated = await prisma.interest.upsert({
-    where: { applicantId_jobId: { applicantId, jobId } },
-    update: { status, matchScore: score, passes },
-    create: { applicantId, jobId, status, matchScore: score, passes },
-  });
-  
-  return NextResponse.json({ ...updated, passes });
+    const updated = await prisma.interest.upsert({
+      where: { applicantId_jobId: { applicantId, jobId } },
+      update: { status, matchScore: score, passes },
+      create: { applicantId, jobId, status, matchScore: score, passes },
+    });
+    
+    return NextResponse.json({ ...updated, passes });
+  } catch (error) {
+    console.error("POST interests error:", error);
+    return NextResponse.json({ 
+      error: "Fehler beim Verarbeiten der Anfrage", 
+      details: error instanceof Error ? error.message : "Unbekannter Fehler" 
+    }, { status: 500 });
+  }
 }

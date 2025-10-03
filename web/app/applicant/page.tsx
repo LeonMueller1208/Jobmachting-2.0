@@ -93,7 +93,11 @@ export default function ApplicantDashboard() {
   }
 
   async function handleInterest(jobId: string, status: "INTERESTED" | "NOT_INTERESTED") {
-    if (!applicant) return;
+    if (!applicant) {
+      setErrorMessage("Bitte melden Sie sich an");
+      setShowError(true);
+      return;
+    }
     
     try {
       const res = await fetch("/api/interests", {
@@ -112,13 +116,13 @@ export default function ApplicantDashboard() {
           setShowSuccess(false);
         }, 3000);
       } else {
-        const errorData = await res.json();
-        setErrorMessage(errorData.error || "Fehler beim Aktualisieren des Interesses");
+        const errorData = await res.json().catch(() => ({ error: "Unbekannter Fehler" }));
+        setErrorMessage(errorData.error || errorData.details || "Fehler beim Aktualisieren des Interesses");
         setShowError(true);
       }
     } catch (error) {
       console.error("Error updating interest:", error);
-      setErrorMessage("Netzwerkfehler beim Aktualisieren des Interesses");
+      setErrorMessage(error instanceof Error ? error.message : "Netzwerkfehler beim Aktualisieren des Interesses");
       setShowError(true);
     }
   }
@@ -365,19 +369,19 @@ export default function ApplicantDashboard() {
       {/* Error Modal */}
       {showError && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="ds-card p-8 max-w-md mx-4 text-center">
+          <div className="ds-card p-6 sm:p-8 max-w-md mx-4 text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h2 className="text-2xl ds-heading mb-2">Fehler</h2>
-            <p className="ds-body-light mb-6">{errorMessage}</p>
+            <h2 className="text-xl sm:text-2xl ds-heading mb-2">Fehler</h2>
+            <p className="ds-body-light text-sm sm:text-base mb-6">{errorMessage}</p>
             <button 
               onClick={() => setShowError(false)}
-              className="ds-button-primary-blue"
+              className="ds-button-primary-blue px-6 py-2.5"
             >
-              Erneut versuchen
+              OK, verstanden
             </button>
           </div>
         </div>
