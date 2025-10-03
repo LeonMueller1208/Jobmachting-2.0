@@ -316,24 +316,24 @@ export default function ApplicantDashboard() {
               </div>
               
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t border-gray-100">
                 <button
                   onClick={() => handleInterest(job.id, "INTERESTED")}
-                  className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
+                  className="ds-button-primary-blue text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-2.5 inline-flex items-center justify-center"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
-                  Interesse bekunden
+                  <span>Interesse bekunden</span>
                 </button>
                 <button
                   onClick={() => handleInterest(job.id, "NOT_INTERESTED")}
-                  className="ds-button-secondary text-sm sm:text-base flex-1 sm:flex-initial"
+                  className="ds-button-secondary text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-2.5 inline-flex items-center justify-center"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  Nicht interessiert
+                  <span>Nicht interessiert</span>
                 </button>
               </div>
             </div>
