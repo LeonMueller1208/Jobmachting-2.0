@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Chat = {
   id: string;
@@ -52,6 +52,7 @@ export default function ChatModal({
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -65,6 +66,15 @@ export default function ChatModal({
       markAsRead();
     }
   }, [chat]);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   async function markAsRead() {
     if (!chat) return;
@@ -156,8 +166,8 @@ export default function ChatModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[600px] flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl h-[85vh] sm:h-[600px] max-h-[700px] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
@@ -191,49 +201,52 @@ export default function ChatModal({
               </div>
             </div>
           ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.senderType === userType ? 'justify-end' : 'justify-start'}`}
-              >
+            <>
+              {messages.map((message) => (
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    message.senderType === userType
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-100 text-gray-900'
-                  }`}
+                  key={message.id}
+                  className={`flex ${message.senderType === userType ? 'justify-end' : 'justify-start'}`}
                 >
-                  <p className="text-sm">{message.content}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.senderType === userType ? 'text-blue-100' : 'text-gray-500'
-                  }`}>
-                    {new Date(message.createdAt).toLocaleTimeString('de-DE', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
+                  <div
+                    className={`max-w-[75%] sm:max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      message.senderType === userType
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-100 text-gray-900'
+                    }`}
+                  >
+                    <p className="text-sm break-words">{message.content}</p>
+                    <p className={`text-xs mt-1 ${
+                      message.senderType === userType ? 'text-blue-100' : 'text-gray-500'
+                    }`}>
+                      {new Date(message.createdAt).toLocaleTimeString('de-DE', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+              <div ref={messagesEndRef} />
+            </>
           )}
         </div>
 
         {/* Input */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-gray-200 p-3 sm:p-4 bg-gray-50">
           <div className="flex space-x-2">
             <textarea
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Nachricht eingeben..."
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
               rows={2}
               disabled={sending}
             />
             <button
               onClick={sendMessage}
               disabled={!newMessage.trim() || sending}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
             >
               {sending ? (
                 <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
