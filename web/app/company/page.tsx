@@ -445,6 +445,7 @@ export default function CompanyDashboard() {
         applicantName={chatModal.applicantName}
         jobTitle={chatModal.jobTitle}
         userType="company"
+        onMessagesRead={fetchData}
       />
     </div>
   );

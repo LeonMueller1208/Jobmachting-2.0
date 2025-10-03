@@ -33,6 +33,7 @@ interface ChatModalProps {
   applicantName: string;
   jobTitle: string;
   userType: 'applicant' | 'company';
+  onMessagesRead?: () => void;
 }
 
 export default function ChatModal({
@@ -43,7 +44,8 @@ export default function ChatModal({
   jobId,
   applicantName,
   jobTitle,
-  userType
+  userType,
+  onMessagesRead
 }: ChatModalProps) {
   const [chat, setChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -73,6 +75,11 @@ export default function ChatModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userType })
       });
+      
+      // Notify parent to refresh chat list
+      if (onMessagesRead) {
+        onMessagesRead();
+      }
     } catch (error) {
       console.error('Error marking messages as read:', error);
     }

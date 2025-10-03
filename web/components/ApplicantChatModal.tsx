@@ -17,6 +17,7 @@ interface ApplicantChatModalProps {
   companyName: string;
   jobTitle: string;
   applicantId: string;
+  onMessagesRead?: () => void;
 }
 
 export default function ApplicantChatModal({
@@ -25,7 +26,8 @@ export default function ApplicantChatModal({
   chatId,
   companyName,
   jobTitle,
-  applicantId
+  applicantId,
+  onMessagesRead
 }: ApplicantChatModalProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -48,6 +50,11 @@ export default function ApplicantChatModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userType: 'applicant' })
       });
+      
+      // Notify parent to refresh chat list
+      if (onMessagesRead) {
+        onMessagesRead();
+      }
     } catch (error) {
       console.error('Error marking messages as read:', error);
     }

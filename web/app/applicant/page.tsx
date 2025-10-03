@@ -391,6 +391,7 @@ export default function ApplicantDashboard() {
         companyName={chatModal.companyName}
         jobTitle={chatModal.jobTitle}
         applicantId={applicant.id}
+        onMessagesRead={() => fetchChats(applicant.id)}
       />
     </div>
   );
