@@ -201,7 +201,13 @@ export default function CompanyDashboard() {
                       )}
                     </div>
                     <button
-                      onClick={() => openChat({ applicant: chat.applicant, job: chat.job })}
+                      onClick={() => setChatModal({
+                        isOpen: true,
+                        applicantId: chat.applicant.id,
+                        applicantName: chat.applicant.name,
+                        jobId: chat.job.id,
+                        jobTitle: chat.job.title
+                      })}
                       className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
                     >
                       <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
