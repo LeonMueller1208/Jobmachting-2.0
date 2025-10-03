@@ -53,6 +53,7 @@ export default function CompanyDashboard() {
   const [filteredInterests, setFilteredInterests] = useState<Interest[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chats, setChats] = useState<any[]>([]);
   const [chatModal, setChatModal] = useState<{
     isOpen: boolean;
     applicantId: string;
@@ -91,22 +92,26 @@ export default function CompanyDashboard() {
         return;
       }
       
-      const [jobsRes, interestsRes] = await Promise.all([
+      const [jobsRes, interestsRes, chatsRes] = await Promise.all([
         fetch(`/api/jobs?companyId=${company.id}`),
-        fetch(`/api/interests?companyId=${company.id}`)
+        fetch(`/api/interests?companyId=${company.id}`),
+        fetch(`/api/chats?userId=${company.id}&userType=company`)
       ]);
       
       const jobsData = await jobsRes.json();
       const interestsData = await interestsRes.json();
+      const chatsData = await chatsRes.json();
       
       setJobs(Array.isArray(jobsData) ? jobsData : []);
       setInterests(Array.isArray(interestsData) ? interestsData : []);
       setFilteredInterests(Array.isArray(interestsData) ? interestsData : []);
+      setChats(Array.isArray(chatsData) ? chatsData : []);
     } catch (error) {
       console.error("Error fetching data:", error);
       setJobs([]);
       setInterests([]);
       setFilteredInterests([]);
+      setChats([]);
     } finally {
       setLoading(false);
     }
@@ -175,6 +180,41 @@ export default function CompanyDashboard() {
             </Link>
           </div>
         </div>
+
+        {/* Chats Overview */}
+        {chats.length > 0 && (
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Chats</h2>
+            <div className="grid gap-4">
+              {chats.map(chat => (
+                <div key={chat.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
+                        Chat mit {chat.applicant.name}
+                      </h3>
+                      <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
+                      {chat.messages && chat.messages.length > 0 && (
+                        <p className="ds-body-light text-xs sm:text-sm mt-1">
+                          Letzte Nachricht: {new Date(chat.messages[0].createdAt).toLocaleDateString('de-DE')}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => openChat({ applicant: chat.applicant, job: chat.job })}
+                      className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
+                    >
+                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      Chat öffnen
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Jobs List - Enhanced Design */}
         <div className="mb-6 sm:mb-8">

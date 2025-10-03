@@ -52,23 +52,23 @@ export default function ApplicantDashboard() {
   useEffect(() => {
     const session = localStorage.getItem("applicantSession");
     if (session) {
-      setApplicant(JSON.parse(session));
+      const applicantData = JSON.parse(session);
+      setApplicant(applicantData);
+      fetchChats(applicantData.id);
     }
     fetchJobs();
-    fetchChats();
   }, []);
 
-  async function fetchChats() {
-    if (!applicant) return;
-    
+  async function fetchChats(applicantId: string) {
     try {
-      const response = await fetch(`/api/chats?userId=${applicant.id}&userType=applicant`);
+      const response = await fetch(`/api/chats?userId=${applicantId}&userType=applicant`);
       if (response.ok) {
         const chatsData = await response.json();
-        setChats(chatsData);
+        setChats(Array.isArray(chatsData) ? chatsData : []);
       }
     } catch (error) {
       console.error('Error fetching chats:', error);
+      setChats([]);
     }
   }
 
