@@ -35,8 +35,23 @@ export default function ApplicantChatModal({
   useEffect(() => {
     if (isOpen && chatId) {
       fetchMessages();
+      markAsRead();
     }
   }, [isOpen, chatId]);
+
+  async function markAsRead() {
+    if (!chatId) return;
+    
+    try {
+      await fetch(`/api/chats/${chatId}/read`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userType: 'applicant' })
+      });
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+    }
+  }
 
   async function fetchMessages() {
     setLoading(true);

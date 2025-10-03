@@ -86,6 +86,7 @@ model Message {
   senderId  String
   senderType String // "applicant" or "company"
   content   String
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
   chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }

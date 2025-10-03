@@ -60,8 +60,23 @@ export default function ChatModal({
   useEffect(() => {
     if (chat) {
       fetchMessages();
+      markAsRead();
     }
   }, [chat]);
+
+  async function markAsRead() {
+    if (!chat) return;
+    
+    try {
+      await fetch(`/api/chats/${chat.id}/read`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userType })
+      });
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+    }
+  }
 
   async function createOrGetChat() {
     setLoading(true);

@@ -29,6 +29,16 @@ export async function GET(request: NextRequest) {
         messages: {
           orderBy: { createdAt: 'desc' },
           take: 1
+        },
+        _count: {
+          select: {
+            messages: {
+              where: {
+                read: false,
+                senderType: userType === 'applicant' ? 'company' : 'applicant'
+              }
+            }
+          }
         }
       },
       orderBy: { updatedAt: 'desc' }

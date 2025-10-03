@@ -190,9 +190,16 @@ export default function CompanyDashboard() {
                 <div key={chat.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
-                        Chat mit {chat.applicant.name}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
+                          Chat mit {chat.applicant.name}
+                        </h3>
+                        {chat._count && chat._count.messages > 0 && (
+                          <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
+                            {chat._count.messages}
+                          </span>
+                        )}
+                      </div>
                       <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
                       {chat.messages && chat.messages.length > 0 && (
                         <p className="ds-body-light text-xs sm:text-sm mt-1">
