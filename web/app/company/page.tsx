@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
+import ChatModal from "@/components/ChatModal";
 import { computeMatchingScore } from "@/lib/matching";
 
 type Company = { 
@@ -52,6 +53,19 @@ export default function CompanyDashboard() {
   const [filteredInterests, setFilteredInterests] = useState<Interest[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chatModal, setChatModal] = useState<{
+    isOpen: boolean;
+    applicantId: string;
+    applicantName: string;
+    jobId: string;
+    jobTitle: string;
+  }>({
+    isOpen: false,
+    applicantId: '',
+    applicantName: '',
+    jobId: '',
+    jobTitle: ''
+  });
 
   useEffect(() => {
     const session = localStorage.getItem("companySession");
@@ -117,6 +131,26 @@ export default function CompanyDashboard() {
       setFilteredInterests(filtered);
     }
   }, [interests, selectedJobId]);
+
+  function openChat(interest: Interest) {
+    setChatModal({
+      isOpen: true,
+      applicantId: interest.applicant.id,
+      applicantName: interest.applicant.name,
+      jobId: interest.job.id,
+      jobTitle: interest.job.title
+    });
+  }
+
+  function closeChat() {
+    setChatModal({
+      isOpen: false,
+      applicantId: '',
+      applicantName: '',
+      jobId: '',
+      jobTitle: ''
+    });
+  }
 
   if (loading) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Lade...</div></div>;
   if (!company) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Bitte melden Sie sich an</div></div>;
@@ -327,8 +361,14 @@ export default function CompanyDashboard() {
                     Status: {interest.status === "INTERESTED" ? "Interessiert" : "Nicht interessiert"}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <button className="ds-button-primary-green text-sm sm:text-base flex-1 sm:flex-initial">
-                      Kontaktieren
+                    <button 
+                      onClick={() => openChat(interest)}
+                      className="ds-button-primary-green text-sm sm:text-base flex-1 sm:flex-initial"
+                    >
+                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      Chat starten
                     </button>
                     <button className="ds-button-secondary text-sm sm:text-base flex-1 sm:flex-initial">
                       Details anzeigen
@@ -341,6 +381,18 @@ export default function CompanyDashboard() {
           )}
         </div>
       </main>
+
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={chatModal.isOpen}
+        onClose={closeChat}
+        applicantId={chatModal.applicantId}
+        companyId={company.id}
+        jobId={chatModal.jobId}
+        applicantName={chatModal.applicantName}
+        jobTitle={chatModal.jobTitle}
+        userType="company"
+      />
     </div>
   );
 }

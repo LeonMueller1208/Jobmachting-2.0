@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
+import ApplicantChatModal from "@/components/ApplicantChatModal";
 import { computeMatchingScore } from "@/lib/matching";
 
 type Applicant = { 
@@ -35,6 +36,18 @@ export default function ApplicantDashboard() {
   const [successMessage, setSuccessMessage] = useState("");
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [chats, setChats] = useState<any[]>([]);
+  const [chatModal, setChatModal] = useState<{
+    isOpen: boolean;
+    chatId: string;
+    companyName: string;
+    jobTitle: string;
+  }>({
+    isOpen: false,
+    chatId: '',
+    companyName: '',
+    jobTitle: ''
+  });
 
   useEffect(() => {
     const session = localStorage.getItem("applicantSession");
@@ -42,7 +55,22 @@ export default function ApplicantDashboard() {
       setApplicant(JSON.parse(session));
     }
     fetchJobs();
+    fetchChats();
   }, []);
+
+  async function fetchChats() {
+    if (!applicant) return;
+    
+    try {
+      const response = await fetch(`/api/chats?userId=${applicant.id}&userType=applicant`);
+      if (response.ok) {
+        const chatsData = await response.json();
+        setChats(chatsData);
+      }
+    } catch (error) {
+      console.error('Error fetching chats:', error);
+    }
+  }
 
   async function fetchJobs() {
     try {
@@ -123,6 +151,24 @@ export default function ApplicantDashboard() {
     return { ...job, matchScore: score };
   }).sort((a, b) => b.matchScore - a.matchScore);
 
+  function openChat(chat: any) {
+    setChatModal({
+      isOpen: true,
+      chatId: chat.id,
+      companyName: chat.company.name,
+      jobTitle: chat.job.title
+    });
+  }
+
+  function closeChat() {
+    setChatModal({
+      isOpen: false,
+      chatId: '',
+      companyName: '',
+      jobTitle: ''
+    });
+  }
+
   if (loading) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Lade...</div></div>;
   if (!applicant) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Bitte melden Sie sich an</div></div>;
 
@@ -149,6 +195,41 @@ export default function ApplicantDashboard() {
             </Link>
           </div>
         </div>
+
+        {/* Chats Section */}
+        {chats.length > 0 && (
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Chats</h2>
+            <div className="grid gap-4">
+              {chats.map(chat => (
+                <div key={chat.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
+                        Chat mit {chat.company.name}
+                      </h3>
+                      <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
+                      {chat.messages && chat.messages.length > 0 && (
+                        <p className="ds-body-light text-xs sm:text-sm mt-1">
+                          Letzte Nachricht: {new Date(chat.messages[0].createdAt).toLocaleDateString('de-DE')}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => openChat(chat)}
+                      className="ds-button-primary-green text-sm sm:text-base flex-1 sm:flex-initial"
+                    >
+                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      Chat öffnen
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Jobs List - Enhanced Design */}
         <div className="grid gap-4 sm:gap-5">
@@ -294,6 +375,16 @@ export default function ApplicantDashboard() {
           </div>
         </div>
       )}
+
+      {/* Chat Modal */}
+      <ApplicantChatModal
+        isOpen={chatModal.isOpen}
+        onClose={closeChat}
+        chatId={chatModal.chatId}
+        companyName={chatModal.companyName}
+        jobTitle={chatModal.jobTitle}
+        applicantId={applicant.id}
+      />
     </div>
   );
 }
