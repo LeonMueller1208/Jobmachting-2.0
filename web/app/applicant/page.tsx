@@ -210,7 +210,7 @@ export default function ApplicantDashboard() {
                           Chat mit {chat.company.name}
                         </h3>
                         {chat._count && chat._count.messages > 0 && (
-                          <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
+                          <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full shadow-lg">
                             {chat._count.messages}
                           </span>
                         )}
