@@ -358,23 +358,19 @@ export default function ApplicantDashboard() {
         </div>
       </main>
 
-      {/* Success Modal */}
+      {/* Success Toast */}
       {showSuccess && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="ds-card p-8 max-w-md mx-4 text-center">
-            <div className="w-16 h-16 ds-icon-container-blue rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 ds-icon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-down">
+          <div className="ds-card p-4 sm:p-6 flex items-center gap-3 shadow-2xl border-l-4 border-[var(--accent-blue)] max-w-sm">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 ds-icon-container-blue rounded-full flex items-center justify-center shrink-0">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 ds-icon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-2xl ds-heading mb-2">Erfolgreich!</h2>
-            <p className="ds-body-light mb-6">{successMessage}</p>
-            <button 
-              onClick={() => setShowSuccess(false)}
-              className="ds-button-primary-blue"
-            >
-              OK
-            </button>
+            <div className="min-w-0 flex-1">
+              <p className="ds-subheading text-sm sm:text-base mb-1">Erfolgreich!</p>
+              <p className="ds-body-light text-xs sm:text-sm">{successMessage}</p>
+            </div>
           </div>
         </div>
       )}
