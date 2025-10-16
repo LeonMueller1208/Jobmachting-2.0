@@ -15,12 +15,22 @@ const availableIndustries = [
   "Medien & Marketing", "Bildung", "Logistik", "Energie", "Immobilien", "Sonstige"
 ];
 
+const availableEducation = [
+  "Hauptschulabschluss",
+  "Realschulabschluss",
+  "Abitur",
+  "Bachelor",
+  "Master",
+  "Promotion"
+];
+
 export default function ApplicantRegister() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState(0);
+  const [education, setEducation] = useState("");
   const [bio, setBio] = useState("");
   const [industry, setIndustry] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,7 +57,7 @@ export default function ApplicantRegister() {
       const res = await fetch("/api/applicants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, skills, location, experience, bio, industry }),
+        body: JSON.stringify({ name, email, skills, location, experience, education, bio, industry }),
       });
 
       if (res.ok) {
@@ -134,18 +144,33 @@ export default function ApplicantRegister() {
               </div>
             </div>
 
-            <div>
-              <label className="ds-label">Bevorzugte Branche</label>
-              <select
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                className="ds-input ds-input-focus-blue"
-              >
-                <option value="">Branche wählen (optional)</option>
-                {availableIndustries.map(ind => (
-                  <option key={ind} value={ind}>{ind}</option>
-                ))}
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="ds-label">Höchster Abschluss</label>
+                <select
+                  value={education}
+                  onChange={(e) => setEducation(e.target.value)}
+                  className="ds-input ds-input-focus-blue"
+                >
+                  <option value="">Abschluss wählen (optional)</option>
+                  {availableEducation.map(edu => (
+                    <option key={edu} value={edu}>{edu}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="ds-label">Bevorzugte Branche</label>
+                <select
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  className="ds-input ds-input-focus-blue"
+                >
+                  <option value="">Branche wählen (optional)</option>
+                  {availableIndustries.map(ind => (
+                    <option key={ind} value={ind}>{ind}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div>

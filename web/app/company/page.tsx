@@ -21,6 +21,7 @@ type Job = {
   requiredSkills: string[]; 
   location: string; 
   minExperience: number; 
+  requiredEducation?: string | null;
   industry?: string | null; 
   company: { id: string; name: string; location: string } 
 };
@@ -32,6 +33,7 @@ type Interest = {
     name: string; 
     skills: string[]; 
     experience: number; 
+    education?: string | null;
     location: string; 
     bio?: string | null; 
     industry?: string | null 
@@ -261,6 +263,18 @@ export default function CompanyDashboard() {
                             </svg>
                             {job.minExperience} Jahre Erfahrung
                           </span>
+                          {job.requiredEducation && (
+                            <>
+                              <span className="text-gray-400">•</span>
+                              <span className="flex items-center gap-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                                </svg>
+                                {job.requiredEducation}
+                              </span>
+                            </>
+                          )}
                           {job.industry && (
                             <>
                               <span className="text-gray-400">•</span>
@@ -393,7 +407,26 @@ export default function CompanyDashboard() {
                   <div className="min-w-0 flex-1">
                     <h3 className="text-base sm:text-lg ds-subheading mb-2 break-words">{interest.applicant.name}</h3>
                     <p className="ds-body-light mb-2 text-sm sm:text-base">{interest.job.title} • {interest.applicant.location}</p>
-                    <p className="ds-body-light text-sm sm:text-base">{interest.applicant.experience} Jahre Erfahrung</p>
+                    <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm ds-body-light">
+                      <span className="flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {interest.applicant.experience} Jahre Erfahrung
+                      </span>
+                      {interest.applicant.education && (
+                        <>
+                          <span className="text-gray-400">•</span>
+                          <span className="flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                            </svg>
+                            {interest.applicant.education}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                   <div className="text-center sm:text-right shrink-0">
                     <div className="text-2xl sm:text-3xl font-bold ds-link-green mb-1">{interest.matchScore}%</div>

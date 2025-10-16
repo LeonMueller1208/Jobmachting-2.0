@@ -15,12 +15,22 @@ const availableIndustries = [
   "Medien & Marketing", "Bildung", "Logistik", "Energie", "Immobilien", "Sonstige"
 ];
 
+const availableEducation = [
+  "Hauptschulabschluss",
+  "Realschulabschluss",
+  "Abitur",
+  "Bachelor",
+  "Master",
+  "Promotion"
+];
+
 export default function EditApplicant() {
   const [applicant, setApplicant] = useState<any>(null);
   const [name, setName] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState(0);
+  const [education, setEducation] = useState("");
   const [bio, setBio] = useState("");
   const [industry, setIndustry] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,6 +48,7 @@ export default function EditApplicant() {
       setSkills(data.skills || []);
       setLocation(data.location || "");
       setExperience(data.experience || 0);
+      setEducation(data.education || "");
       setBio(data.bio || "");
       setIndustry(data.industry || "");
     }
@@ -65,7 +76,7 @@ export default function EditApplicant() {
       const res = await fetch(`/api/applicants/${applicant.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, skills, location, experience: Number(experience) || 0, bio, industry }),
+        body: JSON.stringify({ name, skills, location, experience: Number(experience) || 0, education, bio, industry }),
       });
       
       if (!res.ok) {
@@ -151,6 +162,22 @@ export default function EditApplicant() {
                   max="50"
                 />
               </div>
+              <div>
+                <label className="ds-label">Höchster Abschluss</label>
+                <select
+                  value={education}
+                  onChange={(e) => setEducation(e.target.value)}
+                  className="ds-input ds-input-focus-blue"
+                >
+                  <option value="">Abschluss wählen (optional)</option>
+                  {availableEducation.map(edu => (
+                    <option key={edu} value={edu}>{edu}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="ds-label">Bevorzugte Branche</label>
                 <select

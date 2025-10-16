@@ -15,6 +15,16 @@ const availableIndustries = [
   "Medien & Marketing", "Bildung", "Logistik", "Energie", "Immobilien", "Sonstige"
 ];
 
+const availableEducation = [
+  "Keine Angabe",
+  "Hauptschulabschluss",
+  "Realschulabschluss",
+  "Abitur",
+  "Bachelor",
+  "Master",
+  "Promotion"
+];
+
 export default function EditJob() {
   const [job, setJob] = useState<any>(null);
   const [title, setTitle] = useState("");
@@ -22,6 +32,7 @@ export default function EditJob() {
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
   const [location, setLocation] = useState("");
   const [minExperience, setMinExperience] = useState(0);
+  const [requiredEducation, setRequiredEducation] = useState("");
   const [industry, setIndustry] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -46,6 +57,7 @@ export default function EditJob() {
         setRequiredSkills(jobData.requiredSkills || []);
         setLocation(jobData.location || "");
         setMinExperience(jobData.minExperience || 0);
+        setRequiredEducation(jobData.requiredEducation || "");
         setIndustry(jobData.industry || "");
       } catch (error) {
         console.error("Error fetching job:", error);
@@ -87,6 +99,7 @@ export default function EditJob() {
           requiredSkills, 
           location, 
           minExperience: Number(minExperience) || 0, 
+          requiredEducation,
           industry 
         }),
       });
@@ -206,18 +219,33 @@ export default function EditJob() {
               </div>
             </div>
 
-            <div>
-              <label className="ds-label">Branche</label>
-              <select
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                className="ds-input ds-input-focus-green"
-              >
-                <option value="">Branche wählen (optional)</option>
-                {availableIndustries.map(ind => (
-                  <option key={ind} value={ind}>{ind}</option>
-                ))}
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="ds-label">Erforderlicher Abschluss</label>
+                <select
+                  value={requiredEducation}
+                  onChange={(e) => setRequiredEducation(e.target.value)}
+                  className="ds-input ds-input-focus-green"
+                >
+                  <option value="">Abschluss wählen (optional)</option>
+                  {availableEducation.map(edu => (
+                    <option key={edu} value={edu}>{edu}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="ds-label">Branche</label>
+                <select
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  className="ds-input ds-input-focus-green"
+                >
+                  <option value="">Branche wählen (optional)</option>
+                  {availableIndustries.map(ind => (
+                    <option key={ind} value={ind}>{ind}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div>

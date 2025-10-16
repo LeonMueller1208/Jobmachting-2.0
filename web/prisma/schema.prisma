@@ -14,6 +14,7 @@ model Applicant {
   skills     Json
   location   String
   experience Int
+  education  String?    // Highest degree: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion"
   bio        String?
   industry   String?
   createdAt  DateTime   @default(now())
@@ -35,19 +36,20 @@ model Company {
 }
 
 model Job {
-  id             String     @id @default(cuid())
-  title          String
-  description    String
-  requiredSkills Json
-  location       String
-  minExperience  Int
-  companyId      String
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  industry       String?
-  interests      Interest[]
-  chats          Chat[]
-  company        Company    @relation(fields: [companyId], references: [id])
+  id               String     @id @default(cuid())
+  title            String
+  description      String
+  requiredSkills   Json
+  location         String
+  minExperience    Int
+  requiredEducation String?   // Minimum required: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion", "Keine Angabe"
+  companyId        String
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  industry         String?
+  interests        Interest[]
+  chats            Chat[]
+  company          Company    @relation(fields: [companyId], references: [id])
 }
 
 model Interest {

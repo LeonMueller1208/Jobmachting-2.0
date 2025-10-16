@@ -15,12 +15,23 @@ const availableIndustries = [
   "Medien & Marketing", "Bildung", "Logistik", "Energie", "Immobilien", "Sonstige"
 ];
 
+const availableEducation = [
+  "Keine Angabe",
+  "Hauptschulabschluss",
+  "Realschulabschluss",
+  "Abitur",
+  "Bachelor",
+  "Master",
+  "Promotion"
+];
+
 export default function CreateJob() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
   const [location, setLocation] = useState("");
   const [minExperience, setMinExperience] = useState(0);
+  const [requiredEducation, setRequiredEducation] = useState("");
   const [industry, setIndustry] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -64,6 +75,7 @@ export default function CreateJob() {
           requiredSkills,
           location,
           minExperience,
+          requiredEducation,
           industry,
           companyId: company.id,
         }),
@@ -75,6 +87,7 @@ export default function CreateJob() {
         setRequiredSkills([]);
         setLocation("");
         setMinExperience(0);
+        setRequiredEducation("");
         setIndustry("");
         setShowSuccess(true);
         setTimeout(() => {
@@ -133,7 +146,7 @@ export default function CreateJob() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="ds-label">Standort *</label>
                 <select
@@ -157,6 +170,22 @@ export default function CreateJob() {
                   min="0"
                   max="20"
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="ds-label">Erforderlicher Abschluss</label>
+                <select
+                  value={requiredEducation}
+                  onChange={(e) => setRequiredEducation(e.target.value)}
+                  className="ds-input ds-input-focus-green"
+                >
+                  <option value="">Abschluss wählen (optional)</option>
+                  {availableEducation.map(edu => (
+                    <option key={edu} value={edu}>{edu}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="ds-label">Branche</label>
