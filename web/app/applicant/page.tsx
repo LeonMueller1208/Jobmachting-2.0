@@ -13,6 +13,7 @@ type Applicant = {
   skills: string[]; 
   location: string; 
   experience: number; 
+  education?: string | null;
   bio?: string | null; 
   industry?: string | null 
 };
@@ -140,6 +141,7 @@ export default function ApplicantDashboard() {
         skills: applicantSkills, 
         experience: applicant.experience || 0, 
         location: applicant.location || "",
+        education: applicant.education || undefined,
         bio: applicant.bio || undefined,
         industry: applicant.industry || undefined
       },
@@ -147,6 +149,7 @@ export default function ApplicantDashboard() {
         requiredSkills: jobSkills, 
         minExperience: job.minExperience || 0, 
         location: job.location || "",
+        requiredEducation: job.requiredEducation || undefined,
         title: job.title || "",
         description: job.description || "",
         industry: job.industry || undefined

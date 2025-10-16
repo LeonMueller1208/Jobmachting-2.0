@@ -3,6 +3,7 @@ export type MatchingInput = {
     skills: string[]; 
     experience: number; 
     location: string;
+    education?: string;
     bio?: string;
     industry?: string;
   };
@@ -10,6 +11,7 @@ export type MatchingInput = {
     requiredSkills: string[]; 
     minExperience: number; 
     location: string;
+    requiredEducation?: string;
     title: string;
     description?: string;
     industry?: string;
@@ -49,6 +51,17 @@ const REMOTE_FLEXIBILITY = {
   'teilzeit': 0.7     // Part-time can be remote-friendly
 };
 
+// Education hierarchy for matching
+const EDUCATION_LEVELS: { [key: string]: number } = {
+  'keine angabe': 0,
+  'hauptschulabschluss': 1,
+  'realschulabschluss': 2,
+  'abitur': 3,
+  'bachelor': 4,
+  'master': 5,
+  'promotion': 6
+};
+
 export function computeMatchingScore({ applicant, job }: MatchingInput): number {
   // 1. Skills Matching (Enhanced with categories and partial matches)
   const skillsScore = computeSkillsScore(applicant.skills, job.requiredSkills);
@@ -56,26 +69,30 @@ export function computeMatchingScore({ applicant, job }: MatchingInput): number 
   // 2. Experience Matching (More nuanced)
   const experienceScore = computeExperienceScore(applicant.experience, job.minExperience);
   
-  // 3. Location Matching (Enhanced with proximity)
+  // 3. Education Matching (NEW - hierarchical scoring)
+  const educationScore = computeEducationScore(applicant.education, job.requiredEducation);
+  
+  // 4. Location Matching (Enhanced with proximity)
   const locationScore = computeLocationScore(applicant.location, job.location);
   
-  // 4. Industry Alignment (New)
+  // 5. Industry Alignment
   const industryScore = computeIndustryScore(applicant.industry, job.industry);
   
-  // 5. Role-Specific Keywords (New)
+  // 6. Role-Specific Keywords
   const keywordScore = computeKeywordScore(applicant.bio, job.title, job.description);
   
-  // 6. Experience Level Alignment (New)
+  // 7. Experience Level Alignment
   const levelScore = computeLevelScore(applicant.experience, job.minExperience, job.title);
   
-  // Weighted combination with refined weights
+  // Weighted combination with education included
   const total = 
-    skillsScore * 0.35 +      // Skills are most important
+    skillsScore * 0.30 +       // Skills are most important
     experienceScore * 0.25 +   // Experience matters a lot
-    locationScore * 0.15 +     // Location is important
-    industryScore * 0.10 +     // Industry alignment
-    keywordScore * 0.10 +      // Keyword relevance
-    levelScore * 0.05;         // Experience level fit
+    educationScore * 0.15 +    // Education is significant
+    locationScore * 0.12 +     // Location is important
+    industryScore * 0.08 +     // Industry alignment
+    keywordScore * 0.08 +      // Keyword relevance
+    levelScore * 0.02;         // Experience level fit
   
   return Math.round(total * 1000) / 10; // percentage with 0.1 precision
 }
@@ -139,6 +156,37 @@ function computeExperienceScore(applicantExp: number, minExp: number): number {
   } else {
     // Penalty for insufficient experience
     return Math.max(applicantExp / Math.max(1, minExp), 0.1);
+  }
+}
+
+function computeEducationScore(applicantEducation?: string, requiredEducation?: string): number {
+  // If job requires no education, everyone passes
+  if (!requiredEducation || requiredEducation.toLowerCase() === 'keine angabe') {
+    return 1.0; // 100% - no requirement
+  }
+  
+  // If applicant has no education info, neutral score
+  if (!applicantEducation) {
+    return 0.5; // 50% - unknown
+  }
+  
+  const applicantLevel = EDUCATION_LEVELS[applicantEducation.toLowerCase()] ?? 0;
+  const requiredLevel = EDUCATION_LEVELS[requiredEducation.toLowerCase()] ?? 0;
+  
+  // If applicant meets or exceeds requirement
+  if (applicantLevel >= requiredLevel) {
+    return 1.0; // 100% - qualified or overqualified
+  }
+  
+  // Calculate gap (how many levels below requirement)
+  const gap = requiredLevel - applicantLevel;
+  
+  if (gap === 1) {
+    return 0.6; // 60% - one level below (e.g., Abitur vs Bachelor)
+  } else if (gap === 2) {
+    return 0.2; // 20% - two levels below (e.g., Abitur vs Master)
+  } else {
+    return 0.05; // 5% - three or more levels below (major gap)
   }
 }
 
@@ -248,6 +296,7 @@ export function getMatchingBreakdown({ applicant, job }: MatchingInput) {
   return {
     skills: computeSkillsScore(applicant.skills, job.requiredSkills),
     experience: computeExperienceScore(applicant.experience, job.minExperience),
+    education: computeEducationScore(applicant.education, job.requiredEducation),
     location: computeLocationScore(applicant.location, job.location),
     industry: computeIndustryScore(applicant.industry, job.industry),
     keywords: computeKeywordScore(applicant.bio, job.title, job.description),

@@ -61,6 +61,7 @@ export async function POST(request: Request) {
         skills: applicant.skills as string[], 
         experience: applicant.experience, 
         location: applicant.location,
+        education: applicant.education || undefined,
         bio: applicant.bio || undefined,
         industry: applicant.industry || undefined
       },
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
         requiredSkills: job.requiredSkills as string[], 
         minExperience: job.minExperience, 
         location: job.location,
+        requiredEducation: job.requiredEducation || undefined,
         title: job.title,
         description: job.description,
         industry: job.industry || undefined
