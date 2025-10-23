@@ -208,14 +208,17 @@ export default function EditJob() {
               </div>
               <div>
                 <label className="ds-label">Min. Berufserfahrung (Jahre)</label>
-                <input
-                  type="number"
+                <select
                   value={minExperience}
                   onChange={(e) => setMinExperience(Number(e.target.value))}
                   className="ds-input ds-input-focus-green"
-                  min="0"
-                  max="20"
-                />
+                >
+                  {[...Array(21)].map((_, i) => (
+                    <option key={i} value={i}>
+                      {i === 0 ? "Keine Erfahrung erforderlich" : i === 1 ? "1 Jahr" : `${i} Jahre`}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

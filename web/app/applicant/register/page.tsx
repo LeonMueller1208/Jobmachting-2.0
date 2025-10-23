@@ -133,14 +133,17 @@ export default function ApplicantRegister() {
               </div>
               <div>
                 <label className="ds-label">Berufserfahrung (Jahre)</label>
-                <input
-                  type="number"
+                <select
                   value={experience}
                   onChange={(e) => setExperience(Number(e.target.value))}
                   className="ds-input ds-input-focus-blue"
-                  min="0"
-                  max="50"
-                />
+                >
+                  {[...Array(51)].map((_, i) => (
+                    <option key={i} value={i}>
+                      {i === 0 ? "Keine Erfahrung" : i === 1 ? "1 Jahr" : `${i} Jahre`}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
