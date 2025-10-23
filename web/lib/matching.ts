@@ -63,28 +63,26 @@ const EDUCATION_LEVELS: { [key: string]: number } = {
 };
 
 export function computeMatchingScore({ applicant, job }: MatchingInput): number {
-  // 1. Location Matching (Most critical - deal-breaker)
-  const locationScore = computeLocationScore(applicant.location, job.location);
+  // Location is now handled by UI filter, not in scoring
   
-  // 2. Education Matching (Often mandatory requirement)
+  // 1. Education Matching (Most critical - often mandatory)
   const educationScore = computeEducationScore(applicant.education, job.requiredEducation);
   
-  // 3. Skills Matching (Important but trainable)
+  // 2. Skills Matching (Very important but trainable)
   const skillsScore = computeSkillsScore(applicant.skills, job.requiredSkills);
   
-  // 4. Experience Matching (Significant but flexible)
+  // 3. Experience Matching (Important for role fit)
   const experienceScore = computeExperienceScore(applicant.experience, job.minExperience);
   
-  // 5. Industry Alignment (Bonus factor)
+  // 4. Industry Alignment (Bonus factor)
   const industryScore = computeIndustryScore(applicant.industry, job.industry);
   
-  // Weighted combination - optimized for business/consulting focus
+  // Weighted combination - location removed (handled by filter)
   const total = 
-    locationScore * 0.35 +     // Location is a deal-breaker - must match!
-    educationScore * 0.25 +    // Education often mandatory (Bachelor minimum)
-    skillsScore * 0.20 +       // Important but often trainable
-    experienceScore * 0.15 +   // Matters but not overwhelming
-    industryScore * 0.05;      // Nice to have bonus
+    educationScore * 0.35 +    // Education is critical (Bachelor minimum often required)
+    skillsScore * 0.30 +       // Skills are very important but trainable
+    experienceScore * 0.25 +   // Experience matters significantly
+    industryScore * 0.10;      // Industry alignment is a nice bonus
   
   return Math.round(total * 1000) / 10; // percentage with 0.1 precision
 }
@@ -286,7 +284,6 @@ export function isPassing(scorePercent: number): boolean {
 // Function to get detailed matching breakdown
 export function getMatchingBreakdown({ applicant, job }: MatchingInput) {
   return {
-    location: computeLocationScore(applicant.location, job.location),
     education: computeEducationScore(applicant.education, job.requiredEducation),
     skills: computeSkillsScore(applicant.skills, job.requiredSkills),
     experience: computeExperienceScore(applicant.experience, job.minExperience),
