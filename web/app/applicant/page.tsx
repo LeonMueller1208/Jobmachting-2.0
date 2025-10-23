@@ -157,7 +157,7 @@ export default function ApplicantDashboard() {
     });
     
     return { ...job, matchScore: score };
-  }).sort((a, b) => b.matchScore - a.matchScore);
+  }).sort((a, b) => b.matchScore - a.matchScore).slice(0, 20); // Show only top 20 matches
 
   function openChat(chat: any) {
     setChatModal({
