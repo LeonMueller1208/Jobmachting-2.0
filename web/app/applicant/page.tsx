@@ -39,6 +39,7 @@ export default function ApplicantDashboard() {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [chats, setChats] = useState<any[]>([]);
+  const [locationFilter, setLocationFilter] = useState<string>("all"); // New: location filter state
   const [chatModal, setChatModal] = useState<{
     isOpen: boolean;
     chatId: string;
@@ -129,7 +130,17 @@ export default function ApplicantDashboard() {
     }
   }
 
-  const matchedJobs = jobs.map(job => {
+  // Get all unique locations from jobs
+  const availableLocations = Array.from(new Set(jobs.map(job => job.location).filter(Boolean))).sort();
+
+  // Filter jobs by location first
+  const filteredJobs = jobs.filter(job => {
+    if (locationFilter === "all") return true;
+    if (locationFilter === "my-location") return job.location === applicant?.location;
+    return job.location === locationFilter;
+  });
+
+  const matchedJobs = filteredJobs.map(job => {
     if (!applicant) return { ...job, matchScore: 0 };
     
     // Safety checks for data integrity
@@ -204,6 +215,44 @@ export default function ApplicantDashboard() {
           </div>
         </div>
 
+        {/* Location Filter */}
+        <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <label className="ds-label mb-0 shrink-0">
+              <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Standort filtern:
+            </label>
+            <select
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+              className="ds-input ds-input-focus-blue flex-1 sm:max-w-md"
+            >
+              <option value="all">Alle Standorte ({jobs.length} Jobs)</option>
+              {applicant?.location && (
+                <option value="my-location">
+                  Mein Standort: {applicant.location} ({jobs.filter(j => j.location === applicant.location).length} Jobs)
+                </option>
+              )}
+              {availableLocations.map(location => (
+                <option key={location} value={location}>
+                  {location} ({jobs.filter(j => j.location === location).length} Jobs)
+                </option>
+              ))}
+            </select>
+            {locationFilter !== "all" && (
+              <button
+                onClick={() => setLocationFilter("all")}
+                className="ds-button-secondary text-sm sm:text-base shrink-0"
+              >
+                Filter zurücksetzen
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Chats Section */}
         {chats.length > 0 && (
           <div className="mb-6 sm:mb-8">
@@ -247,6 +296,17 @@ export default function ApplicantDashboard() {
         )}
 
         {/* Jobs List - Enhanced Design */}
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading">
+            Passende Stellen
+          </h2>
+          <span className="ds-body-light text-sm sm:text-base">
+            {matchedJobs.length} {matchedJobs.length === 1 ? 'Stelle' : 'Stellen'} gefunden
+            {matchedJobs.length === 20 && filteredJobs.length > 20 && (
+              <span className="text-xs ml-2">(Top 20 angezeigt)</span>
+            )}
+          </span>
+        </div>
         <div className="grid gap-4 sm:gap-5">
           {matchedJobs.map(job => (
             <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
