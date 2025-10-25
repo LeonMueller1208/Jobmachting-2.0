@@ -18,6 +18,12 @@ export type MatchingInput = {
   };
 };
 
+export type UserPreferences = {
+  skills: Array<{ name: string; count: number }>;
+  industries: Array<{ name: string; count: number }>;
+  educationLevels: Array<{ name: string; count: number }>;
+};
+
 // Skill categories for better matching
 const SKILL_CATEGORIES = {
   'programming': ['javascript', 'typescript', 'python', 'java', 'c#', 'php', 'go', 'rust', 'swift', 'kotlin'],
@@ -290,4 +296,114 @@ export function getMatchingBreakdown({ applicant, job }: MatchingInput) {
     industry: computeIndustryScore(applicant.industry, job.industry),
     total: computeMatchingScore({ applicant, job })
   };
+}
+
+// ============================================
+// PREFERENCE BOOSTING SYSTEM
+// ============================================
+
+/**
+ * Computes preference-based boost for a job based on user's historical preferences
+ * @param job - The job to score
+ * @param preferences - User's preferences from analytics
+ * @returns Boost factor (1.0 = no boost, 1.15 = max 15% boost)
+ */
+export function computePreferenceBoost(
+  job: { requiredSkills: string[]; industry?: string; requiredEducation?: string },
+  preferences: UserPreferences | null
+): number {
+  if (!preferences) return 1.0; // No boost if no preferences data
+  
+  // 1. Skills Match (60% weight)
+  const skillsMatch = computePreferenceSkillsMatch(job.requiredSkills, preferences.skills);
+  
+  // 2. Industry Match (25% weight)
+  const industryMatch = computePreferenceIndustryMatch(job.industry, preferences.industries);
+  
+  // 3. Education Match (15% weight)
+  const educationMatch = computePreferenceEducationMatch(job.requiredEducation, preferences.educationLevels);
+  
+  // Calculate weighted preference score (0-1)
+  const preferenceScore = 
+    skillsMatch * 0.60 +
+    industryMatch * 0.25 +
+    educationMatch * 0.15;
+  
+  // Convert to boost factor (max 15% boost)
+  const boostFactor = 1 + (preferenceScore * 0.15);
+  
+  return boostFactor;
+}
+
+/**
+ * Computes how well job skills match user's preferred skills
+ * @returns Score from 0 to 1
+ */
+function computePreferenceSkillsMatch(
+  jobSkills: string[],
+  preferredSkills: Array<{ name: string; count: number }>
+): number {
+  if (jobSkills.length === 0 || preferredSkills.length === 0) return 0;
+  
+  // Get top preferred skills (normalized to lowercase)
+  const topPreferredSkills = new Set(
+    preferredSkills.slice(0, 10).map(s => s.name.toLowerCase())
+  );
+  
+  // Count how many job skills are in preferred skills
+  const matchingSkills = jobSkills.filter(skill => 
+    topPreferredSkills.has(skill.toLowerCase())
+  );
+  
+  // Return percentage of job skills that match preferences
+  return matchingSkills.length / jobSkills.length;
+}
+
+/**
+ * Computes if job industry is in user's top 3 preferred industries
+ * @returns 1.0 if in top 3, 0 otherwise (binary)
+ */
+function computePreferenceIndustryMatch(
+  jobIndustry: string | undefined,
+  preferredIndustries: Array<{ name: string; count: number }>
+): number {
+  if (!jobIndustry || preferredIndustries.length === 0) return 0;
+  
+  // Get top 3 preferred industries (normalized)
+  const top3Industries = preferredIndustries
+    .slice(0, 3)
+    .map(i => i.name.toLowerCase());
+  
+  // Binary: either in top 3 (100%) or not (0%)
+  return top3Industries.includes(jobIndustry.toLowerCase()) ? 1.0 : 0;
+}
+
+/**
+ * Computes if job education level is in user's top 3 preferred education levels
+ * @returns 1.0 if in top 3, 0 otherwise (binary)
+ */
+function computePreferenceEducationMatch(
+  jobEducation: string | undefined,
+  preferredEducations: Array<{ name: string; count: number }>
+): number {
+  if (!jobEducation || preferredEducations.length === 0) return 0;
+  
+  // Get top 3 preferred education levels (normalized)
+  const top3Educations = preferredEducations
+    .slice(0, 3)
+    .map(e => e.name.toLowerCase());
+  
+  // Binary: either in top 3 (100%) or not (0%)
+  return top3Educations.includes(jobEducation.toLowerCase()) ? 1.0 : 0;
+}
+
+/**
+ * Applies preference boost to base matching score
+ * @param baseScore - The base matching score (0-100)
+ * @param boostFactor - The boost factor from preferences (1.0-1.15)
+ * @returns Final score capped at 100
+ */
+export function applyPreferenceBoost(baseScore: number, boostFactor: number): number {
+  const boostedScore = baseScore * boostFactor;
+  return Math.min(boostedScore, 100); // Cap at 100%
 }

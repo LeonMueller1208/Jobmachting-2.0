@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import ApplicantChatModal from "@/components/ApplicantChatModal";
-import { computeMatchingScore } from "@/lib/matching";
+import { computeMatchingScore, computePreferenceBoost, applyPreferenceBoost, type UserPreferences } from "@/lib/matching";
 
 type Applicant = { 
   id: string; 
@@ -172,7 +172,8 @@ export default function ApplicantDashboard() {
     const applicantSkills = Array.isArray(applicant.skills) ? applicant.skills : [];
     const jobSkills = Array.isArray(job.requiredSkills) ? job.requiredSkills : [];
     
-    const score = computeMatchingScore({
+    // Calculate base matching score
+    const baseScore = computeMatchingScore({
       applicant: { 
         skills: applicantSkills, 
         experience: applicant.experience || 0, 
@@ -192,7 +193,28 @@ export default function ApplicantDashboard() {
       },
     });
     
-    return { ...job, matchScore: score };
+    // Apply preference boost if preferences are available
+    let finalScore = baseScore;
+    if (preferences && preferences.preferences) {
+      const userPrefs: UserPreferences = {
+        skills: preferences.preferences.skills || [],
+        industries: preferences.preferences.industries || [],
+        educationLevels: preferences.preferences.educationLevels || []
+      };
+      
+      const boostFactor = computePreferenceBoost(
+        {
+          requiredSkills: jobSkills,
+          industry: job.industry || undefined,
+          requiredEducation: job.requiredEducation || undefined
+        },
+        userPrefs
+      );
+      
+      finalScore = applyPreferenceBoost(baseScore, boostFactor);
+    }
+    
+    return { ...job, matchScore: finalScore };
   }).sort((a, b) => b.matchScore - a.matchScore).slice(0, 20); // Show only top 20 matches
 
   function openChat(chat: any) {
