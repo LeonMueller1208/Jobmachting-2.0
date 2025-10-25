@@ -134,7 +134,7 @@ export default function ApplicantDashboard() {
 
   // Get all unique locations and job types from jobs
   const availableLocations = Array.from(new Set(jobs.map(job => job.location).filter(Boolean))).sort();
-  const availableJobTypes = Array.from(new Set(jobs.map(job => job.jobType).filter(Boolean))).sort();
+  const availableJobTypes = Array.from(new Set(jobs.map(job => job.jobType).filter((type): type is string => Boolean(type)))).sort();
 
   // Filter jobs by location AND job type
   const filteredJobs = jobs.filter(job => {
