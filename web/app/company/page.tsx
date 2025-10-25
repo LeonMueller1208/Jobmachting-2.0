@@ -238,170 +238,170 @@ export default function CompanyDashboard() {
         {/* Jobs Tab */}
         {activeTab === "jobs" && (
           <>
-        {/* Chats Overview */}
-        {chats.length > 0 && (
-          <div className="mb-6 sm:mb-8">
-            <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Chats</h2>
-            <div className="grid gap-4">
-              {chats.map(chat => (
-                <div key={chat.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
-                          Chat mit {chat.applicant.name}
-                        </h3>
-                        {chat._count && chat._count.messages > 0 && (
-                          <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full shadow-lg">
-                            {chat._count.messages}
-                          </span>
-                        )}
+            {/* Chats Overview */}
+            {chats.length > 0 && (
+              <div className="mb-6 sm:mb-8">
+                <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Chats</h2>
+                <div className="grid gap-4">
+                  {chats.map(chat => (
+                    <div key={chat.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
+                              Chat mit {chat.applicant.name}
+                            </h3>
+                            {chat._count && chat._count.messages > 0 && (
+                              <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full shadow-lg">
+                                {chat._count.messages}
+                              </span>
+                            )}
+                          </div>
+                          <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
+                          {chat.messages && chat.messages.length > 0 && (
+                            <p className="ds-body-light text-xs sm:text-sm mt-1">
+                              Letzte Nachricht: {new Date(chat.messages[0].createdAt).toLocaleDateString('de-DE')}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => setChatModal({
+                            isOpen: true,
+                            applicantId: chat.applicant.id,
+                            applicantName: chat.applicant.name,
+                            jobId: chat.job.id,
+                            jobTitle: chat.job.title
+                          })}
+                          className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
+                        >
+                          <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                          </svg>
+                          Chat öffnen
+                        </button>
                       </div>
-                      <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
-                      {chat.messages && chat.messages.length > 0 && (
-                        <p className="ds-body-light text-xs sm:text-sm mt-1">
-                          Letzte Nachricht: {new Date(chat.messages[0].createdAt).toLocaleDateString('de-DE')}
-                        </p>
-                      )}
                     </div>
-                    <button
-                      onClick={() => setChatModal({
-                        isOpen: true,
-                        applicantId: chat.applicant.id,
-                        applicantName: chat.applicant.name,
-                        jobId: chat.job.id,
-                        jobTitle: chat.job.title
-                      })}
-                      className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
-                    >
-                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      Chat öffnen
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
+            )}
 
-        {/* Jobs List - Enhanced Design */}
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Stellenangebote</h2>
-          <div className="grid gap-4 sm:gap-5">
-            {jobs.map(job => (
-              <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)]">
-                {/* Header Section */}
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 ds-icon-container-green rounded-xl flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6 ds-icon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
+            {/* Jobs List - Enhanced Design */}
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Stellenangebote</h2>
+              <div className="grid gap-4 sm:gap-5">
+                {jobs.map(job => (
+                  <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)]">
+                    {/* Header Section */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-lg sm:text-xl ds-subheading mb-1 break-words">{job.title}</h3>
-                        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm ds-body-light">
-                          <span className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 ds-icon-container-green rounded-xl flex items-center justify-center shrink-0">
+                            <svg className="w-5 h-5 sm:w-6 sm:h-6 ds-icon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            {job.location}
-                          </span>
-                          <span className="text-gray-400">•</span>
-                          <span className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {job.minExperience} Jahre Erfahrung
-                          </span>
-                          {job.requiredEducation && (
-                            <>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-lg sm:text-xl ds-subheading mb-1 break-words">{job.title}</h3>
+                            <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm ds-body-light">
+                              <span className="flex items-center gap-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                {job.location}
+                              </span>
                               <span className="text-gray-400">•</span>
                               <span className="flex items-center gap-1">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                {job.requiredEducation}
+                                {job.minExperience} Jahre Erfahrung
                               </span>
-                            </>
-                          )}
-                          {job.jobType && (
-                            <>
-                              <span className="text-gray-400">•</span>
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                💼 {job.jobType}
-                              </span>
-                            </>
-                          )}
-                          {job.industry && (
-                            <>
-                              <span className="text-gray-400">•</span>
-                              <span>{job.industry}</span>
-                            </>
-                          )}
+                              {job.requiredEducation && (
+                                <>
+                                  <span className="text-gray-400">•</span>
+                                  <span className="flex items-center gap-1">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                                    </svg>
+                                    {job.requiredEducation}
+                                  </span>
+                                </>
+                              )}
+                              {job.jobType && (
+                                <>
+                                  <span className="text-gray-400">•</span>
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    💼 {job.jobType}
+                                  </span>
+                                </>
+                              )}
+                              {job.industry && (
+                                <>
+                                  <span className="text-gray-400">•</span>
+                                  <span>{job.industry}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
                         </div>
+                        <p className="ds-body-light text-sm sm:text-base line-clamp-3 mb-4">{job.description}</p>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                        <button
+                          onClick={() => filterInterestsByJob(selectedJobId === job.id ? null : job.id)}
+                          className={`text-xs sm:text-sm px-3 py-2 transition-all duration-300 ${
+                            selectedJobId === job.id 
+                              ? 'ds-button-primary-green' 
+                              : 'ds-button-secondary'
+                          }`}
+                        >
+                          <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                          {selectedJobId === job.id ? 'Alle anzeigen' : 'Bewerbungen'}
+                        </button>
+                        <Link 
+                          href={`/company/edit-job/${job.id}`}
+                          className="ds-button-secondary text-xs sm:text-sm px-3 py-2 justify-center sm:justify-start"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Bearbeiten
+                        </Link>
                       </div>
                     </div>
-                    <p className="ds-body-light text-sm sm:text-base line-clamp-3 mb-4">{job.description}</p>
+                    
+                    {/* Skills Section */}
+                    <div className="border-t border-gray-100 pt-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <svg className="w-4 h-4 ds-body-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span className="text-xs sm:text-sm font-medium ds-body-light">Erforderliche Skills:</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {job.requiredSkills.map(skill => (
+                          <span key={skill} className="ds-skill-tag-default text-xs sm:text-sm">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-                    <button
-                      onClick={() => filterInterestsByJob(selectedJobId === job.id ? null : job.id)}
-                      className={`text-xs sm:text-sm px-3 py-2 transition-all duration-300 ${
-                        selectedJobId === job.id 
-                          ? 'ds-button-primary-green' 
-                          : 'ds-button-secondary'
-                      }`}
-                    >
-                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      {selectedJobId === job.id ? 'Alle anzeigen' : 'Bewerbungen'}
-                    </button>
-                    <Link 
-                      href={`/company/edit-job/${job.id}`}
-                      className="ds-button-secondary text-xs sm:text-sm px-3 py-2 justify-center sm:justify-start"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      Bearbeiten
-                    </Link>
-                  </div>
-                </div>
-                
-                {/* Skills Section */}
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <svg className="w-4 h-4 ds-body-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                    <span className="text-xs sm:text-sm font-medium ds-body-light">Erforderliche Skills:</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {job.requiredSkills.map(skill => (
-                      <span key={skill} className="ds-skill-tag-default text-xs sm:text-sm">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
           </>
         )}
 
         {/* Interests Tab */}
         {activeTab === "interests" && (
-        <div>
+          <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
             <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading">
               Bewerbungen
@@ -531,7 +531,7 @@ export default function CompanyDashboard() {
               ))}
             </div>
           )}
-        </div>
+          </div>
         )}
 
         {/* Analytics Tab */}
