@@ -487,7 +487,7 @@ export default function ApplicantDashboard() {
                 <div className="text-center sm:text-right shrink-0">
                   <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-blue-dark)] text-white shadow-lg">
                     <div className="text-center">
-                      <div className="text-lg sm:text-xl font-bold leading-none">{job.matchScore}%</div>
+                      <div className="text-lg sm:text-xl font-bold leading-none">{Math.round(job.matchScore)}%</div>
                       <div className="text-xs opacity-90">Match</div>
                     </div>
                   </div>
