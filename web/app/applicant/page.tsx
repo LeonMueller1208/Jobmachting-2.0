@@ -42,6 +42,8 @@ export default function ApplicantDashboard() {
   const [chats, setChats] = useState<any[]>([]);
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [jobTypeFilter, setJobTypeFilter] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<"jobs" | "preferences">("jobs");
+  const [preferences, setPreferences] = useState<any>(null);
   const [chatModal, setChatModal] = useState<{
     isOpen: boolean;
     chatId: string;
@@ -60,6 +62,7 @@ export default function ApplicantDashboard() {
       const applicantData = JSON.parse(session);
       setApplicant(applicantData);
       fetchChats(applicantData.id);
+      fetchPreferences(applicantData.id);
     }
     fetchJobs();
   }, []);
@@ -74,6 +77,18 @@ export default function ApplicantDashboard() {
     } catch (error) {
       console.error('Error fetching chats:', error);
       setChats([]);
+    }
+  }
+
+  async function fetchPreferences(applicantId: string) {
+    try {
+      const response = await fetch(`/api/analytics/preferences/${applicantId}`);
+      if (response.ok) {
+        const preferencesData = await response.json();
+        setPreferences(preferencesData);
+      }
+    } catch (error) {
+      console.error('Error fetching preferences:', error);
     }
   }
 
@@ -225,6 +240,35 @@ export default function ApplicantDashboard() {
           </div>
         </div>
 
+        {/* Tab Navigation */}
+        <div className="ds-card p-2 mb-6 sm:mb-8">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab("jobs")}
+              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+                activeTab === "jobs"
+                  ? "bg-[var(--accent-blue)] text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              💼 Stellenangebote
+            </button>
+            <button
+              onClick={() => setActiveTab("preferences")}
+              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+                activeTab === "preferences"
+                  ? "bg-[var(--accent-blue)] text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              📊 Meine Präferenzen
+            </button>
+          </div>
+        </div>
+
+        {/* Jobs Tab */}
+        {activeTab === "jobs" && (
+          <>
         {/* Chats Section */}
         {chats.length > 0 && (
           <div className="mb-6 sm:mb-8">
@@ -469,6 +513,154 @@ export default function ApplicantDashboard() {
             </div>
           ))}
         </div>
+          </>
+        )}
+
+        {/* Preferences Tab */}
+        {activeTab === "preferences" && (
+          <div className="space-y-6">
+            {!preferences || preferences.totalInteractions === 0 ? (
+              <div className="ds-card p-8 text-center">
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl ds-heading mb-2">Noch keine Daten</h3>
+                <p className="ds-body-light">
+                  Beginne damit, Jobs zu bewerten, um deine Präferenzen zu sehen!
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* Statistics Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="ds-card p-6 text-center border-l-4 border-blue-500">
+                    <div className="text-3xl font-bold ds-heading text-blue-600">{preferences.totalInteractions}</div>
+                    <div className="ds-body-light text-sm mt-1">Bewertete Jobs</div>
+                  </div>
+                  <div className="ds-card p-6 text-center border-l-4 border-green-500">
+                    <div className="text-3xl font-bold ds-heading text-green-600">{preferences.interestedCount}</div>
+                    <div className="ds-body-light text-sm mt-1">Interessiert</div>
+                  </div>
+                  <div className="ds-card p-6 text-center border-l-4 border-purple-500">
+                    <div className="text-3xl font-bold ds-heading text-purple-600">{preferences.interestRate}%</div>
+                    <div className="ds-body-light text-sm mt-1">Interesse-Rate</div>
+                  </div>
+                </div>
+
+                {/* Preferred Skills */}
+                {preferences.preferences.skills.length > 0 && (
+                  <div className="ds-card p-6">
+                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
+                      <span>🛠️</span> Bevorzugte Skills
+                    </h3>
+                    <div className="space-y-3">
+                      {preferences.preferences.skills.slice(0, 5).map((skill: any) => (
+                        <div key={skill.name} className="flex items-center gap-3">
+                          <div className="flex-1">
+                            <div className="flex justify-between mb-1">
+                              <span className="ds-body font-medium">{skill.name}</span>
+                              <span className="ds-body-light text-sm">{skill.count}x gemocht</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-blue-600 h-2 rounded-full transition-all"
+                                style={{ width: `${Math.min((skill.count / preferences.interestedCount) * 100, 100)}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Preferred Job Types */}
+                {preferences.preferences.jobTypes.length > 0 && (
+                  <div className="ds-card p-6">
+                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
+                      <span>💼</span> Bevorzugte Job-Arten
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {preferences.preferences.jobTypes.map((type: any) => (
+                        <div key={type.name} className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-full">
+                          <span className="font-medium">{type.name}</span>
+                          <span className="text-sm bg-purple-200 px-2 py-0.5 rounded-full">{type.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Preferred Locations */}
+                {preferences.preferences.locations.length > 0 && (
+                  <div className="ds-card p-6">
+                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
+                      <span>📍</span> Bevorzugte Standorte
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {preferences.preferences.locations.map((location: any) => (
+                        <div key={location.name} className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full">
+                          <span className="font-medium">{location.name}</span>
+                          <span className="text-sm bg-green-200 px-2 py-0.5 rounded-full">{location.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Preferred Industries */}
+                {preferences.preferences.industries.length > 0 && (
+                  <div className="ds-card p-6">
+                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
+                      <span>🏢</span> Bevorzugte Branchen
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {preferences.preferences.industries.map((industry: any) => (
+                        <div key={industry.name} className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-800 rounded-full">
+                          <span className="font-medium">{industry.name}</span>
+                          <span className="text-sm bg-orange-200 px-2 py-0.5 rounded-full">{industry.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Activity */}
+                {preferences.recentActivity && preferences.recentActivity.length > 0 && (
+                  <div className="ds-card p-6">
+                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
+                      <span>📅</span> Letzte Aktivität
+                    </h3>
+                    <div className="space-y-3">
+                      {preferences.recentActivity.map((activity: any, index: number) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex-1">
+                            <div className="ds-body font-medium">{activity.jobTitle}</div>
+                            <div className="ds-body-light text-sm">{activity.company}</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              activity.status === "INTERESTED" 
+                                ? "bg-green-100 text-green-800" 
+                                : "bg-red-100 text-red-800"
+                            }`}>
+                              {activity.status === "INTERESTED" ? "✓ Interessiert" : "✗ Nicht interessiert"}
+                            </span>
+                            <span className="ds-body-light text-xs">
+                              {new Date(activity.date).toLocaleDateString('de-DE')}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </main>
 
       {/* Success Toast */}
