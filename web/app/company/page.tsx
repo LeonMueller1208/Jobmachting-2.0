@@ -275,6 +275,14 @@ export default function CompanyDashboard() {
                               </span>
                             </>
                           )}
+                          {job.jobType && (
+                            <>
+                              <span className="text-gray-400">•</span>
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                💼 {job.jobType}
+                              </span>
+                            </>
+                          )}
                           {job.industry && (
                             <>
                               <span className="text-gray-400">•</span>

@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, requiredSkills, location, minExperience, requiredEducation, industry, companyId } = body ?? {};
+    const { title, description, requiredSkills, location, minExperience, requiredEducation, jobType, industry, companyId } = body ?? {};
     
     if (!title || !description || !Array.isArray(requiredSkills) || requiredSkills.length === 0 || !location || !companyId) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
@@ -43,6 +43,7 @@ export async function POST(request: Request) {
         location,
         minExperience: Number(minExperience) || 0,
         requiredEducation: requiredEducation || null,
+        jobType: jobType || null,
         industry: industry || null,
         companyId,
       },

@@ -39,7 +39,8 @@ export default function ApplicantDashboard() {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [chats, setChats] = useState<any[]>([]);
-  const [locationFilter, setLocationFilter] = useState<string>("all"); // New: location filter state
+  const [locationFilter, setLocationFilter] = useState<string>("all");
+  const [jobTypeFilter, setJobTypeFilter] = useState<string>("all");
   const [chatModal, setChatModal] = useState<{
     isOpen: boolean;
     chatId: string;
@@ -130,14 +131,22 @@ export default function ApplicantDashboard() {
     }
   }
 
-  // Get all unique locations from jobs
+  // Get all unique locations and job types from jobs
   const availableLocations = Array.from(new Set(jobs.map(job => job.location).filter(Boolean))).sort();
+  const availableJobTypes = Array.from(new Set(jobs.map(job => job.jobType).filter(Boolean))).sort();
 
-  // Filter jobs by location first
+  // Filter jobs by location AND job type
   const filteredJobs = jobs.filter(job => {
-    if (locationFilter === "all") return true;
-    if (locationFilter === "my-location") return job.location === applicant?.location;
-    return job.location === locationFilter;
+    // Location filter
+    if (locationFilter !== "all") {
+      if (locationFilter === "my-location" && job.location !== applicant?.location) return false;
+      if (locationFilter !== "my-location" && job.location !== locationFilter) return false;
+    }
+    
+    // Job type filter
+    if (jobTypeFilter !== "all" && job.jobType !== jobTypeFilter) return false;
+    
+    return true;
   });
 
   const matchedJobs = filteredJobs.map(job => {
@@ -257,42 +266,74 @@ export default function ApplicantDashboard() {
           </div>
         )}
 
-        {/* Location Filter */}
+        {/* Filters */}
         <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <label className="ds-label mb-0 shrink-0">
-              <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Standort filtern:
-            </label>
-            <select
-              value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value)}
-              className="ds-input ds-input-focus-blue flex-1 sm:max-w-md"
-            >
-              <option value="all">Alle Standorte ({jobs.length} Jobs)</option>
-              {applicant?.location && (
-                <option value="my-location">
-                  Mein Standort: {applicant.location} ({jobs.filter(j => j.location === applicant.location).length} Jobs)
-                </option>
-              )}
-              {availableLocations.map(location => (
-                <option key={location} value={location}>
-                  {location} ({jobs.filter(j => j.location === location).length} Jobs)
-                </option>
-              ))}
-            </select>
-            {locationFilter !== "all" && (
-              <button
-                onClick={() => setLocationFilter("all")}
-                className="ds-button-secondary text-sm sm:text-base shrink-0"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Location Filter */}
+            <div>
+              <label className="ds-label mb-2">
+                <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Standort filtern:
+              </label>
+              <select
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
+                className="ds-input ds-input-focus-blue w-full"
               >
-                Filter zurücksetzen
-              </button>
-            )}
+                <option value="all">Alle Standorte ({jobs.length} Jobs)</option>
+                {applicant?.location && (
+                  <option value="my-location">
+                    Mein Standort: {applicant.location} ({jobs.filter(j => j.location === applicant.location).length} Jobs)
+                  </option>
+                )}
+                {availableLocations.map(location => (
+                  <option key={location} value={location}>
+                    {location} ({jobs.filter(j => j.location === location).length} Jobs)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Job Type Filter */}
+            <div>
+              <label className="ds-label mb-2">
+                <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Job-Art filtern:
+              </label>
+              <select
+                value={jobTypeFilter}
+                onChange={(e) => setJobTypeFilter(e.target.value)}
+                className="ds-input ds-input-focus-blue w-full"
+              >
+                <option value="all">Alle Job-Arten ({jobs.length} Jobs)</option>
+                {availableJobTypes.map(type => (
+                  <option key={type} value={type}>
+                    {type} ({jobs.filter(j => j.jobType === type).length} Jobs)
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
+          {/* Reset Filters Button */}
+          {(locationFilter !== "all" || jobTypeFilter !== "all") && (
+            <div className="mt-4">
+              <button
+                onClick={() => {
+                  setLocationFilter("all");
+                  setJobTypeFilter("all");
+                }}
+                className="ds-button-secondary text-sm sm:text-base"
+              >
+                Alle Filter zurücksetzen
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Jobs List - Enhanced Design */}
@@ -352,6 +393,14 @@ export default function ApplicantDashboard() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
                               </svg>
                               {job.requiredEducation}
+                            </span>
+                          </>
+                        )}
+                        {job.jobType && (
+                          <>
+                            <span className="text-gray-400">•</span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                              💼 {job.jobType}
                             </span>
                           </>
                         )}

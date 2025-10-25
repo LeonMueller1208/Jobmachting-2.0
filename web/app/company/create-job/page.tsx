@@ -25,6 +25,16 @@ const availableEducation = [
   "Promotion"
 ];
 
+const availableJobTypes = [
+  "Vollzeit",
+  "Teilzeit",
+  "Praktikum",
+  "Werkstudent",
+  "Minijob",
+  "Freelance",
+  "Ausbildung"
+];
+
 export default function CreateJob() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -32,6 +42,7 @@ export default function CreateJob() {
   const [location, setLocation] = useState("");
   const [minExperience, setMinExperience] = useState(0);
   const [requiredEducation, setRequiredEducation] = useState("");
+  const [jobType, setJobType] = useState("");
   const [industry, setIndustry] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -76,6 +87,7 @@ export default function CreateJob() {
           location,
           minExperience,
           requiredEducation,
+          jobType,
           industry,
           companyId: company.id,
         }),
@@ -190,6 +202,22 @@ export default function CreateJob() {
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="ds-label">Job-Art</label>
+                <select
+                  value={jobType}
+                  onChange={(e) => setJobType(e.target.value)}
+                  className="ds-input ds-input-focus-green"
+                >
+                  <option value="">Job-Art wählen (optional)</option>
+                  {availableJobTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="ds-label">Branche</label>
                 <select
