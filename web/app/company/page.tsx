@@ -583,10 +583,7 @@ export default function CompanyDashboard() {
                       return (
                         <div key={job.jobId} className="ds-card border-l-4 border-green-500 overflow-hidden transition-all">
                           {/* Compact Job Card */}
-                          <div 
-                            className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
-                            onClick={() => setExpandedJobId(isExpanded ? null : job.jobId)}
-                          >
+                          <div className="p-5">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-2">
@@ -630,38 +627,62 @@ export default function CompanyDashboard() {
                                 </div>
                               </div>
                               
-                              {/* Interest Rate Badge & Expand Icon */}
+                              {/* Interest Rate Badge */}
                               <div className="flex flex-col items-end gap-2 shrink-0">
                                 <div className="text-center">
                                   <div className="text-3xl font-bold ds-heading text-green-600">{job.interestRate}%</div>
                                   <div className="text-xs ds-body-light whitespace-nowrap">Interesse-Rate</div>
                                 </div>
-                                <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                  <svg 
-                                    className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </button>
                               </div>
                             </div>
                             
                             {/* Progress Bar */}
-                            <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div className="w-full bg-gray-200 rounded-full h-2 mt-3 mb-4">
                               <div
-                                className="bg-green-600 h-2 rounded-full transition-all"
+                                className="bg-green-600 h-2 rounded-full transition-all duration-500"
                                 style={{ width: `${job.interestRate}%` }}
                               ></div>
                             </div>
+
+                            {/* Modern "Details anzeigen" Button */}
+                            {!isExpanded && (
+                              <button
+                                onClick={() => setExpandedJobId(job.jobId)}
+                                className="w-full mt-2 px-4 py-3 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                <span>Details anzeigen</span>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </button>
+                            )}
                           </div>
 
-                          {/* Expanded Details */}
+                          {/* Expanded Details with Slide Animation */}
                           {isExpanded && job.interested > 0 && (
-                            <div className="border-t border-gray-200 bg-gray-50 p-5 space-y-5">
-                              <h4 className="text-md ds-subheading mb-3">📊 Detaillierte Bewerber-Insights</h4>
+                            <div className="border-t border-gray-200 bg-gradient-to-br from-gray-50 to-blue-50 p-5 space-y-5 animate-slideDown">
+                              {/* Close Button - Sticky at top */}
+                              <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-300">
+                                <h4 className="text-md ds-subheading flex items-center gap-2">
+                                  <span className="text-2xl">📊</span>
+                                  <span>Detaillierte Bewerber-Insights</span>
+                                </h4>
+                                <button
+                                  onClick={() => setExpandedJobId(null)}
+                                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-[1.05] transition-all duration-300 flex items-center gap-2"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                  <span className="hidden sm:inline">Details schließen</span>
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                </button>
+                              </div>
                               
                               {/* Top Skills for THIS job */}
                               {job.insights.topSkills.length > 0 && (
