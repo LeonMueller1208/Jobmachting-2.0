@@ -556,22 +556,26 @@ export default function ApplicantDashboard() {
                       <span>🛠️</span> Bevorzugte Skills
                     </h3>
                     <div className="space-y-3">
-                      {preferences.preferences.skills.slice(0, 5).map((skill: any) => (
-                        <div key={skill.name} className="flex items-center gap-3">
-                          <div className="flex-1">
-                            <div className="flex justify-between mb-1">
-                              <span className="ds-body font-medium">{skill.name}</span>
-                              <span className="ds-body-light text-sm">{skill.count}x gemocht</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div 
-                                className="bg-blue-600 h-2 rounded-full transition-all"
-                                style={{ width: `${Math.min((skill.count / preferences.interestedCount) * 100, 100)}%` }}
-                              ></div>
+                      {(() => {
+                        const topSkills = preferences.preferences.skills.slice(0, 5);
+                        const maxCount = topSkills[0]?.count || 1; // Höchster Wert = 100%
+                        return topSkills.map((skill: any) => (
+                          <div key={skill.name} className="flex items-center gap-3">
+                            <div className="flex-1">
+                              <div className="flex justify-between mb-1">
+                                <span className="ds-body font-medium">{skill.name}</span>
+                                <span className="ds-body-light text-sm">{skill.count}x gemocht</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                <div 
+                                  className="bg-blue-600 h-2.5 rounded-full transition-all"
+                                  style={{ width: `${(skill.count / maxCount) * 100}%` }}
+                                ></div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ));
+                      })()}
                     </div>
                   </div>
                 )}
