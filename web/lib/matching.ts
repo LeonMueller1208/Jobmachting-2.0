@@ -345,9 +345,10 @@ function computePreferenceSkillsMatch(
 ): number {
   if (jobSkills.length === 0 || preferredSkills.length === 0) return 0;
   
-  // Get top preferred skills (normalized to lowercase)
+  // Get top 5 preferred skills (normalized to lowercase)
+  // Only top 5 to be selective (out of 20 total skills in system)
   const topPreferredSkills = new Set(
-    preferredSkills.slice(0, 10).map(s => s.name.toLowerCase())
+    preferredSkills.slice(0, 5).map(s => s.name.toLowerCase())
   );
   
   // Count how many job skills are in preferred skills
