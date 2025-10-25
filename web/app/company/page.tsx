@@ -791,6 +791,7 @@ export default function CompanyDashboard() {
         onClose={closeChat}
         applicantId={chatModal.applicantId}
         applicantName={chatModal.applicantName}
+        companyId={company?.id || ''}
         jobId={chatModal.jobId}
         jobTitle={chatModal.jobTitle}
         userType="company"
