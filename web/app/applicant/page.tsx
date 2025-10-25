@@ -26,6 +26,7 @@ type Job = {
   location: string; 
   minExperience: number; 
   requiredEducation?: string | null;
+  jobType?: string | null;
   industry?: string | null; 
   company: { id: string; name: string; location: string } 
 };
