@@ -83,25 +83,57 @@ export async function GET(
       .filter(Boolean) as string[];
     const educationCounts = countOccurrences(educations);
 
-    // Job performance analysis
+    // Job performance analysis with detailed insights per job
     const jobPerformance = jobs.map(job => {
       const jobInterests = job.interests;
-      const interested = jobInterests.filter(i => i.status === "INTERESTED").length;
-      const notInterested = jobInterests.filter(i => i.status === "NOT_INTERESTED").length;
-      const total = interested + notInterested;
+      const interestedInJob = jobInterests.filter(i => i.status === "INTERESTED");
+      const notInterestedInJob = jobInterests.filter(i => i.status === "NOT_INTERESTED");
+      const total = interestedInJob.length + notInterestedInJob.length;
+
+      // Get applicants who are interested in THIS job
+      const interestedApplicantsForJob = interestedInJob.map(i => i.applicant);
+
+      // Skills from interested applicants for THIS job
+      const jobSkills = interestedApplicantsForJob.flatMap(a => a.skills as string[]);
+      const jobSkillCounts = countOccurrences(jobSkills);
+
+      // Locations from interested applicants for THIS job
+      const jobLocations = interestedApplicantsForJob.map(a => a.location);
+      const jobLocationCounts = countOccurrences(jobLocations);
+
+      // Experience levels for THIS job
+      const jobExperienceLevels = {
+        junior: interestedApplicantsForJob.filter(a => a.experience >= 0 && a.experience <= 2).length,
+        mid: interestedApplicantsForJob.filter(a => a.experience >= 3 && a.experience <= 5).length,
+        senior: interestedApplicantsForJob.filter(a => a.experience > 5).length
+      };
+
+      // Education levels for THIS job
+      const jobEducations = interestedApplicantsForJob
+        .map(a => a.education)
+        .filter(Boolean) as string[];
+      const jobEducationCounts = countOccurrences(jobEducations);
 
       return {
         jobId: job.id,
         jobTitle: job.title,
         location: job.location,
         jobType: job.jobType,
+        industry: job.industry,
         totalInterests: total,
-        interested,
-        notInterested,
-        interestRate: total > 0 ? Math.round((interested / total) * 100) : 0,
+        interested: interestedInJob.length,
+        notInterested: notInterestedInJob.length,
+        interestRate: total > 0 ? Math.round((interestedInJob.length / total) * 100) : 0,
         requiredSkills: job.requiredSkills as string[],
         minExperience: job.minExperience,
-        requiredEducation: job.requiredEducation
+        requiredEducation: job.requiredEducation,
+        // Detailed insights for THIS job
+        insights: {
+          topSkills: sortByCount(jobSkillCounts).slice(0, 8),
+          locations: sortByCount(jobLocationCounts),
+          experienceLevels: jobExperienceLevels,
+          educationLevels: sortByCount(jobEducationCounts)
+        }
       };
     }).sort((a, b) => b.interested - a.interested); // Sort by most interested
 

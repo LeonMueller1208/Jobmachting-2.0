@@ -58,6 +58,7 @@ export default function CompanyDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"jobs" | "interests" | "analytics">("jobs");
   const [analytics, setAnalytics] = useState<any>(null);
+  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
   const [chats, setChats] = useState<any[]>([]);
   const [chatModal, setChatModal] = useState<{
     isOpen: boolean;
@@ -534,10 +535,10 @@ export default function CompanyDashboard() {
           </div>
         )}
 
-        {/* Analytics Tab */}
+        {/* Analytics Tab - Job-Centric View */}
         {activeTab === "analytics" && (
           <div className="space-y-6">
-            {!analytics || analytics.overview.totalInterests === 0 ? (
+            {!analytics || analytics.jobPerformance.length === 0 ? (
               // No data state
               <div className="ds-card p-8 text-center">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -550,187 +551,234 @@ export default function CompanyDashboard() {
               </div>
             ) : (
               <>
-                {/* Overview Statistics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="ds-card p-6 text-center border-l-4 border-green-500">
-                    <div className="text-3xl font-bold ds-heading text-green-600">{analytics.overview.totalInterests}</div>
-                    <div className="ds-body-light text-sm mt-1">Gesamt Interaktionen</div>
-                  </div>
-                  <div className="ds-card p-6 text-center border-l-4 border-blue-500">
-                    <div className="text-3xl font-bold ds-heading text-blue-600">{analytics.overview.interestedCount}</div>
-                    <div className="ds-body-light text-sm mt-1">Interessierte Bewerber</div>
-                  </div>
-                  <div className="ds-card p-6 text-center border-l-4 border-purple-500">
-                    <div className="text-3xl font-bold ds-heading text-purple-600">{analytics.overview.interestRate}%</div>
-                    <div className="ds-body-light text-sm mt-1">Interesse-Rate</div>
-                  </div>
-                  <div className="ds-card p-6 text-center border-l-4 border-orange-500">
-                    <div className="text-3xl font-bold ds-heading text-orange-600">{analytics.overview.activeJobs}/{analytics.overview.totalJobs}</div>
-                    <div className="ds-body-light text-sm mt-1">Aktive Stellen</div>
+                {/* Overall Summary */}
+                <div className="ds-card p-6 bg-gradient-to-r from-green-50 to-blue-50">
+                  <h2 className="text-xl ds-subheading mb-4">📊 Gesamtübersicht</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold ds-heading text-green-600">{analytics.overview.interestedCount}</div>
+                      <div className="ds-body-light text-sm mt-1">Interessierte</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold ds-heading text-purple-600">{analytics.overview.interestRate}%</div>
+                      <div className="ds-body-light text-sm mt-1">Interesse-Rate</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold ds-heading text-blue-600">{analytics.overview.activeJobs}</div>
+                      <div className="ds-body-light text-sm mt-1">Aktive Stellen</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold ds-heading text-orange-600">{analytics.overview.totalInterests}</div>
+                      <div className="ds-body-light text-sm mt-1">Gesamt Interaktionen</div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Job Performance */}
-                {analytics.jobPerformance && analytics.jobPerformance.length > 0 && (
-                  <div className="ds-card p-6">
-                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
-                      <span>💼</span> Job Performance
-                    </h3>
-                    <div className="space-y-4">
-                      {analytics.jobPerformance.map((job: any) => (
-                        <div key={job.jobId} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex-1">
-                              <h4 className="ds-body font-semibold">{job.jobTitle}</h4>
-                              <div className="flex flex-wrap gap-2 mt-1 text-xs ds-body-light">
-                                <span className="flex items-center gap-1">
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                  </svg>
-                                  {job.location}
-                                </span>
-                                {job.jobType && (
-                                  <>
-                                    <span className="text-gray-400">•</span>
-                                    <span>💼 {job.jobType}</span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-2xl font-bold ds-heading text-green-600">{job.interestRate}%</div>
-                              <div className="text-xs ds-body-light">Interesse-Rate</div>
-                            </div>
-                          </div>
-                          
-                          <div className="grid grid-cols-3 gap-3 mb-3">
-                            <div className="text-center p-2 bg-gray-50 rounded">
-                              <div className="text-lg font-semibold ds-heading">{job.totalInterests}</div>
-                              <div className="text-xs ds-body-light">Gesamt</div>
-                            </div>
-                            <div className="text-center p-2 bg-green-50 rounded">
-                              <div className="text-lg font-semibold ds-heading text-green-600">{job.interested}</div>
-                              <div className="text-xs ds-body-light">Interessiert</div>
-                            </div>
-                            <div className="text-center p-2 bg-red-50 rounded">
-                              <div className="text-lg font-semibold ds-heading text-red-600">{job.notInterested}</div>
-                              <div className="text-xs ds-body-light">Nicht interessiert</div>
-                            </div>
-                          </div>
-
-                          {/* Progress Bar */}
-                          <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                            <div
-                              className="bg-green-600 h-2.5 rounded-full transition-all"
-                              style={{ width: `${job.interestRate}%` }}
-                            ></div>
-                          </div>
-
-                          {/* Required Skills */}
-                          {job.requiredSkills && job.requiredSkills.length > 0 && (
-                            <div className="mt-3 pt-3 border-t border-gray-100">
-                              <div className="text-xs ds-body-light mb-2">Erforderliche Skills:</div>
-                              <div className="flex flex-wrap gap-1">
-                                {job.requiredSkills.map((skill: string) => (
-                                  <span key={skill} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded">
-                                    {skill}
+                {/* Job-Specific Analytics Cards */}
+                <div>
+                  <h2 className="text-xl ds-subheading mb-4">💼 Analytics pro Stelle</h2>
+                  <div className="space-y-4">
+                    {analytics.jobPerformance.map((job: any) => {
+                      const isExpanded = expandedJobId === job.jobId;
+                      return (
+                        <div key={job.jobId} className="ds-card border-l-4 border-green-500 overflow-hidden transition-all">
+                          {/* Compact Job Card */}
+                          <div 
+                            className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
+                            onClick={() => setExpandedJobId(isExpanded ? null : job.jobId)}
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h3 className="text-lg ds-subheading truncate">{job.jobTitle}</h3>
+                                  {job.jobType && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 shrink-0">
+                                      💼 {job.jobType}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex flex-wrap gap-2 text-xs ds-body-light mb-3">
+                                  <span className="flex items-center gap-1">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    {job.location}
                                   </span>
-                                ))}
+                                  {job.industry && (
+                                    <>
+                                      <span className="text-gray-400">•</span>
+                                      <span>{job.industry}</span>
+                                    </>
+                                  )}
+                                </div>
+                                
+                                {/* Key Metrics Row */}
+                                <div className="grid grid-cols-3 gap-3">
+                                  <div className="text-center p-2 bg-gray-50 rounded">
+                                    <div className="text-lg font-semibold ds-heading">{job.totalInterests}</div>
+                                    <div className="text-xs ds-body-light">Gesamt</div>
+                                  </div>
+                                  <div className="text-center p-2 bg-green-50 rounded">
+                                    <div className="text-lg font-semibold ds-heading text-green-600">{job.interested}</div>
+                                    <div className="text-xs ds-body-light">Interessiert</div>
+                                  </div>
+                                  <div className="text-center p-2 bg-red-50 rounded">
+                                    <div className="text-lg font-semibold ds-heading text-red-600">{job.notInterested}</div>
+                                    <div className="text-xs ds-body-light">Nicht interessiert</div>
+                                  </div>
+                                </div>
                               </div>
+                              
+                              {/* Interest Rate Badge & Expand Icon */}
+                              <div className="flex flex-col items-end gap-2 shrink-0">
+                                <div className="text-center">
+                                  <div className="text-3xl font-bold ds-heading text-green-600">{job.interestRate}%</div>
+                                  <div className="text-xs ds-body-light whitespace-nowrap">Interesse-Rate</div>
+                                </div>
+                                <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                  <svg 
+                                    className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                            
+                            {/* Progress Bar */}
+                            <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                              <div
+                                className="bg-green-600 h-2 rounded-full transition-all"
+                                style={{ width: `${job.interestRate}%` }}
+                              ></div>
+                            </div>
+                          </div>
+
+                          {/* Expanded Details */}
+                          {isExpanded && job.interested > 0 && (
+                            <div className="border-t border-gray-200 bg-gray-50 p-5 space-y-5">
+                              <h4 className="text-md ds-subheading mb-3">📊 Detaillierte Bewerber-Insights</h4>
+                              
+                              {/* Top Skills for THIS job */}
+                              {job.insights.topSkills.length > 0 && (
+                                <div>
+                                  <h5 className="text-sm ds-body font-semibold mb-3 flex items-center gap-2">
+                                    <span>🛠️</span> Top Skills der Interessenten
+                                  </h5>
+                                  <div className="space-y-2">
+                                    {(() => {
+                                      const maxCount = job.insights.topSkills[0]?.count || 1;
+                                      return job.insights.topSkills.map((skill: any) => (
+                                        <div key={skill.name} className="flex items-center gap-3">
+                                          <div className="flex-1">
+                                            <div className="flex justify-between mb-1">
+                                              <span className="text-sm ds-body capitalize">{skill.name}</span>
+                                              <span className="text-xs ds-body-light">{skill.count} Bewerber</span>
+                                            </div>
+                                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                              <div
+                                                className="bg-green-600 h-2 rounded-full transition-all"
+                                                style={{ width: `${(skill.count / maxCount) * 100}%` }}
+                                              ></div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ));
+                                    })()}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Experience Levels for THIS job */}
+                              {(job.insights.experienceLevels.junior > 0 || job.insights.experienceLevels.mid > 0 || job.insights.experienceLevels.senior > 0) && (
+                                <div>
+                                  <h5 className="text-sm ds-body font-semibold mb-3 flex items-center gap-2">
+                                    <span>📈</span> Erfahrungslevel
+                                  </h5>
+                                  <div className="grid grid-cols-3 gap-3">
+                                    <div className="text-center p-3 bg-blue-100 rounded-lg">
+                                      <div className="text-2xl font-bold ds-heading text-blue-600">{job.insights.experienceLevels.junior}</div>
+                                      <div className="text-xs ds-body-light mt-1">Junior (0-2 J.)</div>
+                                    </div>
+                                    <div className="text-center p-3 bg-purple-100 rounded-lg">
+                                      <div className="text-2xl font-bold ds-heading text-purple-600">{job.insights.experienceLevels.mid}</div>
+                                      <div className="text-xs ds-body-light mt-1">Mid (3-5 J.)</div>
+                                    </div>
+                                    <div className="text-center p-3 bg-orange-100 rounded-lg">
+                                      <div className="text-2xl font-bold ds-heading text-orange-600">{job.insights.experienceLevels.senior}</div>
+                                      <div className="text-xs ds-body-light mt-1">Senior (6+ J.)</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Locations for THIS job */}
+                              {job.insights.locations.length > 0 && (
+                                <div>
+                                  <h5 className="text-sm ds-body font-semibold mb-3 flex items-center gap-2">
+                                    <span>📍</span> Standorte der Interessenten
+                                  </h5>
+                                  <div className="flex flex-wrap gap-2">
+                                    {job.insights.locations.map((location: any) => (
+                                      <div key={location.name} className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                                        <span className="font-medium">{location.name}</span>
+                                        <span className="text-xs bg-green-200 px-2 py-0.5 rounded-full">{location.count}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Education Levels for THIS job */}
+                              {job.insights.educationLevels.length > 0 && (
+                                <div>
+                                  <h5 className="text-sm ds-body font-semibold mb-3 flex items-center gap-2">
+                                    <span>🎓</span> Bildungsabschlüsse
+                                  </h5>
+                                  <div className="flex flex-wrap gap-2">
+                                    {job.insights.educationLevels.map((edu: any) => (
+                                      <div key={edu.name} className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                                        <span className="font-medium">{edu.name}</span>
+                                        <span className="text-xs bg-blue-200 px-2 py-0.5 rounded-full">{edu.count}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Required Skills Comparison */}
+                              {job.requiredSkills && job.requiredSkills.length > 0 && (
+                                <div className="pt-4 border-t border-gray-300">
+                                  <h5 className="text-sm ds-body font-semibold mb-2 flex items-center gap-2">
+                                    <span>✅</span> Erforderliche Skills für diese Stelle
+                                  </h5>
+                                  <div className="flex flex-wrap gap-2">
+                                    {job.requiredSkills.map((skill: string) => (
+                                      <span key={skill} className="text-xs px-2 py-1 bg-gray-200 text-gray-700 rounded">
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* No interested applicants message */}
+                          {isExpanded && job.interested === 0 && (
+                            <div className="border-t border-gray-200 bg-gray-50 p-5 text-center">
+                              <p className="ds-body-light text-sm">Noch keine interessierten Bewerber für diese Stelle.</p>
                             </div>
                           )}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Applicant Insights - Top Skills */}
-                {analytics.applicantInsights.topSkills.length > 0 && (
-                  <div className="ds-card p-6">
-                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
-                      <span>🛠️</span> Top Skills der interessierten Bewerber
-                    </h3>
-                    <div className="space-y-3">
-                      {(() => {
-                        const topSkills = analytics.applicantInsights.topSkills.slice(0, 8);
-                        const maxCount = topSkills[0]?.count || 1;
-                        return topSkills.map((skill: any) => (
-                          <div key={skill.name} className="flex items-center gap-3">
-                            <div className="flex-1">
-                              <div className="flex justify-between mb-1">
-                                <span className="ds-body font-medium capitalize">{skill.name}</span>
-                                <span className="ds-body-light text-sm">{skill.count} Bewerber</span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                <div
-                                  className="bg-green-600 h-2.5 rounded-full transition-all"
-                                  style={{ width: `${(skill.count / maxCount) * 100}%` }}
-                                ></div>
-                              </div>
-                            </div>
-                          </div>
-                        ));
-                      })()}
-                    </div>
-                  </div>
-                )}
-
-                {/* Location Distribution */}
-                {analytics.applicantInsights.locations.length > 0 && (
-                  <div className="ds-card p-6">
-                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
-                      <span>📍</span> Standorte der interessierten Bewerber
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                      {analytics.applicantInsights.locations.map((location: any) => (
-                        <div key={location.name} className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full">
-                          <span className="font-medium">{location.name}</span>
-                          <span className="text-sm bg-green-200 px-2 py-0.5 rounded-full">{location.count}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Experience Levels */}
-                <div className="ds-card p-6">
-                  <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
-                    <span>📈</span> Erfahrungslevel der interessierten Bewerber
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-3xl font-bold ds-heading text-blue-600">{analytics.applicantInsights.experienceLevels.junior}</div>
-                      <div className="ds-body-light text-sm mt-1">Junior (0-2 Jahre)</div>
-                    </div>
-                    <div className="text-center p-4 bg-purple-50 rounded-lg">
-                      <div className="text-3xl font-bold ds-heading text-purple-600">{analytics.applicantInsights.experienceLevels.mid}</div>
-                      <div className="ds-body-light text-sm mt-1">Mid-Level (3-5 Jahre)</div>
-                    </div>
-                    <div className="text-center p-4 bg-orange-50 rounded-lg">
-                      <div className="text-3xl font-bold ds-heading text-orange-600">{analytics.applicantInsights.experienceLevels.senior}</div>
-                      <div className="ds-body-light text-sm mt-1">Senior (6+ Jahre)</div>
-                    </div>
+                      );
+                    })}
                   </div>
                 </div>
-
-                {/* Education Levels */}
-                {analytics.applicantInsights.educationLevels.length > 0 && (
-                  <div className="ds-card p-6">
-                    <h3 className="text-lg ds-subheading mb-4 flex items-center gap-2">
-                      <span>🎓</span> Bildungsabschlüsse der interessierten Bewerber
-                    </h3>
-                    <div className="flex flex-wrap gap-3">
-                      {analytics.applicantInsights.educationLevels.map((edu: any) => (
-                        <div key={edu.name} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
-                          <span className="font-medium">{edu.name}</span>
-                          <span className="text-sm bg-blue-200 px-2 py-0.5 rounded-full">{edu.count}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </>
             )}
           </div>
@@ -742,9 +790,8 @@ export default function CompanyDashboard() {
         isOpen={chatModal.isOpen}
         onClose={closeChat}
         applicantId={chatModal.applicantId}
-        companyId={company.id}
-        jobId={chatModal.jobId}
         applicantName={chatModal.applicantName}
+        jobId={chatModal.jobId}
         jobTitle={chatModal.jobTitle}
         userType="company"
         onMessagesRead={fetchData}
