@@ -354,7 +354,14 @@ function getExperienceOverqualificationGap(
   applicantExperience: number,
   jobMinExperience: number
 ): number {
-  // Allow up to 2 years over requirement without penalty (reasonable flexibility)
+  // Special case: Jobs requiring 0 years (entry-level/simple jobs)
+  // Any experience counts as overqualification
+  if (jobMinExperience === 0 && applicantExperience > 0) {
+    if (applicantExperience <= 2) return 1; // Junior with experience at 0-year job
+    return 2; // Mid/Senior at 0-year job
+  }
+  
+  // For jobs with experience requirements: allow up to 2 years over without penalty
   if (applicantExperience <= jobMinExperience + 2) return 0;
   
   // Determine job level from required experience
