@@ -60,8 +60,6 @@ export default function CompanyDashboard() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
   const [chats, setChats] = useState<any[]>([]);
-  const [showDeleteCompanyConfirm, setShowDeleteCompanyConfirm] = useState(false);
-  const [deletingCompany, setDeletingCompany] = useState(false);
   const [chatModal, setChatModal] = useState<{
     isOpen: boolean;
     applicantId: string;
@@ -178,31 +176,6 @@ export default function CompanyDashboard() {
     });
   }
 
-  async function handleDeleteCompany() {
-    if (!company) return;
-
-    try {
-      setDeletingCompany(true);
-      const res = await fetch(`/api/companies/${company.id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        const errorData = await res.text();
-        throw new Error(`Server error: ${res.status} - ${errorData}`);
-      }
-
-      // Clear session and redirect to homepage
-      localStorage.removeItem("companySession");
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Delete company error:", error);
-      alert(`Fehler beim Löschen: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
-      setShowDeleteCompanyConfirm(false);
-    } finally {
-      setDeletingCompany(false);
-    }
-  }
 
   if (loading) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Lade...</div></div>;
   if (!company) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Bitte melden Sie sich an</div></div>;
@@ -226,15 +199,12 @@ export default function CompanyDashboard() {
                 </svg>
                 Neue Stelle erstellen
               </Link>
-              <button
-                onClick={() => setShowDeleteCompanyConfirm(true)}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm sm:text-base font-semibold rounded-[var(--border-radius-button)] shadow-md hover:shadow-lg transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center"
-              >
+              <Link href="/company/edit" className="ds-button-secondary-green text-sm sm:text-base justify-center sm:justify-start">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                Profil löschen
-              </button>
+                Profil bearbeiten
+              </Link>
             </div>
           </div>
         </div>
@@ -858,38 +828,6 @@ export default function CompanyDashboard() {
         onMessagesRead={fetchData}
       />
 
-      {/* Delete Company Confirmation Modal */}
-      {showDeleteCompanyConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="ds-card p-8 max-w-md mx-4 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl ds-heading mb-2">Unternehmensprofil wirklich löschen?</h2>
-            <p className="ds-body-light mb-6">
-              Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Stellenangebote, Chats, Interessenten-Daten und Unternehmensinfos werden dauerhaft gelöscht.
-            </p>
-            <div className="flex gap-4">
-              <button 
-                onClick={() => setShowDeleteCompanyConfirm(false)}
-                disabled={deletingCompany}
-                className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-[var(--border-radius-button)] transition-all duration-300"
-              >
-                Abbrechen
-              </button>
-              <button 
-                onClick={handleDeleteCompany}
-                disabled={deletingCompany}
-                className="flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-[var(--border-radius-button)] shadow-md hover:shadow-lg transition-all duration-300"
-              >
-                {deletingCompany ? "Lösche..." : "Endgültig löschen"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

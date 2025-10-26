@@ -1,6 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const { name, email, industry, location } = await request.json();
+
+    const updatedCompany = await prisma.company.update({
+      where: { id },
+      data: {
+        name,
+        email,
+        industry,
+        location,
+      },
+    });
+    return NextResponse.json(updatedCompany);
+  } catch (error) {
+    console.error("Update company error:", error);
+    return NextResponse.json({ error: "Failed to update company" }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
