@@ -99,6 +99,15 @@ export function computeMatchingScore({ applicant, job }: MatchingInput): number 
   );
   total = total * overqualificationPenalty;
   
+  // Apply underqualification penalty (prevents suggesting unrealistic senior jobs to juniors)
+  const underqualificationPenalty = computeUnderqualificationPenalty(
+    applicant.education,
+    applicant.experience,
+    job.requiredEducation,
+    job.minExperience
+  );
+  total = total * underqualificationPenalty;
+  
   return Math.round(total * 1000) / 10; // percentage with 0.1 precision
 }
 
@@ -316,11 +325,11 @@ function computeOverqualificationPenalty(
   // Combine both gaps
   const totalGap = educationGap + experienceGap;
   
-  // Return penalty multiplier based on total gap
-  if (totalGap >= 5) return 0.40; // Extrem überqualifiziert: -60%
-  if (totalGap >= 4) return 0.60; // Stark überqualifiziert: -40%
-  if (totalGap >= 3) return 0.75; // Mittel überqualifiziert: -25%
-  if (totalGap >= 2) return 0.90; // Leicht überqualifiziert: -10%
+  // Return penalty multiplier based on total gap (verschärft!)
+  if (totalGap >= 5) return 0.25; // Extrem überqualifiziert: -75%
+  if (totalGap >= 4) return 0.40; // Stark überqualifiziert: -60%
+  if (totalGap >= 3) return 0.60; // Mittel überqualifiziert: -40%
+  if (totalGap >= 2) return 0.80; // Leicht überqualifiziert: -20%
   return 1.0; // Keine Penalty
 }
 
@@ -376,6 +385,85 @@ function getExperienceOverqualificationGap(
   if (jobLevel === 'mid' && applicantLevel === 'senior') return 1; // Senior applying to Mid
   
   return 0; // No significant overqualification
+}
+
+// ============================================
+// UNDERQUALIFICATION PENALTY SYSTEM
+// ============================================
+
+/**
+ * Computes penalty for underqualified candidates
+ * Prevents suggesting unrealistic senior/complex jobs to juniors
+ * @returns Penalty multiplier (0.25 to 1.0, where 1.0 = no penalty)
+ */
+function computeUnderqualificationPenalty(
+  applicantEducation?: string,
+  applicantExperience?: number,
+  jobEducation?: string,
+  jobMinExperience?: number
+): number {
+  // Calculate education gap (only if underqualified)
+  const educationGap = getEducationUnderqualificationGap(applicantEducation, jobEducation);
+  
+  // Calculate experience gap (only if underqualified)
+  const experienceGap = getExperienceUnderqualificationGap(applicantExperience || 0, jobMinExperience || 0);
+  
+  // Combine both gaps (negative values)
+  const totalGap = Math.abs(educationGap + experienceGap);
+  
+  // Return penalty multiplier based on total gap
+  if (totalGap >= 5) return 0.25; // Extrem unterqualifiziert: -75%
+  if (totalGap >= 4) return 0.40; // Stark unterqualifiziert: -60%
+  if (totalGap >= 3) return 0.60; // Mittel unterqualifiziert: -40%
+  if (totalGap >= 2) return 0.80; // Leicht unterqualifiziert: -20%
+  return 1.0; // Keine Penalty
+}
+
+/**
+ * Calculates education underqualification gap
+ * @returns Gap value (0 to -3, where 0 = no underqualification)
+ */
+function getEducationUnderqualificationGap(
+  applicantEducation?: string,
+  jobEducation?: string
+): number {
+  if (!applicantEducation || !jobEducation) return 0;
+  
+  const applicantLevel = EDUCATION_LEVELS[applicantEducation.toLowerCase()] ?? 0;
+  const jobLevel = EDUCATION_LEVELS[jobEducation.toLowerCase()] ?? 0;
+  
+  // Only count if applicant is UNDER-qualified
+  const gap = applicantLevel - jobLevel;
+  
+  if (gap >= 0) return 0; // Not underqualified
+  if (gap === -1) return -1; // 1 level below (e.g., Abitur vs. Bachelor)
+  if (gap === -2) return -2; // 2 levels below (e.g., Abitur vs. Master)
+  return -3; // 3+ levels below (e.g., Keine vs. Master)
+}
+
+/**
+ * Calculates experience underqualification gap
+ * @returns Gap value (0 to -2, where 0 = no underqualification)
+ */
+function getExperienceUnderqualificationGap(
+  applicantExperience: number,
+  jobMinExperience: number
+): number {
+  // If applicant meets or exceeds requirement, no penalty
+  if (applicantExperience >= jobMinExperience) return 0;
+  
+  // Determine job level from required experience
+  const jobLevel = jobMinExperience <= 2 ? 'junior' : jobMinExperience <= 5 ? 'mid' : 'senior';
+  
+  // Determine applicant level from their experience
+  const applicantLevel = applicantExperience <= 2 ? 'junior' : applicantExperience <= 5 ? 'mid' : 'senior';
+  
+  // Calculate underqualification gap
+  if (jobLevel === 'senior' && applicantLevel === 'junior') return -2; // Junior applying to Senior
+  if (jobLevel === 'senior' && applicantLevel === 'mid') return -1; // Mid applying to Senior
+  if (jobLevel === 'mid' && applicantLevel === 'junior') return -1; // Junior applying to Mid
+  
+  return 0; // No significant underqualification
 }
 
 export function isPassing(scorePercent: number): boolean {
