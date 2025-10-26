@@ -306,7 +306,7 @@ export function getMatchingBreakdown({ applicant, job }: MatchingInput) {
  * Computes preference-based boost for a job based on user's historical preferences
  * @param job - The job to score
  * @param preferences - User's preferences from analytics
- * @returns Boost factor (1.0 = no boost, 1.15 = max 15% boost)
+ * @returns Boost factor (1.0 = no boost, 1.10 = max 10% boost)
  */
 export function computePreferenceBoost(
   job: { requiredSkills: string[]; industry?: string; requiredEducation?: string },
@@ -324,15 +324,36 @@ export function computePreferenceBoost(
   const educationMatch = computePreferenceEducationMatch(job.requiredEducation, preferences.educationLevels);
   
   // Calculate weighted preference score (0-1)
-  const preferenceScore = 
+  let preferenceScore = 
     skillsMatch * 0.60 +
     industryMatch * 0.25 +
     educationMatch * 0.15;
   
-  // Convert to boost factor (max 15% boost)
-  const boostFactor = 1 + (preferenceScore * 0.15);
+  // Apply skill count penalty to prevent simple jobs from getting too much boost
+  // Jobs with fewer skills get less boost (prevents overqualified matches)
+  const skillCountPenalty = computeSkillCountPenalty(job.requiredSkills.length);
+  preferenceScore = preferenceScore * skillCountPenalty;
+  
+  // Convert to boost factor (max 10% boost, reduced from 15%)
+  const boostFactor = 1 + (preferenceScore * 0.10);
   
   return boostFactor;
+}
+
+/**
+ * Computes penalty based on number of required skills
+ * Prevents simple jobs (1-2 skills) from getting disproportionate boost
+ * @param skillCount - Number of required skills
+ * @returns Penalty factor (0.3 to 1.0)
+ */
+function computeSkillCountPenalty(skillCount: number): number {
+  if (skillCount <= 2) {
+    return 0.3; // Only 30% of boost for very simple jobs (1-2 skills)
+  } else if (skillCount <= 4) {
+    return 0.6; // 60% of boost for simple jobs (3-4 skills)
+  } else {
+    return 1.0; // Full boost for complex jobs (5+ skills)
+  }
 }
 
 /**
@@ -401,7 +422,7 @@ function computePreferenceEducationMatch(
 /**
  * Applies preference boost to base matching score
  * @param baseScore - The base matching score (0-100)
- * @param boostFactor - The boost factor from preferences (1.0-1.15)
+ * @param boostFactor - The boost factor from preferences (1.0-1.10)
  * @returns Final score capped at 100
  */
 export function applyPreferenceBoost(baseScore: number, boostFactor: number): number {
