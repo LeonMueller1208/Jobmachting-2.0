@@ -443,7 +443,7 @@ function getEducationUnderqualificationGap(
 
 /**
  * Calculates experience underqualification gap
- * @returns Gap value (0 to -2, where 0 = no underqualification)
+ * @returns Gap value (0 to -3, where 0 = no underqualification)
  */
 function getExperienceUnderqualificationGap(
   applicantExperience: number,
@@ -452,16 +452,39 @@ function getExperienceUnderqualificationGap(
   // If applicant meets or exceeds requirement, no penalty
   if (applicantExperience >= jobMinExperience) return 0;
   
-  // Determine job level from required experience
-  const jobLevel = jobMinExperience <= 2 ? 'junior' : jobMinExperience <= 5 ? 'mid' : 'senior';
+  // Determine job level from required experience (with Executive level for 10+ years)
+  let jobLevel: 'junior' | 'mid' | 'senior' | 'executive';
+  if (jobMinExperience <= 2) {
+    jobLevel = 'junior';
+  } else if (jobMinExperience <= 5) {
+    jobLevel = 'mid';
+  } else if (jobMinExperience <= 9) {
+    jobLevel = 'senior';
+  } else {
+    jobLevel = 'executive'; // 10+ years = C-Level, Director, etc.
+  }
   
   // Determine applicant level from their experience
-  const applicantLevel = applicantExperience <= 2 ? 'junior' : applicantExperience <= 5 ? 'mid' : 'senior';
+  let applicantLevel: 'junior' | 'mid' | 'senior' | 'executive';
+  if (applicantExperience <= 2) {
+    applicantLevel = 'junior';
+  } else if (applicantExperience <= 5) {
+    applicantLevel = 'mid';
+  } else if (applicantExperience <= 9) {
+    applicantLevel = 'senior';
+  } else {
+    applicantLevel = 'executive';
+  }
   
-  // Calculate underqualification gap
-  if (jobLevel === 'senior' && applicantLevel === 'junior') return -2; // Junior applying to Senior
-  if (jobLevel === 'senior' && applicantLevel === 'mid') return -1; // Mid applying to Senior
-  if (jobLevel === 'mid' && applicantLevel === 'junior') return -1; // Junior applying to Mid
+  // Calculate underqualification gap (now with 4 levels)
+  if (jobLevel === 'executive' && applicantLevel === 'junior') return -3; // Junior at C-Level
+  if (jobLevel === 'executive' && applicantLevel === 'mid') return -2; // Mid at C-Level
+  if (jobLevel === 'executive' && applicantLevel === 'senior') return -1; // Senior at C-Level
+  
+  if (jobLevel === 'senior' && applicantLevel === 'junior') return -2; // Junior at Senior
+  if (jobLevel === 'senior' && applicantLevel === 'mid') return -1; // Mid at Senior
+  
+  if (jobLevel === 'mid' && applicantLevel === 'junior') return -1; // Junior at Mid
   
   return 0; // No significant underqualification
 }
