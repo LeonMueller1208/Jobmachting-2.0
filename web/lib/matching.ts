@@ -84,11 +84,20 @@ export function computeMatchingScore({ applicant, job }: MatchingInput): number 
   const industryScore = computeIndustryScore(applicant.industry, job.industry);
   
   // Weighted combination - location removed (handled by filter)
-  const total = 
+  let total = 
     educationScore * 0.35 +    // Education is critical (Bachelor minimum often required)
     skillsScore * 0.30 +       // Skills are very important but trainable
     experienceScore * 0.25 +   // Experience matters significantly
     industryScore * 0.10;      // Industry alignment is a nice bonus
+  
+  // Apply overqualification penalty (prevents suggesting simple jobs to highly qualified candidates)
+  const overqualificationPenalty = computeOverqualificationPenalty(
+    applicant.education,
+    applicant.experience,
+    job.requiredEducation,
+    job.minExperience
+  );
+  total = total * overqualificationPenalty;
   
   return Math.round(total * 1000) / 10; // percentage with 0.1 precision
 }
@@ -281,6 +290,85 @@ function computeLevelScore(applicantExp: number, minExp: number, jobTitle: strin
   } else {
     return Math.max(applicantExp / Math.max(1, expectedLevel), 0.2);
   }
+}
+
+// ============================================
+// OVERQUALIFICATION PENALTY SYSTEM
+// ============================================
+
+/**
+ * Computes penalty for overqualified candidates
+ * Prevents suggesting simple jobs to highly qualified candidates
+ * @returns Penalty multiplier (0.4 to 1.0, where 1.0 = no penalty)
+ */
+function computeOverqualificationPenalty(
+  applicantEducation?: string,
+  applicantExperience?: number,
+  jobEducation?: string,
+  jobMinExperience?: number
+): number {
+  // Calculate education gap (only if overqualified)
+  const educationGap = getEducationOverqualificationGap(applicantEducation, jobEducation);
+  
+  // Calculate experience gap (only if overqualified)
+  const experienceGap = getExperienceOverqualificationGap(applicantExperience || 0, jobMinExperience || 0);
+  
+  // Combine both gaps
+  const totalGap = educationGap + experienceGap;
+  
+  // Return penalty multiplier based on total gap
+  if (totalGap >= 5) return 0.40; // Extrem überqualifiziert: -60%
+  if (totalGap >= 4) return 0.60; // Stark überqualifiziert: -40%
+  if (totalGap >= 3) return 0.75; // Mittel überqualifiziert: -25%
+  if (totalGap >= 2) return 0.90; // Leicht überqualifiziert: -10%
+  return 1.0; // Keine Penalty
+}
+
+/**
+ * Calculates education overqualification gap
+ * @returns Gap value (0-3, where 0 = no overqualification)
+ */
+function getEducationOverqualificationGap(
+  applicantEducation?: string,
+  jobEducation?: string
+): number {
+  if (!applicantEducation || !jobEducation) return 0;
+  
+  const applicantLevel = EDUCATION_LEVELS[applicantEducation.toLowerCase()] ?? 0;
+  const jobLevel = EDUCATION_LEVELS[jobEducation.toLowerCase()] ?? 0;
+  
+  // Only count if applicant is OVER-qualified
+  const gap = applicantLevel - jobLevel;
+  
+  if (gap <= 0) return 0; // Not overqualified
+  if (gap === 1) return 1; // 1 level above (e.g., Bachelor vs. Abitur)
+  if (gap === 2) return 2; // 2 levels above (e.g., Master vs. Abitur)
+  return 3; // 3+ levels above (e.g., Promotion vs. Keine Angabe)
+}
+
+/**
+ * Calculates experience overqualification gap
+ * @returns Gap value (0-2, where 0 = no overqualification)
+ */
+function getExperienceOverqualificationGap(
+  applicantExperience: number,
+  jobMinExperience: number
+): number {
+  // Allow up to 2 years over requirement without penalty (reasonable flexibility)
+  if (applicantExperience <= jobMinExperience + 2) return 0;
+  
+  // Determine job level from required experience
+  const jobLevel = jobMinExperience <= 2 ? 'junior' : jobMinExperience <= 5 ? 'mid' : 'senior';
+  
+  // Determine applicant level from their experience
+  const applicantLevel = applicantExperience <= 2 ? 'junior' : applicantExperience <= 5 ? 'mid' : 'senior';
+  
+  // Calculate overqualification gap
+  if (jobLevel === 'junior' && applicantLevel === 'senior') return 2; // Senior applying to Junior
+  if (jobLevel === 'junior' && applicantLevel === 'mid') return 1; // Mid applying to Junior
+  if (jobLevel === 'mid' && applicantLevel === 'senior') return 1; // Senior applying to Mid
+  
+  return 0; // No significant overqualification
 }
 
 export function isPassing(scorePercent: number): boolean {
