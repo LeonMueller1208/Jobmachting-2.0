@@ -31,13 +31,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
     }
     
-    const upserted = await prisma.company.upsert({
-      where: { email },
-      update: { name, industry, location },
-      create: { email, name, industry, location },
+    // Check if company already exists
+    const existing = await prisma.company.findUnique({ where: { email } });
+    if (existing) {
+      return NextResponse.json({ error: "Company with this email already exists" }, { status: 409 });
+    }
+    
+    const company = await prisma.company.create({
+      data: { email, name, industry, location },
     });
     
-    return NextResponse.json(upserted, { status: 201 });
+    return NextResponse.json(company, { status: 201 });
   } catch (e) {
     console.error("Company creation error:", e);
     return NextResponse.json({ error: "internal", details: e instanceof Error ? e.message : "Unknown error" }, { status: 500 });
