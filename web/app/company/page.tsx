@@ -44,9 +44,11 @@ type Interest = {
     title: string; 
     industry?: string | null 
   }; 
-  status: "INTERESTED" | "NOT_INTERESTED"; 
+  status: "INTERESTED" | "NOT_INTERESTED" | "COMPANY_REJECTED"; 
   matchScore: number; 
-  passes: boolean 
+  passes: boolean;
+  companyNote?: string | null;
+  updatedAt?: string;
 };
 
 export default function CompanyDashboard() {
@@ -84,6 +86,17 @@ export default function CompanyDashboard() {
     job: null,
     matchScore: 0
   });
+  const [interestFilter, setInterestFilter] = useState<"active" | "archived">("active");
+  const [rejectModal, setRejectModal] = useState<{
+    isOpen: boolean;
+    interestId: string;
+    applicantName: string;
+  }>({
+    isOpen: false,
+    interestId: '',
+    applicantName: ''
+  });
+  const [rejectNote, setRejectNote] = useState("");
 
   useEffect(() => {
     const session = localStorage.getItem("companySession");
@@ -149,23 +162,31 @@ export default function CompanyDashboard() {
 
   function filterInterestsByJob(jobId: string | null) {
     setSelectedJobId(jobId);
-    if (jobId === null) {
-      setFilteredInterests(interests);
-    } else {
-      const filtered = interests.filter(interest => interest.job.id === jobId);
-      setFilteredInterests(filtered);
-    }
+    applyFilters(jobId, interestFilter);
   }
 
-  // Update filtered interests when interests change
-  useEffect(() => {
-    if (selectedJobId === null) {
-      setFilteredInterests(interests);
+  function applyFilters(jobId: string | null, statusFilter: "active" | "archived") {
+    let filtered = interests;
+
+    // Filter by status (active/archived)
+    if (statusFilter === "active") {
+      filtered = filtered.filter(interest => interest.status === "INTERESTED");
     } else {
-      const filtered = interests.filter(interest => interest.job.id === selectedJobId);
-      setFilteredInterests(filtered);
+      filtered = filtered.filter(interest => interest.status === "COMPANY_REJECTED");
     }
-  }, [interests, selectedJobId]);
+
+    // Filter by job (if selected)
+    if (jobId !== null) {
+      filtered = filtered.filter(interest => interest.job.id === jobId);
+    }
+
+    setFilteredInterests(filtered);
+  }
+
+  // Update filtered interests when interests or filters change
+  useEffect(() => {
+    applyFilters(selectedJobId, interestFilter);
+  }, [interests, selectedJobId, interestFilter]);
 
   function openChat(interest: Interest) {
     setChatModal({
@@ -185,6 +206,55 @@ export default function CompanyDashboard() {
       jobId: '',
       jobTitle: ''
     });
+  }
+
+  async function handleRejectApplicant() {
+    if (!rejectModal.interestId) return;
+
+    try {
+      const res = await fetch(`/api/interests/${rejectModal.interestId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: "COMPANY_REJECTED",
+          companyNote: rejectNote || null
+        }),
+      });
+
+      if (res.ok) {
+        // Refresh interests
+        await fetchData();
+        // Close modal and reset
+        setRejectModal({ isOpen: false, interestId: '', applicantName: '' });
+        setRejectNote('');
+      } else {
+        alert("Fehler beim Ablehnen des Bewerbers");
+      }
+    } catch (error) {
+      console.error("Reject applicant error:", error);
+      alert("Fehler beim Ablehnen des Bewerbers");
+    }
+  }
+
+  async function handleReactivateApplicant(interestId: string) {
+    try {
+      const res = await fetch(`/api/interests/${interestId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: "INTERESTED"
+        }),
+      });
+
+      if (res.ok) {
+        await fetchData();
+      } else {
+        alert("Fehler beim Reaktivieren des Bewerbers");
+      }
+    } catch (error) {
+      console.error("Reactivate applicant error:", error);
+      alert("Fehler beim Reaktivieren des Bewerbers");
+    }
   }
 
 
@@ -423,12 +493,37 @@ export default function CompanyDashboard() {
         {/* Interests Tab */}
         {activeTab === "interests" && (
           <div>
+          {/* Filter Tabs: Active / Archived */}
+          <div className="ds-card p-2 mb-6">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setInterestFilter("active")}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  interestFilter === "active"
+                    ? "bg-[var(--accent-green)] text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                👥 Aktive Bewerber ({interests.filter(i => i.status === "INTERESTED").length})
+              </button>
+              <button
+                onClick={() => setInterestFilter("archived")}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  interestFilter === "archived"
+                    ? "bg-[var(--accent-green)] text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                📦 Archivierte Bewerber ({interests.filter(i => i.status === "COMPANY_REJECTED").length})
+              </button>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
             <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading">
-              Bewerbungen
+              {interestFilter === "active" ? "Aktive Bewerbungen" : "Archivierte Bewerbungen"}
               <span className="text-sm ds-body-light ml-2">
-                ({filteredInterests.length} von {interests.length})
-                {selectedJobId && " • gefiltert"}
+                ({filteredInterests.length} {selectedJobId && " • gefiltert"})
               </span>
             </h2>
             
@@ -529,9 +624,20 @@ export default function CompanyDashboard() {
                   ))}
                 </div>
                 
+                {/* Company Note (if archived) */}
+                {interest.status === "COMPANY_REJECTED" && interest.companyNote && (
+                  <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="text-xs font-semibold text-gray-600 mb-1">Ihre Notiz:</div>
+                    <div className="text-sm text-gray-700">{interest.companyNote}</div>
+                  </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="text-xs sm:text-sm ds-body-light">
-                    Status: {interest.status === "INTERESTED" ? "Interessiert" : "Nicht interessiert"}
+                    Status: {interest.status === "INTERESTED" ? "Interessiert" : interest.status === "COMPANY_REJECTED" ? "Archiviert" : "Nicht interessiert"}
+                    {interest.status === "COMPANY_REJECTED" && interest.updatedAt && (
+                      <span className="ml-2">• {new Date(interest.updatedAt).toLocaleDateString('de-DE')}</span>
+                    )}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <button 
@@ -550,8 +656,31 @@ export default function CompanyDashboard() {
                       <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Details anzeigen
+                      Details
                     </button>
+                    
+                    {/* Conditional buttons based on status */}
+                    {interest.status === "INTERESTED" ? (
+                      <button 
+                        onClick={() => setRejectModal({ isOpen: true, interestId: interest.id, applicantName: interest.applicant.name })}
+                        className="bg-red-500 hover:bg-red-600 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-all duration-300 flex-1 sm:flex-initial inline-flex items-center justify-center"
+                      >
+                        <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Ablehnen
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => handleReactivateApplicant(interest.id)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-all duration-300 flex-1 sm:flex-initial inline-flex items-center justify-center"
+                      >
+                        <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Reaktivieren
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -980,6 +1109,61 @@ export default function CompanyDashboard() {
                 className="flex-1 ds-button-secondary"
               >
                 Schließen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Modal */}
+      {rejectModal.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="ds-card p-6 sm:p-8 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl ds-heading">Bewerber ablehnen?</h2>
+              <button
+                onClick={() => {
+                  setRejectModal({ isOpen: false, interestId: '', applicantName: '' });
+                  setRejectNote('');
+                }}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <p className="ds-body mb-4">
+              <strong>{rejectModal.applicantName}</strong> wird archiviert. Sie können ihn später jederzeit reaktivieren.
+            </p>
+
+            <div className="mb-6">
+              <label className="ds-label">Optionale Notiz für interne Zwecke:</label>
+              <textarea
+                value={rejectNote}
+                onChange={(e) => setRejectNote(e.target.value)}
+                className="ds-input ds-input-focus-green"
+                rows={4}
+                placeholder='z.B. "Überqualifiziert" oder "Passt nicht zur Teamgröße"...'
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setRejectModal({ isOpen: false, interestId: '', applicantName: '' });
+                  setRejectNote('');
+                }}
+                className="flex-1 ds-button-secondary"
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={handleRejectApplicant}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-300"
+              >
+                Ablehnen & Archivieren
               </button>
             </div>
           </div>
