@@ -11,7 +11,7 @@ export async function GET(request: Request) {
       const interests = await prisma.interest.findMany({
         where: { 
           job: { companyId }, 
-          status: "INTERESTED" 
+          status: { in: ["INTERESTED", "COMPANY_REJECTED"] } // Include both active and archived
         },
         include: { 
           applicant: true, 
