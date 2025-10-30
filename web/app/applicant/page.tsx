@@ -28,7 +28,8 @@ type Job = {
   requiredEducation?: string | null;
   jobType?: string | null;
   industry?: string | null; 
-  company: { id: string; name: string; location: string } 
+  company: { id: string; name: string; location: string };
+  matchScore?: number;
 };
 
 export default function ApplicantDashboard() {
@@ -790,18 +791,20 @@ export default function ApplicantDashboard() {
             </div>
 
             {/* Match Score */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-6">
-              <div className="flex items-center justify-between">
-                <span className="text-sm ds-body-light">Dein Match Score</span>
-                <span className="text-3xl font-bold text-blue-600">{Math.round(jobDetailsModal.job.matchScore)}%</span>
+            {jobDetailsModal.job.matchScore !== undefined && (
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm ds-body-light">Dein Match Score</span>
+                  <span className="text-3xl font-bold text-blue-600">{Math.round(jobDetailsModal.job.matchScore)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 mt-2">
+                  <div
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${jobDetailsModal.job.matchScore}%` }}
+                  ></div>
+                </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mt-2">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${jobDetailsModal.job.matchScore}%` }}
-                ></div>
-              </div>
-            </div>
+            )}
 
             {/* Job Info Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
