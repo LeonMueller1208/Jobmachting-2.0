@@ -1298,14 +1298,14 @@ export default function CompanyDashboard() {
               onClick={handleCloseWelcome}
               className="w-full ds-button-primary-green text-base sm:text-lg py-3"
             >
-              Los geht's! 🚀
+              Alles klar, verstanden! 🚀
             </button>
             
             <button
               onClick={handleCloseWelcome}
               className="w-full mt-3 text-sm text-gray-500 hover:text-gray-700 transition-colors"
             >
-              Tour überspringen
+              Schließen
             </button>
           </div>
         </div>
