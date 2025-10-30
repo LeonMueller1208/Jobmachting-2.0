@@ -97,6 +97,7 @@ export default function CompanyDashboard() {
     applicantName: ''
   });
   const [rejectNote, setRejectNote] = useState("");
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   useEffect(() => {
     const session = localStorage.getItem("companySession");
@@ -105,6 +106,12 @@ export default function CompanyDashboard() {
         const companyData = JSON.parse(session);
         setCompany(companyData);
         fetchAnalytics(companyData.id);
+        
+        // Check if this is the first time visiting
+        const hasSeenWelcome = localStorage.getItem("company_welcome_shown");
+        if (!hasSeenWelcome) {
+          setShowWelcomeModal(true);
+        }
       } catch (error) {
         console.error("Error parsing company session:", error);
         localStorage.removeItem("companySession");
@@ -112,6 +119,11 @@ export default function CompanyDashboard() {
     }
     fetchData();
   }, []);
+  
+  function handleCloseWelcome() {
+    localStorage.setItem("company_welcome_shown", "true");
+    setShowWelcomeModal(false);
+  }
 
   async function fetchData() {
     try {
@@ -1166,6 +1178,135 @@ export default function CompanyDashboard() {
                 Ablehnen & Archivieren
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Welcome Modal */}
+      {showWelcomeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="ds-card p-6 sm:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 ds-icon-container-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 ds-icon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h2 className="text-2xl sm:text-3xl ds-heading mb-2">🏢 Willkommen im Firmen-Dashboard!</h2>
+              <p className="ds-body-light text-sm sm:text-base">So finden Sie die perfekten Kandidaten für Ihr Team</p>
+            </div>
+
+            {/* Steps */}
+            <div className="space-y-4 mb-6">
+              {/* Step 1 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">
+                  1
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">📝 Erstellen Sie Stellenanzeigen</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Klicken Sie auf "Neue Stelle erstellen" und beschreiben Sie Ihre offene Position mit allen relevanten Details.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold">
+                  2
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">👥 Empfangen Sie qualifizierte Bewerber</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Unser Matching-Algorithmus zeigt Ihre Stelle passenden Bewerbern. Im Tab "Interessenten" sehen Sie, wer sich interessiert.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-teal-500 text-white rounded-full flex items-center justify-center font-bold">
+                  3
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">🎯 Nutzen Sie den Match-Score</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Jeder Bewerber hat einen Match-Score (0-100%), der zeigt, wie gut er zur Stelle passt - basierend auf Skills, Erfahrung und Ausbildung.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold">
+                  4
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">💬 Kontaktieren Sie Kandidaten</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Nutzen Sie den integrierten Chat, um direkt mit interessierten Bewerbern zu kommunizieren und Interviews zu vereinbaren.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 5 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+                  5
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">📊 Nutzen Sie Analytics</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Im Analytics-Tab sehen Sie detaillierte Statistiken zu Ihren Jobs: Interessenten-Anzahl, Top-Skills, beliebte Standorte und mehr!
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 6 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-indigo-500 text-white rounded-full flex items-center justify-center font-bold">
+                  6
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">📦 Archivieren Sie Bewerber</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Mit "Ablehnen" können Sie Bewerber archivieren (mit optionaler Notiz). Sie bleiben unsichtbar für den Bewerber und können jederzeit reaktiviert werden.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pro Tip */}
+            <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <h4 className="font-semibold text-green-900 mb-1 text-sm sm:text-base">💡 Pro-Tipp</h4>
+                  <p className="text-xs sm:text-sm text-green-800">
+                    Je detaillierter Sie Ihre Stellenbeschreibung ausfüllen (Skills, Erfahrung, Ausbildung), desto besser funktioniert das Matching und desto qualifiziertere Bewerber erhalten Sie!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <button
+              onClick={handleCloseWelcome}
+              className="w-full ds-button-primary-green text-base sm:text-lg py-3"
+            >
+              Los geht's! 🚀
+            </button>
+            
+            <button
+              onClick={handleCloseWelcome}
+              className="w-full mt-3 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              Tour überspringen
+            </button>
           </div>
         </div>
       )}

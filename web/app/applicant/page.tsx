@@ -45,6 +45,7 @@ export default function ApplicantDashboard() {
   const [jobTypeFilter, setJobTypeFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<"jobs" | "preferences">("jobs");
   const [preferences, setPreferences] = useState<any>(null);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [chatModal, setChatModal] = useState<{
     isOpen: boolean;
     chatId: string;
@@ -71,9 +72,20 @@ export default function ApplicantDashboard() {
       setApplicant(applicantData);
       fetchChats(applicantData.id);
       fetchPreferences(applicantData.id);
+      
+      // Check if this is the first time visiting
+      const hasSeenWelcome = localStorage.getItem("applicant_welcome_shown");
+      if (!hasSeenWelcome) {
+        setShowWelcomeModal(true);
+      }
     }
     fetchJobs();
   }, []);
+  
+  function handleCloseWelcome() {
+    localStorage.setItem("applicant_welcome_shown", "true");
+    setShowWelcomeModal(false);
+  }
 
   async function fetchChats(applicantId: string) {
     try {
@@ -918,6 +930,122 @@ export default function ApplicantDashboard() {
                 Nicht interessiert
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Welcome Modal */}
+      {showWelcomeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="ds-card p-6 sm:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 ds-icon-container-blue rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 ds-icon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl sm:text-3xl ds-heading mb-2">🎉 Willkommen bei JobMatching!</h2>
+              <p className="ds-body-light text-sm sm:text-base">Lass uns dir zeigen, wie du die perfekte Stelle findest</p>
+            </div>
+
+            {/* Steps */}
+            <div className="space-y-4 mb-6">
+              {/* Step 1 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+                  1
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">📋 Entdecke deine Top-Matches</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Sieh dir Jobs an, die zu deinem Profil passen. Der Match-Score zeigt dir, wie gut du zur Stelle passt.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">
+                  2
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">🎯 Nutze die Filter</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Filtere nach Standort und Job-Art, um genau das zu finden, was du suchst.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-pink-50 to-red-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">
+                  3
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">💙 Bekunde Interesse</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Ein Klick auf "Interesse bekunden" - und das Unternehmen sieht dein Profil und kann dich kontaktieren!
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold">
+                  4
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">💬 Chatte mit Unternehmen</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Sobald ein Unternehmen Interesse hat, kannst du direkt per Chat kommunizieren.
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 5 */}
+              <div className="flex gap-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg">
+                <div className="flex-shrink-0 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">
+                  5
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">📊 Tracke deine Präferenzen</h3>
+                  <p className="text-xs sm:text-sm ds-body-light">
+                    Im Tab "Meine Präferenzen" siehst du, welche Jobs und Skills du bevorzugst - wie Spotify Wrapped für deine Jobsuche!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pro Tip */}
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <h4 className="font-semibold text-blue-900 mb-1 text-sm sm:text-base">💡 Pro-Tipp</h4>
+                  <p className="text-xs sm:text-sm text-blue-800">
+                    Je mehr Jobs du bewertest (interessiert/nicht interessiert), desto besser lernt die Plattform deine Präferenzen kennen und kann dir bessere Matches vorschlagen!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <button
+              onClick={handleCloseWelcome}
+              className="w-full ds-button-primary-blue text-base sm:text-lg py-3"
+            >
+              Los geht's! 🚀
+            </button>
+            
+            <button
+              onClick={handleCloseWelcome}
+              className="w-full mt-3 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              Tour überspringen
+            </button>
           </div>
         </div>
       )}
