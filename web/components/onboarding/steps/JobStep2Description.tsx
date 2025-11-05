@@ -8,7 +8,7 @@ interface JobStep2DescriptionProps {
 export default function JobStep2Description({ description, setDescription }: JobStep2DescriptionProps) {
   const charCount = description.length;
   const minChars = 50;
-  const maxChars = 2000;
+  const maxChars = 500;
 
   return (
     <div className="space-y-6">
@@ -25,25 +25,27 @@ export default function JobStep2Description({ description, setDescription }: Job
 
       {/* Description Textarea */}
       <div>
-        <label className="ds-label">Beschreibung * (mind. {minChars} Zeichen)</label>
+        <label className="ds-label">Beschreibung * ({minChars}-{maxChars} Zeichen)</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="ds-input ds-input-focus-green text-base min-h-[200px]"
-          rows={8}
+          className="ds-input ds-input-focus-green text-base min-h-[180px]"
+          rows={7}
           maxLength={maxChars}
-          placeholder="Beschreiben Sie:&#10;• Die Aufgaben und Verantwortlichkeiten&#10;• Anforderungen an den Bewerber&#10;• Was Sie als Arbeitgeber bieten&#10;• Besonderheiten der Position"
+          placeholder="Kurz & knackig! Beschreiben Sie:&#10;• Die Hauptaufgaben (2-3 Punkte)&#10;• Must-Have Skills&#10;• Was Sie bieten (Remote, Benefits, etc.)"
           autoFocus
         />
         <div className="flex justify-between items-center mt-2">
-          <p className={`text-xs ${charCount < minChars ? 'text-orange-600' : 'text-gray-500'}`}>
+          <p className={`text-xs ${charCount < minChars ? 'text-orange-600' : charCount > 400 ? 'text-orange-600' : 'text-gray-500'}`}>
             {charCount < minChars 
               ? `Noch ${minChars - charCount} Zeichen bis Minimum` 
+              : charCount > 400
+              ? `${charCount} / ${maxChars} - Fast am Limit!`
               : `${charCount} / ${maxChars} Zeichen`}
           </p>
-          {charCount >= minChars && (
+          {charCount >= minChars && charCount <= 400 && (
             <p className="text-xs text-green-600 font-medium">
-              ✓ Gute Länge!
+              ✓ Perfekte Länge!
             </p>
           )}
         </div>
@@ -58,11 +60,28 @@ export default function JobStep2Description({ description, setDescription }: Job
           <div>
             <h4 className="font-semibold text-green-900 mb-1 text-sm">💡 Pro-Tipp:</h4>
             <p className="text-xs text-green-800">
-              Je detaillierter die Beschreibung, desto besser können Bewerber einschätzen, ob die Stelle zu ihnen passt!
+              <strong>Kurz & prägnant schlägt lang & langweilig!</strong> Bewerber schätzen klare, ehrliche Beschreibungen ohne Baustein-Texte. Fokus auf das Wesentliche!
             </p>
           </div>
         </div>
       </div>
+
+      {/* Warning Box if too long */}
+      {charCount > 400 && (
+        <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-lg animate-pulse">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+              <h4 className="font-semibold text-orange-900 mb-1 text-sm">⚠️ Achtung:</h4>
+              <p className="text-xs text-orange-800">
+                Zu lange Texte schrecken Bewerber ab! Versuchen Sie, auf den Punkt zu kommen.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
