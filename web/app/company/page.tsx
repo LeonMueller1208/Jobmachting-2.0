@@ -286,17 +286,17 @@ export default function CompanyDashboard() {
               <p className="ds-body-light text-sm sm:text-base lg:text-lg">Verwalten Sie Ihre Stellenangebote und Bewerbungen</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-              <Link href="/company/create-job" className="ds-button-primary-green text-sm sm:text-base justify-center sm:justify-start">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <Link href="/company/create-job" className="ds-button-primary-green text-sm sm:text-base whitespace-nowrap">
+                <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                Neue Stelle erstellen
+                <span className="truncate">Neue Stelle erstellen</span>
               </Link>
-              <Link href="/company/edit" className="ds-button-secondary-green text-sm sm:text-base justify-center sm:justify-start">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <Link href="/company/edit" className="ds-button-primary-green text-sm sm:text-base whitespace-nowrap">
+                <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                Profil bearbeiten
+                <span className="truncate">Profil bearbeiten</span>
               </Link>
             </div>
           </div>
@@ -654,18 +654,19 @@ export default function CompanyDashboard() {
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <button 
                       onClick={() => openChat(interest)}
-                      className="ds-button-primary-green text-sm sm:text-base flex-1 sm:flex-initial"
+                      className="ds-button-primary-green text-xs sm:text-sm flex-1 sm:flex-initial whitespace-nowrap"
                     >
-                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
-                      Chat starten
+                      <span className="hidden sm:inline">Chat starten</span>
+                      <span className="sm:hidden">Chat</span>
                     </button>
                     <button 
                       onClick={() => setApplicantDetailsModal({ isOpen: true, applicant: interest.applicant, job: interest.job, matchScore: interest.matchScore })}
-                      className="ds-button-secondary text-sm sm:text-base flex-1 sm:flex-initial"
+                      className="ds-button-secondary text-xs sm:text-sm flex-1 sm:flex-initial whitespace-nowrap"
                     >
-                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       Details
@@ -675,22 +676,24 @@ export default function CompanyDashboard() {
                     {interest.status === "INTERESTED" ? (
                       <button 
                         onClick={() => setRejectModal({ isOpen: true, interestId: interest.id, applicantName: interest.applicant.name })}
-                        className="bg-red-500 hover:bg-red-600 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-all duration-300 flex-1 sm:flex-initial inline-flex items-center justify-center"
+                        className="bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-300 flex-1 sm:flex-initial inline-flex items-center justify-center whitespace-nowrap"
                       >
-                        <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                        Ablehnen
+                        <span className="hidden sm:inline">Ablehnen</span>
+                        <span className="sm:hidden">✕</span>
                       </button>
                     ) : (
                       <button 
                         onClick={() => handleReactivateApplicant(interest.id)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white text-sm sm:text-base px-4 py-2 rounded-lg font-medium transition-all duration-300 flex-1 sm:flex-initial inline-flex items-center justify-center"
+                        className="bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-300 flex-1 sm:flex-initial inline-flex items-center justify-center whitespace-nowrap"
                       >
-                        <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        Reaktivieren
+                        <span className="hidden sm:inline">Reaktivieren</span>
+                        <span className="sm:hidden">↻</span>
                       </button>
                     )}
                   </div>
