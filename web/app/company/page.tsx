@@ -307,33 +307,36 @@ export default function CompanyDashboard() {
           <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => setActiveTab("jobs")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
                 activeTab === "jobs"
                   ? "bg-[var(--accent-green)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              💼 Meine Stellen
+              <span className="hidden sm:inline">💼 Meine Stellen</span>
+              <span className="sm:hidden">💼 Stellen</span>
             </button>
             <button
               onClick={() => setActiveTab("interests")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
                 activeTab === "interests"
                   ? "bg-[var(--accent-green)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              👥 Interessenten
+              <span className="hidden sm:inline">👥 Interessenten</span>
+              <span className="sm:hidden">👥 Bewerber</span>
             </button>
             <button
               onClick={() => setActiveTab("analytics")}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
                 activeTab === "analytics"
                   ? "bg-[var(--accent-green)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              📊 Analytics
+              <span className="hidden sm:inline">📊 Analytics</span>
+              <span className="sm:hidden">📊 Stats</span>
             </button>
           </div>
         </div>
