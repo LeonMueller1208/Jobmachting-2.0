@@ -546,24 +546,55 @@ export default function ApplicantDashboard() {
                       </div>
                     </div>
                   </div>
-                  <p className="ds-body-light text-sm sm:text-base line-clamp-3 mb-4">{job.description}</p>
+                  <p className="ds-body-light text-sm sm:text-base line-clamp-3 mb-3">{job.description}</p>
+                  
+                  {/* Match Scores - Horizontal on Mobile */}
+                  <div className="flex gap-2 sm:hidden">
+                    {/* Skills Match Score */}
+                    <div className="flex-1 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-2.5 border-2 border-blue-200">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-blue-dark)] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                          {Math.round(job.matchScore)}%
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold text-gray-700">Skills</div>
+                          <div className="text-xs text-gray-500">Match</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Cultural Fit Score */}
+                    {job.culturalFit !== null && job.culturalFit !== undefined && (
+                      <div className="flex-1 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-2.5 border-2 border-purple-200">
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            {Math.round(job.culturalFit)}%
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-semibold text-gray-700">Kultur</div>
+                            <div className="text-xs text-gray-500">Fit</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
-                {/* Match Scores */}
-                <div className="text-center sm:text-right shrink-0 flex flex-col gap-2">
+                {/* Match Scores - Vertical on Desktop */}
+                <div className="hidden sm:flex sm:flex-col gap-2 shrink-0">
                   {/* Skills Match Score */}
-                  <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-blue-dark)] text-white shadow-lg">
+                  <div className="inline-flex items-center justify-center w-18 h-18 rounded-full bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-blue-dark)] text-white shadow-lg">
                     <div className="text-center">
-                      <div className="text-lg sm:text-xl font-bold leading-none">{Math.round(job.matchScore)}%</div>
+                      <div className="text-xl font-bold leading-none">{Math.round(job.matchScore)}%</div>
                       <div className="text-xs opacity-90">Match</div>
                     </div>
                   </div>
                   
                   {/* Cultural Fit Score */}
                   {job.culturalFit !== null && job.culturalFit !== undefined && (
-                    <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg">
+                    <div className="inline-flex items-center justify-center w-18 h-18 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg">
                       <div className="text-center">
-                        <div className="text-lg sm:text-xl font-bold leading-none">{Math.round(job.culturalFit)}%</div>
+                        <div className="text-xl font-bold leading-none">{Math.round(job.culturalFit)}%</div>
                         <div className="text-xs opacity-90">Kultur</div>
                       </div>
                     </div>
