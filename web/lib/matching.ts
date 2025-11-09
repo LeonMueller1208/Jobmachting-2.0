@@ -6,6 +6,10 @@ export type MatchingInput = {
     education?: string;
     bio?: string;
     industry?: string;
+    workValues?: string[] | any;
+    teamStyle?: string;
+    workEnvironment?: string;
+    motivation?: string;
   };
   job: { 
     requiredSkills: string[]; 
@@ -15,6 +19,10 @@ export type MatchingInput = {
     title: string;
     description?: string;
     industry?: string;
+    workValues?: string[] | any;
+    teamStyle?: string;
+    workEnvironment?: string;
+    motivation?: string;
   };
 };
 
@@ -634,4 +642,65 @@ function computePreferenceEducationMatch(
 export function applyPreferenceBoost(baseScore: number, boostFactor: number): number {
   const boostedScore = baseScore * boostFactor;
   return Math.min(boostedScore, 100); // Cap at 100%
+}
+
+/**
+ * Computes Cultural Fit Score based on soft factors
+ * @param applicant - Applicant with soft factor preferences
+ * @param job - Job with soft factor requirements
+ * @returns Cultural fit score (0-100) or null if no data available
+ */
+export function computeCulturalFit({ applicant, job }: MatchingInput): number | null {
+  let totalFactors = 0;
+  let matchedFactors = 0;
+
+  // 1. Work Values (can have multiple, so check for overlap)
+  if (applicant.workValues && job.workValues) {
+    totalFactors++;
+    const applicantValues = Array.isArray(applicant.workValues) 
+      ? applicant.workValues 
+      : (typeof applicant.workValues === 'string' ? [applicant.workValues] : []);
+    const jobValues = Array.isArray(job.workValues) 
+      ? job.workValues 
+      : (typeof job.workValues === 'string' ? [job.workValues] : []);
+    
+    // Check if there's any overlap
+    const hasOverlap = applicantValues.some(val => jobValues.includes(val));
+    if (hasOverlap) {
+      matchedFactors++;
+    }
+  }
+
+  // 2. Team Style (exact match)
+  if (applicant.teamStyle && job.teamStyle) {
+    totalFactors++;
+    if (applicant.teamStyle === job.teamStyle) {
+      matchedFactors++;
+    }
+  }
+
+  // 3. Work Environment (exact match)
+  if (applicant.workEnvironment && job.workEnvironment) {
+    totalFactors++;
+    if (applicant.workEnvironment === job.workEnvironment) {
+      matchedFactors++;
+    }
+  }
+
+  // 4. Motivation (exact match)
+  if (applicant.motivation && job.motivation) {
+    totalFactors++;
+    if (applicant.motivation === job.motivation) {
+      matchedFactors++;
+    }
+  }
+
+  // If no soft factors are available, return null
+  if (totalFactors === 0) {
+    return null;
+  }
+
+  // Calculate percentage
+  const culturalFitScore = (matchedFactors / totalFactors) * 100;
+  return Math.round(culturalFitScore * 10) / 10; // Round to 1 decimal place
 }

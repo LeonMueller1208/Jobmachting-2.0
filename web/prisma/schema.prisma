@@ -8,19 +8,23 @@ datasource db {
 }
 
 model Applicant {
-  id         String     @id @default(cuid())
-  name       String
-  email      String     @unique
-  skills     Json
-  location   String
-  experience Int
-  education  String?    // Highest degree: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion"
-  bio        String?
-  industry   String?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  interests  Interest[]
-  chats      Chat[]
+  id              String     @id @default(cuid())
+  name            String
+  email           String     @unique
+  skills          Json
+  location        String
+  experience      Int
+  education       String?    // Highest degree: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion"
+  bio             String?
+  industry        String?
+  workValues      Json?      // Array: ["security", "fun", "development", "purpose"]
+  teamStyle       String?    // "close" | "balanced" | "independent"
+  workEnvironment String?    // "quiet" | "lively" | "structured"
+  motivation      String?    // "recognition" | "responsibility" | "success" | "learning"
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  interests       Interest[]
+  chats           Chat[]
 }
 
 model Company {
@@ -36,35 +40,40 @@ model Company {
 }
 
 model Job {
-  id               String     @id @default(cuid())
-  title            String
-  description      String
-  requiredSkills   Json
-  location         String
-  minExperience    Int
-  requiredEducation String?   // Minimum required: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion", "Keine Angabe"
-  jobType          String?    // Job type: "Vollzeit", "Teilzeit", "Praktikum", "Werkstudent", "Minijob", "Freelance", "Ausbildung"
-  companyId        String
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  industry         String?
-  interests        Interest[]
-  chats            Chat[]
-  company          Company    @relation(fields: [companyId], references: [id])
+  id                String     @id @default(cuid())
+  title             String
+  description       String
+  requiredSkills    Json
+  location          String
+  minExperience     Int
+  requiredEducation String?    // Minimum required: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion", "Keine Angabe"
+  jobType           String?    // Job type: "Vollzeit", "Teilzeit", "Praktikum", "Werkstudent", "Minijob", "Freelance", "Ausbildung"
+  companyId         String
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  industry          String?
+  workValues        Json?      // Array: ["security", "fun", "development", "purpose"]
+  teamStyle         String?    // "close" | "balanced" | "independent"
+  workEnvironment   String?    // "quiet" | "lively" | "structured"
+  motivation        String?    // "recognition" | "responsibility" | "success" | "learning"
+  interests         Interest[]
+  chats             Chat[]
+  company           Company    @relation(fields: [companyId], references: [id])
 }
 
 model Interest {
-  id          String    @id @default(cuid())
-  applicantId String
-  jobId       String
-  status      String    // "INTERESTED", "NOT_INTERESTED", "COMPANY_REJECTED"
-  matchScore  Float
-  passes      Boolean
-  companyNote String?   // Optional note from company when rejecting applicant
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  job         Job       @relation(fields: [jobId], references: [id])
-  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  id           String    @id @default(cuid())
+  applicantId  String
+  jobId        String
+  status       String    // "INTERESTED", "NOT_INTERESTED", "COMPANY_REJECTED"
+  matchScore   Float
+  culturalFit  Float?    // Cultural fit score (0-100)
+  passes       Boolean
+  companyNote  String?   // Optional note from company when rejecting applicant
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  job          Job       @relation(fields: [jobId], references: [id])
+  applicant    Applicant @relation(fields: [applicantId], references: [id])
 
   @@unique([applicantId, jobId])
 }

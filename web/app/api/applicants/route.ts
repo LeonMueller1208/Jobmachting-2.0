@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, name, skills, location, experience, education, bio, industry } = body ?? {};
+    const { email, name, skills, location, experience, education, bio, industry, workValues, teamStyle, workEnvironment, motivation } = body ?? {};
     
     if (!email || !name || !Array.isArray(skills) || skills.length === 0 || !location) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
@@ -39,7 +39,11 @@ export async function POST(request: Request) {
         experience: Number(experience) || 0, 
         education: education || null,
         bio: bio || null, 
-        industry: industry || null 
+        industry: industry || null,
+        workValues: workValues || null,
+        teamStyle: teamStyle || null,
+        workEnvironment: workEnvironment || null,
+        motivation: motivation || null
       },
       create: { 
         email, 
@@ -49,7 +53,11 @@ export async function POST(request: Request) {
         experience: Number(experience) || 0, 
         education: education || null,
         bio: bio || null, 
-        industry: industry || null 
+        industry: industry || null,
+        workValues: workValues || null,
+        teamStyle: teamStyle || null,
+        workEnvironment: workEnvironment || null,
+        motivation: motivation || null
       },
     });
     

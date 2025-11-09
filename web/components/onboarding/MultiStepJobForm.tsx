@@ -11,9 +11,13 @@ import JobStep4Experience from "./steps/JobStep4Experience";
 import JobStep5Education from "./steps/JobStep5Education";
 import JobStep6Skills from "./steps/JobStep6Skills";
 import JobStep7Industry from "./steps/JobStep7Industry";
-import JobStep8Summary from "./steps/JobStep8Summary";
+import JobStep8WorkValues from "./steps/JobStep8WorkValues";
+import JobStep9TeamStyle from "./steps/JobStep9TeamStyle";
+import JobStep10WorkEnvironment from "./steps/JobStep10WorkEnvironment";
+import JobStep11Motivation from "./steps/JobStep11Motivation";
+import JobStep12Summary from "./steps/JobStep8Summary";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 12;
 const DRAFT_KEY = "job_onboarding_draft";
 
 export default function MultiStepJobForm() {
@@ -35,6 +39,10 @@ export default function MultiStepJobForm() {
   const [requiredEducation, setRequiredEducation] = useState("");
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
   const [industry, setIndustry] = useState("");
+  const [workValues, setWorkValues] = useState<string[]>([]);
+  const [teamStyle, setTeamStyle] = useState("");
+  const [workEnvironment, setWorkEnvironment] = useState("");
+  const [motivation, setMotivation] = useState("");
 
   // Load draft on mount
   useEffect(() => {
@@ -69,12 +77,16 @@ export default function MultiStepJobForm() {
         requiredEducation,
         requiredSkills,
         industry,
+        workValues,
+        teamStyle,
+        workEnvironment,
+        motivation,
         currentStep,
         timestamp: Date.now()
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [title, description, location, jobType, minExperience, requiredEducation, requiredSkills, industry, currentStep]);
+  }, [title, description, location, jobType, minExperience, requiredEducation, requiredSkills, industry, workValues, teamStyle, workEnvironment, motivation, currentStep]);
 
   function loadDraft() {
     const draft = localStorage.getItem(DRAFT_KEY);
@@ -88,6 +100,10 @@ export default function MultiStepJobForm() {
       setRequiredEducation(parsed.requiredEducation || "");
       setRequiredSkills(parsed.requiredSkills || []);
       setIndustry(parsed.industry || "");
+      setWorkValues(parsed.workValues || []);
+      setTeamStyle(parsed.teamStyle || "");
+      setWorkEnvironment(parsed.workEnvironment || "");
+      setMotivation(parsed.motivation || "");
       setCurrentStep(parsed.currentStep || 1);
     }
     setShowDraftModal(false);
@@ -116,6 +132,22 @@ export default function MultiStepJobForm() {
       alert("Bitte mindestens 1 Skill auswählen");
       return;
     }
+    if (currentStep === 8 && workValues.length === 0) {
+      alert("Bitte mindestens einen Wert auswählen");
+      return;
+    }
+    if (currentStep === 9 && !teamStyle) {
+      alert("Bitte einen Teamstil auswählen");
+      return;
+    }
+    if (currentStep === 10 && !workEnvironment) {
+      alert("Bitte ein Arbeitsumfeld auswählen");
+      return;
+    }
+    if (currentStep === 11 && !motivation) {
+      alert("Bitte einen Motivator auswählen");
+      return;
+    }
 
     setDirection('forward');
     setCurrentStep(prev => Math.min(prev + 1, TOTAL_STEPS));
@@ -137,8 +169,8 @@ export default function MultiStepJobForm() {
   }
 
   async function handleSubmit() {
-    if (!title || !description || requiredSkills.length === 0 || !location) {
-      setErrorMessage("Bitte alle Pflichtfelder ausfüllen: Titel, Beschreibung, Skills und Standort");
+    if (!title || !description || requiredSkills.length === 0 || !location || workValues.length === 0 || !teamStyle || !workEnvironment || !motivation) {
+      setErrorMessage("Bitte alle Pflichtfelder ausfüllen");
       setShowError(true);
       return;
     }
@@ -165,6 +197,10 @@ export default function MultiStepJobForm() {
           requiredEducation,
           jobType,
           industry,
+          workValues,
+          teamStyle,
+          workEnvironment,
+          motivation,
           companyId: company.id,
         }),
       });
@@ -197,7 +233,11 @@ export default function MultiStepJobForm() {
     minExperience,
     requiredEducation,
     requiredSkills,
-    industry
+    industry,
+    workValues,
+    teamStyle,
+    workEnvironment,
+    motivation
   };
 
   return (
@@ -240,7 +280,19 @@ export default function MultiStepJobForm() {
               <JobStep7Industry industry={industry} setIndustry={setIndustry} onSkip={skipStep} />
             )}
             {currentStep === 8 && (
-              <JobStep8Summary formData={formData} onEdit={goToStep} />
+              <JobStep8WorkValues workValues={workValues} setWorkValues={setWorkValues} />
+            )}
+            {currentStep === 9 && (
+              <JobStep9TeamStyle teamStyle={teamStyle} setTeamStyle={setTeamStyle} />
+            )}
+            {currentStep === 10 && (
+              <JobStep10WorkEnvironment workEnvironment={workEnvironment} setWorkEnvironment={setWorkEnvironment} />
+            )}
+            {currentStep === 11 && (
+              <JobStep11Motivation motivation={motivation} setMotivation={setMotivation} />
+            )}
+            {currentStep === 12 && (
+              <JobStep12Summary formData={formData} onEdit={goToStep} />
             )}
           </StepTransition>
 

@@ -10,10 +10,14 @@ import Step3Experience from "./steps/Step3Experience";
 import Step4Education from "./steps/Step4Education";
 import Step5Skills from "./steps/Step5Skills";
 import Step6Industry from "./steps/Step6Industry";
-import Step7Bio from "./steps/Step7Bio";
-import Step8Summary from "./steps/Step8Summary";
+import Step7WorkValues from "./steps/Step7WorkValues";
+import Step8TeamStyle from "./steps/Step8TeamStyle";
+import Step9WorkEnvironment from "./steps/Step9WorkEnvironment";
+import Step10Motivation from "./steps/Step10Motivation";
+import Step11Bio from "./steps/Step7Bio";
+import Step12Summary from "./steps/Step8Summary";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 12;
 const DRAFT_KEY = "applicant_onboarding_draft";
 
 export default function MultiStepApplicantForm() {
@@ -31,6 +35,10 @@ export default function MultiStepApplicantForm() {
   const [education, setEducation] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [industry, setIndustry] = useState("");
+  const [workValues, setWorkValues] = useState<string[]>([]);
+  const [teamStyle, setTeamStyle] = useState("");
+  const [workEnvironment, setWorkEnvironment] = useState("");
+  const [motivation, setMotivation] = useState("");
   const [bio, setBio] = useState("");
 
   // Load draft on mount
@@ -66,13 +74,17 @@ export default function MultiStepApplicantForm() {
         education,
         skills,
         industry,
+        workValues,
+        teamStyle,
+        workEnvironment,
+        motivation,
         bio,
         currentStep,
         timestamp: Date.now()
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [name, email, location, experience, education, skills, industry, bio, currentStep]);
+  }, [name, email, location, experience, education, skills, industry, workValues, teamStyle, workEnvironment, motivation, bio, currentStep]);
 
   function loadDraft() {
     const draft = localStorage.getItem(DRAFT_KEY);
@@ -85,6 +97,10 @@ export default function MultiStepApplicantForm() {
       setEducation(parsed.education || "");
       setSkills(parsed.skills || []);
       setIndustry(parsed.industry || "");
+      setWorkValues(parsed.workValues || []);
+      setTeamStyle(parsed.teamStyle || "");
+      setWorkEnvironment(parsed.workEnvironment || "");
+      setMotivation(parsed.motivation || "");
       setBio(parsed.bio || "");
       setCurrentStep(parsed.currentStep || 1);
     }
@@ -110,6 +126,22 @@ export default function MultiStepApplicantForm() {
       alert("Bitte mindestens 1 Skill auswählen");
       return;
     }
+    if (currentStep === 7 && workValues.length === 0) {
+      alert("Bitte mindestens einen Wert auswählen");
+      return;
+    }
+    if (currentStep === 8 && !teamStyle) {
+      alert("Bitte einen Teamstil auswählen");
+      return;
+    }
+    if (currentStep === 9 && !workEnvironment) {
+      alert("Bitte ein Arbeitsumfeld auswählen");
+      return;
+    }
+    if (currentStep === 10 && !motivation) {
+      alert("Bitte einen Motivator auswählen");
+      return;
+    }
 
     setDirection('forward');
     setCurrentStep(prev => Math.min(prev + 1, TOTAL_STEPS));
@@ -131,8 +163,8 @@ export default function MultiStepApplicantForm() {
   }
 
   async function handleSubmit() {
-    if (!name || !email || skills.length === 0 || !location) {
-      alert("Bitte alle Pflichtfelder ausfüllen: Name, E-Mail, Skills und Standort");
+    if (!name || !email || skills.length === 0 || !location || workValues.length === 0 || !teamStyle || !workEnvironment || !motivation) {
+      alert("Bitte alle Pflichtfelder ausfüllen");
       return;
     }
 
@@ -141,7 +173,20 @@ export default function MultiStepApplicantForm() {
       const res = await fetch("/api/applicants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, skills, location, experience, education, bio, industry }),
+        body: JSON.stringify({ 
+          name, 
+          email, 
+          skills, 
+          location, 
+          experience, 
+          education, 
+          bio, 
+          industry,
+          workValues,
+          teamStyle,
+          workEnvironment,
+          motivation
+        }),
       });
 
       if (res.ok) {
@@ -163,7 +208,7 @@ export default function MultiStepApplicantForm() {
     }
   }
 
-  const formData = { name, email, location, experience, education, skills, industry, bio };
+  const formData = { name, email, location, experience, education, skills, industry, workValues, teamStyle, workEnvironment, motivation, bio };
 
   return (
     <>
@@ -193,10 +238,22 @@ export default function MultiStepApplicantForm() {
               <Step6Industry industry={industry} setIndustry={setIndustry} onSkip={skipStep} />
             )}
             {currentStep === 7 && (
-              <Step7Bio bio={bio} setBio={setBio} onSkip={skipStep} />
+              <Step7WorkValues workValues={workValues} setWorkValues={setWorkValues} />
             )}
             {currentStep === 8 && (
-              <Step8Summary formData={formData} onEdit={goToStep} />
+              <Step8TeamStyle teamStyle={teamStyle} setTeamStyle={setTeamStyle} />
+            )}
+            {currentStep === 9 && (
+              <Step9WorkEnvironment workEnvironment={workEnvironment} setWorkEnvironment={setWorkEnvironment} />
+            )}
+            {currentStep === 10 && (
+              <Step10Motivation motivation={motivation} setMotivation={setMotivation} />
+            )}
+            {currentStep === 11 && (
+              <Step11Bio bio={bio} setBio={setBio} onSkip={skipStep} />
+            )}
+            {currentStep === 12 && (
+              <Step12Summary formData={formData} onEdit={goToStep} />
             )}
           </StepTransition>
 
