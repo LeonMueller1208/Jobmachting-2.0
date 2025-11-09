@@ -583,19 +583,19 @@ export default function ApplicantDashboard() {
                 {/* Match Scores - Vertical on Desktop */}
                 <div className="hidden sm:flex sm:flex-col gap-2 shrink-0">
                   {/* Skills Match Score */}
-                  <div className="inline-flex items-center justify-center w-18 h-18 rounded-full bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-blue-dark)] text-white shadow-lg">
+                  <div className="inline-flex items-center justify-center w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-blue-dark)] text-white shadow-lg">
                     <div className="text-center">
-                      <div className="text-xl font-bold leading-none">{Math.round(job.matchScore)}%</div>
-                      <div className="text-xs opacity-90">Match</div>
+                      <div className="text-xl lg:text-2xl font-bold leading-none">{Math.round(job.matchScore)}%</div>
+                      <div className="text-xs lg:text-sm opacity-90 mt-0.5">Match</div>
                     </div>
                   </div>
                   
                   {/* Cultural Fit Score */}
                   {job.culturalFit !== null && job.culturalFit !== undefined && (
-                    <div className="inline-flex items-center justify-center w-18 h-18 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg">
+                    <div className="inline-flex items-center justify-center w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg">
                       <div className="text-center">
-                        <div className="text-xl font-bold leading-none">{Math.round(job.culturalFit)}%</div>
-                        <div className="text-xs opacity-90">Kultur</div>
+                        <div className="text-xl lg:text-2xl font-bold leading-none">{Math.round(job.culturalFit)}%</div>
+                        <div className="text-xs lg:text-sm opacity-90 mt-0.5">Kultur</div>
                       </div>
                     </div>
                   )}
