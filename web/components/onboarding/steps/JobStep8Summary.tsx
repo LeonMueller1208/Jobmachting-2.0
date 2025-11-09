@@ -10,9 +10,39 @@ interface JobStep8SummaryProps {
     requiredEducation: string;
     requiredSkills: string[];
     industry: string;
+    workValues: string[];
+    teamStyle: string;
+    workEnvironment: string;
+    motivation: string;
   };
   onEdit: (step: number) => void;
 }
+
+const WORK_VALUES_LABELS: { [key: string]: string } = {
+  security: "🛡️ Sicherheit & Stabilität",
+  fun: "🎉 Spaß & Atmosphäre",
+  development: "📈 Entwicklung & Lernen",
+  purpose: "🌍 Sinn & Beitrag"
+};
+
+const TEAM_STYLE_LABELS: { [key: string]: string } = {
+  close: "👥 Eng im Team",
+  balanced: "🤝 Ausgewogen",
+  independent: "🎯 Eigenständig"
+};
+
+const WORK_ENV_LABELS: { [key: string]: string } = {
+  quiet: "🤫 Ruhig & konzentriert",
+  lively: "💬 Lebendig & kommunikativ",
+  structured: "📋 Strukturiert & organisiert"
+};
+
+const MOTIVATION_LABELS: { [key: string]: string } = {
+  recognition: "🏆 Anerkennung",
+  responsibility: "🎯 Verantwortung",
+  success: "📊 Erfolg",
+  learning: "💡 Lernen & Innovation"
+};
 
 export default function JobStep8Summary({ formData, onEdit }: JobStep8SummaryProps) {
   const getExperienceLabel = (years: number) => {
@@ -118,6 +148,43 @@ export default function JobStep8Summary({ formData, onEdit }: JobStep8SummaryPro
                 {skill}
               </span>
             ))}
+          </div>
+        </div>
+
+        {/* Soft Factors - Cultural Fit */}
+        <div className="ds-card p-5 hover:shadow-lg transition-shadow duration-300 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="font-semibold text-gray-800 text-lg">🤝 Team-Kultur & Werte</h3>
+            <button
+              onClick={() => onEdit(8)}
+              className="text-sm text-purple-600 hover:text-purple-800 font-medium transition-colors"
+            >
+              Bearbeiten
+            </button>
+          </div>
+          <div className="space-y-3 text-sm">
+            <div>
+              <span className="font-medium text-gray-700">Was euch wichtig ist:</span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {formData.workValues.map(val => (
+                  <span key={val} className="px-3 py-1 bg-white rounded-full text-xs font-medium text-purple-700 border border-purple-200">
+                    {WORK_VALUES_LABELS[val] || val}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <p>
+              <span className="font-medium text-gray-700">Teamarbeit:</span>{" "}
+              <span className="text-gray-800">{TEAM_STYLE_LABELS[formData.teamStyle] || formData.teamStyle}</span>
+            </p>
+            <p>
+              <span className="font-medium text-gray-700">Arbeitsumfeld:</span>{" "}
+              <span className="text-gray-800">{WORK_ENV_LABELS[formData.workEnvironment] || formData.workEnvironment}</span>
+            </p>
+            <p>
+              <span className="font-medium text-gray-700">Motivation:</span>{" "}
+              <span className="text-gray-800">{MOTIVATION_LABELS[formData.motivation] || formData.motivation}</span>
+            </p>
           </div>
         </div>
 
