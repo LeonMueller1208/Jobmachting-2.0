@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import ApplicantChatModal from "@/components/ApplicantChatModal";
-import { computeMatchingScore, computePreferenceBoost, applyPreferenceBoost, type UserPreferences } from "@/lib/matching";
+import { computeMatchingScore, computePreferenceBoost, applyPreferenceBoost, computeCulturalFit, type UserPreferences } from "@/lib/matching";
 
 type Applicant = { 
   id: string; 
@@ -15,7 +15,11 @@ type Applicant = {
   experience: number; 
   education?: string | null;
   bio?: string | null; 
-  industry?: string | null 
+  industry?: string | null;
+  workValues?: string[] | any;
+  teamStyle?: string | null;
+  workEnvironment?: string | null;
+  motivation?: string | null;
 };
 
 type Job = { 
@@ -28,8 +32,13 @@ type Job = {
   requiredEducation?: string | null;
   jobType?: string | null;
   industry?: string | null; 
+  workValues?: string[] | any;
+  teamStyle?: string | null;
+  workEnvironment?: string | null;
+  motivation?: string | null;
   company: { id: string; name: string; location: string };
   matchScore?: number;
+  culturalFit?: number | null;
 };
 
 export default function ApplicantDashboard() {
@@ -200,7 +209,11 @@ export default function ApplicantDashboard() {
         location: applicant.location || "",
         education: applicant.education || undefined,
         bio: applicant.bio || undefined,
-        industry: applicant.industry || undefined
+        industry: applicant.industry || undefined,
+        workValues: applicant.workValues,
+        teamStyle: applicant.teamStyle || undefined,
+        workEnvironment: applicant.workEnvironment || undefined,
+        motivation: applicant.motivation || undefined
       },
       job: { 
         requiredSkills: jobSkills, 
@@ -209,8 +222,41 @@ export default function ApplicantDashboard() {
         requiredEducation: job.requiredEducation || undefined,
         title: job.title || "",
         description: job.description || "",
-        industry: job.industry || undefined
+        industry: job.industry || undefined,
+        workValues: job.workValues,
+        teamStyle: job.teamStyle || undefined,
+        workEnvironment: job.workEnvironment || undefined,
+        motivation: job.motivation || undefined
       },
+    });
+    
+    // Calculate cultural fit score
+    const culturalFitScore = computeCulturalFit({
+      applicant: {
+        skills: applicantSkills,
+        experience: applicant.experience || 0,
+        location: applicant.location || "",
+        education: applicant.education || undefined,
+        bio: applicant.bio || undefined,
+        industry: applicant.industry || undefined,
+        workValues: applicant.workValues,
+        teamStyle: applicant.teamStyle || undefined,
+        workEnvironment: applicant.workEnvironment || undefined,
+        motivation: applicant.motivation || undefined
+      },
+      job: {
+        requiredSkills: jobSkills,
+        minExperience: job.minExperience || 0,
+        location: job.location || "",
+        requiredEducation: job.requiredEducation || undefined,
+        title: job.title || "",
+        description: job.description || "",
+        industry: job.industry || undefined,
+        workValues: job.workValues,
+        teamStyle: job.teamStyle || undefined,
+        workEnvironment: job.workEnvironment || undefined,
+        motivation: job.motivation || undefined
+      }
     });
     
     // Apply preference boost if preferences are available
@@ -234,7 +280,7 @@ export default function ApplicantDashboard() {
       finalScore = applyPreferenceBoost(baseScore, boostFactor);
     }
     
-    return { ...job, matchScore: finalScore };
+    return { ...job, matchScore: finalScore, culturalFit: culturalFitScore };
   }).sort((a, b) => b.matchScore - a.matchScore).slice(0, 20); // Show only top 20 matches
 
   function openChat(chat: any) {
@@ -503,14 +549,25 @@ export default function ApplicantDashboard() {
                   <p className="ds-body-light text-sm sm:text-base line-clamp-3 mb-4">{job.description}</p>
                 </div>
                 
-                {/* Match Score */}
-                <div className="text-center sm:text-right shrink-0">
+                {/* Match Scores */}
+                <div className="text-center sm:text-right shrink-0 flex flex-col gap-2">
+                  {/* Skills Match Score */}
                   <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-[var(--accent-blue)] to-[var(--accent-blue-dark)] text-white shadow-lg">
                     <div className="text-center">
                       <div className="text-lg sm:text-xl font-bold leading-none">{Math.round(job.matchScore)}%</div>
                       <div className="text-xs opacity-90">Match</div>
                     </div>
                   </div>
+                  
+                  {/* Cultural Fit Score */}
+                  {job.culturalFit !== null && job.culturalFit !== undefined && (
+                    <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg">
+                      <div className="text-center">
+                        <div className="text-lg sm:text-xl font-bold leading-none">{Math.round(job.culturalFit)}%</div>
+                        <div className="text-xs opacity-90">Kultur</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -809,21 +866,40 @@ export default function ApplicantDashboard() {
               </button>
             </div>
 
-            {/* Match Score */}
-            {jobDetailsModal.job.matchScore !== undefined && (
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm ds-body-light">Dein Match Score</span>
-                  <span className="text-3xl font-bold text-blue-600">{Math.round(jobDetailsModal.job.matchScore)}%</span>
+            {/* Match Scores */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              {/* Skills Match Score */}
+              {jobDetailsModal.job.matchScore !== undefined && (
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">🎯 Skills Match</span>
+                    <span className="text-3xl font-bold text-blue-600">{Math.round(jobDetailsModal.job.matchScore)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${jobDetailsModal.job.matchScore}%` }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3 mt-2">
-                  <div
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${jobDetailsModal.job.matchScore}%` }}
-                  ></div>
+              )}
+              
+              {/* Cultural Fit Score */}
+              {jobDetailsModal.job.culturalFit !== null && jobDetailsModal.job.culturalFit !== undefined && (
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">🤝 Cultural Fit</span>
+                    <span className="text-3xl font-bold text-purple-600">{Math.round(jobDetailsModal.job.culturalFit)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${jobDetailsModal.job.culturalFit}%` }}
+                    ></div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Job Info Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
