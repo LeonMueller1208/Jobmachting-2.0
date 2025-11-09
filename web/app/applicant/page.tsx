@@ -73,9 +73,9 @@ export default function ApplicantDashboard() {
       fetchChats(applicantData.id);
       fetchPreferences(applicantData.id);
       
-      // Check if this is the first time visiting
-      const hasSeenWelcome = localStorage.getItem("applicant_welcome_shown");
-      if (!hasSeenWelcome) {
+      // Check if welcome modal should be shown (only after registration)
+      const welcomeStatus = localStorage.getItem("applicant_welcome_shown");
+      if (welcomeStatus === "pending") {
         setShowWelcomeModal(true);
       }
     }

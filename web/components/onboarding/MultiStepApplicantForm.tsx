@@ -148,6 +148,7 @@ export default function MultiStepApplicantForm() {
         const data = await res.json();
         localStorage.setItem("applicantSession", JSON.stringify(data));
         localStorage.removeItem(DRAFT_KEY); // Clear draft
+        localStorage.setItem("applicant_welcome_shown", "pending"); // Trigger welcome modal on first dashboard visit
         alert("Profil erfolgreich erstellt!");
         router.push("/applicant");
       } else {

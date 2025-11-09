@@ -107,9 +107,9 @@ export default function CompanyDashboard() {
         setCompany(companyData);
         fetchAnalytics(companyData.id);
         
-        // Check if this is the first time visiting
-        const hasSeenWelcome = localStorage.getItem("company_welcome_shown");
-        if (!hasSeenWelcome) {
+        // Check if welcome modal should be shown (only after registration)
+        const welcomeStatus = localStorage.getItem("company_welcome_shown");
+        if (welcomeStatus === "pending") {
           setShowWelcomeModal(true);
         }
       } catch (error) {

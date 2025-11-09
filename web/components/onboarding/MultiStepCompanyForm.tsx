@@ -126,6 +126,7 @@ export default function MultiStepCompanyForm() {
         const data = await res.json();
         localStorage.setItem("companySession", JSON.stringify(data));
         localStorage.removeItem(DRAFT_KEY);
+        localStorage.setItem("company_welcome_shown", "pending"); // Trigger welcome modal on first dashboard visit
         alert("Unternehmen erfolgreich registriert!");
         router.push("/company");
       } else {
