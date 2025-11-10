@@ -75,12 +75,27 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    // First delete all interests/applications for this job
+    // Delete in correct order to avoid foreign key constraints:
+    // 1. Delete all messages in chats for this job
+    await prisma.message.deleteMany({
+      where: {
+        chat: {
+          jobId: id
+        }
+      }
+    });
+    
+    // 2. Delete all chats for this job
+    await prisma.chat.deleteMany({
+      where: { jobId: id },
+    });
+    
+    // 3. Delete all interests/applications for this job
     await prisma.interest.deleteMany({
       where: { jobId: id },
     });
     
-    // Then delete the job itself
+    // 4. Finally delete the job itself
     await prisma.job.delete({
       where: { id },
     });
