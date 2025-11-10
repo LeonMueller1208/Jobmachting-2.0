@@ -29,7 +29,20 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const { title, description, requiredSkills, location, minExperience, requiredEducation, jobType, industry } = await request.json();
+    const { 
+      title, 
+      description, 
+      requiredSkills, 
+      location, 
+      minExperience, 
+      requiredEducation, 
+      jobType, 
+      industry,
+      workValues,
+      teamStyle,
+      workEnvironment,
+      motivation
+    } = await request.json();
 
     const updatedJob = await prisma.job.update({
       where: { id },
@@ -42,6 +55,10 @@ export async function PUT(
         requiredEducation: requiredEducation || null,
         jobType: jobType || null,
         industry: industry || null,
+        workValues: workValues || null,
+        teamStyle: teamStyle || null,
+        workEnvironment: workEnvironment || null,
+        motivation: motivation || null,
       },
     });
     return NextResponse.json(updatedJob);
