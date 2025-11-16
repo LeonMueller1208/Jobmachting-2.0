@@ -1,7 +1,7 @@
 "use client";
 
 const availableLocations = [
-  'Berlin', 'München', 'Hamburg', 'Köln', 'Frankfurt', 'Stuttgart', 
+  'Berlin', 'München', 'Hamburg', 'Kassel', 'Kassel Umgebung', 'Köln', 'Frankfurt', 'Stuttgart', 
   'Düsseldorf', 'Dortmund', 'Essen', 'Leipzig', 'Bremen', 'Dresden', 
   'Hannover', 'Nürnberg', 'Remote'
 ];

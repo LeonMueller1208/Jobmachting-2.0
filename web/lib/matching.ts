@@ -53,8 +53,10 @@ const LOCATION_PROXIMITY = {
   'hamburg': ['schleswig-holstein', 'bremen'],
   'köln': ['düsseldorf', 'essen', 'dortmund', 'nrw'],
   'frankfurt': ['wiesbaden', 'mainz', 'darmstadt'],
+  'kassel': ['kassel umgebung', 'göttingen', 'fulda', 'marburg', 'hessen'],
+  'kassel umgebung': ['kassel', 'göttingen', 'fulda', 'marburg', 'hessen'],
   'stuttgart': ['baden-württemberg', 'karlsruhe', 'freiburg'],
-  'remote': ['berlin', 'münchen', 'hamburg', 'köln', 'frankfurt', 'stuttgart']
+  'remote': ['berlin', 'münchen', 'hamburg', 'köln', 'frankfurt', 'kassel', 'stuttgart']
 };
 
 // Remote work flexibility scoring

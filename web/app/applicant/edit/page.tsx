@@ -192,7 +192,7 @@ export default function EditApplicant() {
                   className="ds-input ds-input-focus-blue"
                 >
                   <option value="">Standort wählen</option>
-                  {['Berlin','München','Hamburg','Köln','Frankfurt','Stuttgart','Düsseldorf','Dortmund','Essen','Leipzig','Bremen','Dresden','Hannover','Nürnberg','Remote'].map(city => (
+                  {['Berlin','München','Hamburg','Kassel','Kassel Umgebung','Köln','Frankfurt','Stuttgart','Düsseldorf','Dortmund','Essen','Leipzig','Bremen','Dresden','Hannover','Nürnberg','Remote'].map(city => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
