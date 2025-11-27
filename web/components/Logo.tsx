@@ -27,7 +27,7 @@ export default function Logo({ className = "", size = "md", variant = "default" 
   return (
     <div className={`${className}`}>
       <span className={`${sizeClasses[size]} ${getVariantClasses()} tracking-tight`}>
-        Talentsync
+        TalNow
       </span>
     </div>
   );

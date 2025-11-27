@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Talentsync - Intelligente Jobvermittlung",
+  title: "TalNow - Intelligente Jobvermittlung",
   description: "Intelligente Jobvermittlung mit KI-gestütztem Matching. Finde den perfekten Job oder den idealen Kandidaten.",
 };
 

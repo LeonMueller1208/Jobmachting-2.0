@@ -1,9 +1,9 @@
-# Talentsync Logo Setup
+# TalNow Logo Setup
 
-## 🎨 Text-Logo "Talentsync"
+## 🎨 Text-Logo "TalNow"
 
 ### 1. Einfaches Text-Logo
-Das Logo ist jetzt ein elegantes Text-Logo mit "Talentsync":
+Das Logo ist jetzt ein elegantes Text-Logo mit "TalNow":
 - **Keine Bilddateien nötig**
 - **Professionelle Typografie**
 - **Automatische Anpassung**
