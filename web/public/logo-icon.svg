@@ -1,0 +1,17 @@
+<svg width="2048" height="2048" viewBox="0 0 2048 2048" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon Version: T + N combined - Ultra High Resolution -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded Square Background -->
+  <rect x="160" y="160" width="1728" height="1728" rx="384" fill="url(#gradient)"/>
+  
+  <!-- TN Letters in White -->
+  <text x="1024" y="1360" font-family="Inter, Arial, sans-serif" font-size="800" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-32">
+    TN
+  </text>
+</svg>
