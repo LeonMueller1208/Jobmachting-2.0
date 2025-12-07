@@ -260,7 +260,7 @@ export default function SkillsSelector({
                     {isSelected && (
                       <span className={`font-bold flex-shrink-0 mt-0.5 ${isBlue ? "text-blue-600" : "text-green-600"}`}>✓</span>
                     )}
-                    <span className={`${isSelected ? "font-semibold" : ""} line-clamp-2 break-words`} title={skill.name}>{skill.name}</span>
+                    <span className={`${isSelected ? "font-semibold" : ""} line-clamp-2 break-words hyphens-auto`} lang="de" title={skill.name}>{skill.name}</span>
                   </div>
                 </button>
               );

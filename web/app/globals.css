@@ -176,6 +176,15 @@ body {
       overflow: hidden;
     }
 
+    /* Smart text wrapping with German hyphenation */
+    .hyphens-auto {
+      hyphens: auto;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
     .line-clamp-3 {
       display: -webkit-box;
       -webkit-line-clamp: 3;

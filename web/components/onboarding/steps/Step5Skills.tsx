@@ -249,7 +249,7 @@ export default function Step5Skills({ skills, setSkills }: Step5SkillsProps) {
                   >
                     <div className="flex items-start gap-1.5 min-w-0 w-full">
                       {isSelected && <span className="text-blue-600 font-bold flex-shrink-0 mt-0.5">✓</span>}
-                      <span className={`${isSelected ? "font-semibold" : ""} line-clamp-2 break-words`} title={skill.name}>{skill.name}</span>
+                      <span className={`${isSelected ? "font-semibold" : ""} line-clamp-2 break-words hyphens-auto`} lang="de" title={skill.name}>{skill.name}</span>
                     </div>
                   </button>
                 );
