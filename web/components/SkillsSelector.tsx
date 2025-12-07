@@ -56,12 +56,6 @@ export default function SkillsSelector({
     }
   }
 
-  function addPopularSkill(skillName: string) {
-    if (!selectedSkills.includes(skillName)) {
-      onSkillsChange([...selectedSkills, skillName]);
-    }
-  }
-
   return (
     <div className="space-y-4">
       {/* Label */}
@@ -124,31 +118,34 @@ export default function SkillsSelector({
       )}
 
       {/* Popular Skills Quick-Picks */}
-      {selectedSkills.length === 0 && (
-        <div>
-          <p className="text-xs font-medium text-gray-600 mb-2">Beliebte Skills:</p>
-          <div className="flex flex-wrap gap-2">
-            {POPULAR_SKILLS.slice(0, 6).map(skillName => {
-              const skill = ALL_SKILLS.find(s => s.name === skillName);
-              if (!skill) return null;
-              return (
-                <button
-                  key={skillName}
-                  type="button"
-                  onClick={() => addPopularSkill(skillName)}
-                  className={`text-xs px-2.5 py-1.5 rounded-lg border-2 transition-all duration-200 font-medium ${
-                    isBlue
+      <div>
+        <p className="text-xs font-medium text-gray-600 mb-2">Beliebte Skills:</p>
+        <div className="flex flex-wrap gap-2">
+          {POPULAR_SKILLS.slice(0, 6).map(skillName => {
+            const skill = ALL_SKILLS.find(s => s.name === skillName);
+            if (!skill) return null;
+            const isSelected = selectedSkills.includes(skillName);
+            return (
+              <button
+                key={skillName}
+                type="button"
+                onClick={() => toggleSkill(skillName)}
+                className={`text-xs px-2.5 py-1.5 rounded-lg border-2 transition-all duration-200 font-medium ${
+                  isSelected
+                    ? isBlue
+                      ? "ds-skill-tag-blue border-blue-500"
+                      : "ds-skill-tag-green border-green-500"
+                    : isBlue
                       ? "border-gray-300 hover:border-blue-400 bg-white hover:bg-blue-50"
                       : "border-gray-300 hover:border-green-400 bg-white hover:bg-green-50"
-                  }`}
-                >
-                  {SKILL_CATEGORIES[skill.category].icon} {skillName}
-                </button>
-              );
-            })}
-          </div>
+                }`}
+              >
+                {SKILL_CATEGORIES[skill.category].icon} {isSelected && "✓ "}{skillName}
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Search Bar */}
       <div className="relative">

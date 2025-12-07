@@ -47,12 +47,6 @@ export default function Step5Skills({ skills, setSkills }: Step5SkillsProps) {
     }
   }
 
-  function addPopularSkill(skillName: string) {
-    if (!skills.includes(skillName)) {
-      setSkills([...skills, skillName]);
-    }
-  }
-
   const selectedSkillsData = skills.map(name => ALL_SKILLS.find(s => s.name === name)).filter(Boolean);
 
   return (
@@ -121,27 +115,30 @@ export default function Step5Skills({ skills, setSkills }: Step5SkillsProps) {
       )}
 
       {/* Popular Skills Quick-Picks */}
-      {skills.length === 0 && (
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">Beliebte Skills:</p>
-          <div className="flex flex-wrap gap-2">
-            {POPULAR_SKILLS.slice(0, 6).map(skillName => {
-              const skill = ALL_SKILLS.find(s => s.name === skillName);
-              if (!skill) return null;
-              return (
-                <button
-                  key={skillName}
-                  type="button"
-                  onClick={() => addPopularSkill(skillName)}
-                  className="text-sm px-3 py-2 rounded-lg border-2 border-gray-300 hover:border-blue-400 bg-white hover:bg-blue-50 transition-all duration-200 font-medium"
-                >
-                  {SKILL_CATEGORIES[skill.category].icon} {skillName}
-                </button>
-              );
-            })}
-          </div>
+      <div>
+        <p className="text-sm font-medium text-gray-700 mb-2">Beliebte Skills:</p>
+        <div className="flex flex-wrap gap-2">
+          {POPULAR_SKILLS.slice(0, 6).map(skillName => {
+            const skill = ALL_SKILLS.find(s => s.name === skillName);
+            if (!skill) return null;
+            const isSelected = skills.includes(skillName);
+            return (
+              <button
+                key={skillName}
+                type="button"
+                onClick={() => toggleSkill(skillName)}
+                className={`text-sm px-3 py-2 rounded-lg border-2 transition-all duration-200 font-medium ${
+                  isSelected
+                    ? "ds-skill-tag-blue border-blue-500"
+                    : "border-gray-300 hover:border-blue-400 bg-white hover:bg-blue-50"
+                }`}
+              >
+                {SKILL_CATEGORIES[skill.category].icon} {isSelected && "✓ "}{skillName}
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Search Bar */}
       <div className="relative">
