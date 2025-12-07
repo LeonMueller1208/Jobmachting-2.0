@@ -246,7 +246,7 @@ export default function SkillsSelector({
                   key={skill.id}
                   type="button"
                   onClick={() => toggleSkill(skill.name)}
-                  className={`text-xs px-2.5 py-2 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full ${
+                  className={`text-xs px-2.5 py-2 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full min-h-[2.75rem] flex items-start ${
                     isSelected
                       ? isBlue
                         ? "ds-skill-tag-blue border-blue-500 scale-105 shadow-md"
@@ -256,11 +256,11 @@ export default function SkillsSelector({
                         : "bg-white border-gray-300 hover:border-green-400 hover:bg-green-50"
                   }`}
                 >
-                  <div className="flex items-center gap-1 min-w-0">
+                  <div className="flex items-start gap-1 min-w-0 w-full">
                     {isSelected && (
-                      <span className={`font-bold flex-shrink-0 ${isBlue ? "text-blue-600" : "text-green-600"}`}>✓</span>
+                      <span className={`font-bold flex-shrink-0 mt-0.5 ${isBlue ? "text-blue-600" : "text-green-600"}`}>✓</span>
                     )}
-                    <span className={`${isSelected ? "font-semibold" : ""} truncate`} title={skill.name}>{skill.name}</span>
+                    <span className={`${isSelected ? "font-semibold" : ""} line-clamp-2 break-words`} title={skill.name}>{skill.name}</span>
                   </div>
                 </button>
               );

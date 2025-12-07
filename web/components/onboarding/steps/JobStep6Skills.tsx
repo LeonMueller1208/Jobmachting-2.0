@@ -239,15 +239,15 @@ export default function JobStep6Skills({ requiredSkills, setRequiredSkills }: Jo
                     key={skill.id}
                     type="button"
                     onClick={() => toggleSkill(skill.name)}
-                    className={`text-sm px-3 py-2.5 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full ${
+                    className={`text-sm px-3 py-2.5 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full min-h-[3rem] flex items-start ${
                       isSelected
                         ? "ds-skill-tag-green border-green-500 scale-105 shadow-md"
                         : "bg-white border-gray-300 hover:border-green-400 hover:bg-green-50"
                     }`}
                   >
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      {isSelected && <span className="text-green-600 font-bold flex-shrink-0">✓</span>}
-                      <span className={`${isSelected ? "font-semibold" : ""} truncate`} title={skill.name}>{skill.name}</span>
+                    <div className="flex items-start gap-1.5 min-w-0 w-full">
+                      {isSelected && <span className="text-green-600 font-bold flex-shrink-0 mt-0.5">✓</span>}
+                      <span className={`${isSelected ? "font-semibold" : ""} line-clamp-2 break-words`} title={skill.name}>{skill.name}</span>
                     </div>
                   </button>
                 );
