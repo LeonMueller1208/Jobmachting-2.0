@@ -43,7 +43,6 @@ export default function JobStep4Experience({ minExperience, setMinExperience }: 
           value={minExperience}
           onChange={(e) => setMinExperience(Number(e.target.value))}
           className="ds-input ds-input-focus-green text-lg"
-          autoFocus
         >
           {[...Array(21)].map((_, i) => (
             <option key={i} value={i}>

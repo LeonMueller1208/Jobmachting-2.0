@@ -43,7 +43,6 @@ export default function Step3Experience({ experience, setExperience }: Step3Expe
           value={experience}
           onChange={(e) => setExperience(Number(e.target.value))}
           className="ds-input ds-input-focus-blue text-lg"
-          autoFocus
         >
           {[...Array(51)].map((_, i) => (
             <option key={i} value={i}>

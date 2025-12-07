@@ -44,6 +44,11 @@ export default function MultiStepJobForm() {
   const [workEnvironment, setWorkEnvironment] = useState("");
   const [motivation, setMotivation] = useState("");
 
+  // Scroll to top on initial load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Load draft on mount
   useEffect(() => {
     const draft = localStorage.getItem(DRAFT_KEY);
@@ -64,6 +69,11 @@ export default function MultiStepJobForm() {
       }
     }
   }, []);
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
 
   // Auto-save to localStorage
   useEffect(() => {

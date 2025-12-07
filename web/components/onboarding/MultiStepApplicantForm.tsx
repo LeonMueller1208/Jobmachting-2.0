@@ -41,6 +41,11 @@ export default function MultiStepApplicantForm() {
   const [motivation, setMotivation] = useState("");
   const [bio, setBio] = useState("");
 
+  // Scroll to top on initial load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Load draft on mount
   useEffect(() => {
     const draft = localStorage.getItem(DRAFT_KEY);
@@ -62,6 +67,11 @@ export default function MultiStepApplicantForm() {
       }
     }
   }, []);
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
 
   // Auto-save to localStorage on every change
   useEffect(() => {

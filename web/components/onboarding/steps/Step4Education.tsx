@@ -38,7 +38,6 @@ export default function Step4Education({ education, setEducation, onSkip }: Step
           value={education}
           onChange={(e) => setEducation(e.target.value)}
           className="ds-input ds-input-focus-blue text-lg"
-          autoFocus
         >
           <option value="">Abschluss wählen...</option>
           {availableEducation.map(edu => (
