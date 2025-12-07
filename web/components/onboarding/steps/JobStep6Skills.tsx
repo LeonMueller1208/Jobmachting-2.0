@@ -99,13 +99,14 @@ export default function JobStep6Skills({ requiredSkills, setRequiredSkills }: Jo
               return (
                 <span 
                   key={skillName} 
-                  className="inline-flex items-center gap-1.5 ds-skill-tag-green text-sm px-3 py-1.5"
+                  className="inline-flex items-center gap-1.5 ds-skill-tag-green text-sm px-3 py-1.5 max-w-full"
+                  title={skillName}
                 >
-                  {skill && <span className="text-xs opacity-70">{SKILL_CATEGORIES[skill.category].icon}</span>}
-                  {skillName}
+                  {skill && <span className="text-xs opacity-70 flex-shrink-0">{SKILL_CATEGORIES[skill.category].icon}</span>}
+                  <span className="truncate">{skillName}</span>
                   <button 
                     onClick={() => toggleSkill(skillName)}
-                    className="hover:text-[var(--accent-green-dark)] transition-colors duration-200 font-bold text-base leading-none ml-1"
+                    className="hover:text-[var(--accent-green-dark)] transition-colors duration-200 font-bold text-base leading-none ml-1 flex-shrink-0"
                     aria-label={`${skillName} entfernen`}
                   >
                     ×
@@ -238,15 +239,15 @@ export default function JobStep6Skills({ requiredSkills, setRequiredSkills }: Jo
                     key={skill.id}
                     type="button"
                     onClick={() => toggleSkill(skill.name)}
-                    className={`text-sm px-3 py-2.5 rounded-lg border-2 transition-all duration-200 font-medium text-left ${
+                    className={`text-sm px-3 py-2.5 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full ${
                       isSelected
                         ? "ds-skill-tag-green border-green-500 scale-105 shadow-md"
                         : "bg-white border-gray-300 hover:border-green-400 hover:bg-green-50"
                     }`}
                   >
-                    <div className="flex items-center gap-1.5">
-                      {isSelected && <span className="text-green-600 font-bold">✓</span>}
-                      <span className={isSelected ? "font-semibold" : ""}>{skill.name}</span>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {isSelected && <span className="text-green-600 font-bold flex-shrink-0">✓</span>}
+                      <span className={`${isSelected ? "font-semibold" : ""} truncate`} title={skill.name}>{skill.name}</span>
                     </div>
                   </button>
                 );
