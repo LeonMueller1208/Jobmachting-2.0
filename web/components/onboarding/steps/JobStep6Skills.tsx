@@ -190,13 +190,13 @@ export default function JobStep6Skills({ requiredSkills, setRequiredSkills }: Jo
                 setActiveCategory(category);
                 setSearchQuery("");
               }}
-              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 whitespace-nowrap ${
+              className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all duration-200 whitespace-nowrap ${
                 activeCategory === category
                   ? "bg-green-500 text-white shadow-md"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {SKILL_CATEGORIES[category].icon} {SKILL_CATEGORIES[category].label}
+              {SKILL_CATEGORIES[category].icon} <span className="ml-1">{SKILL_CATEGORIES[category].label}</span>
             </button>
           ))}
         </div>
@@ -230,8 +230,8 @@ export default function JobStep6Skills({ requiredSkills, setRequiredSkills }: Jo
             )}
           </div>
         ) : (
-          <div className="max-h-96 overflow-y-auto border-2 border-gray-200 rounded-xl p-4 bg-gray-50 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          <div className="max-h-96 overflow-y-auto border-2 border-gray-200 rounded-xl p-3 sm:p-4 bg-gray-50 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-2">
               {filteredSkills.map((skill) => {
                 const isSelected = requiredSkills.includes(skill.name);
                 return (
@@ -239,7 +239,7 @@ export default function JobStep6Skills({ requiredSkills, setRequiredSkills }: Jo
                     key={skill.id}
                     type="button"
                     onClick={() => toggleSkill(skill.name)}
-                    className={`text-sm px-3 py-2.5 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full min-h-[3rem] flex items-start ${
+                    className={`text-sm sm:text-sm px-3 py-2.5 sm:py-2.5 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full min-h-[3.5rem] sm:min-h-[3rem] flex items-start ${
                       isSelected
                         ? "ds-skill-tag-green border-green-500 scale-105 shadow-md"
                         : "bg-white border-gray-300 hover:border-green-400 hover:bg-green-50"

@@ -205,7 +205,7 @@ export default function SkillsSelector({
                 setActiveCategory(category);
                 setSearchQuery("");
               }}
-              className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap ${
                 activeCategory === category
                   ? isBlue
                     ? "bg-blue-500 text-white shadow-md"
@@ -213,7 +213,7 @@ export default function SkillsSelector({
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {SKILL_CATEGORIES[category].icon} <span className="hidden sm:inline">{SKILL_CATEGORIES[category].label}</span>
+              {SKILL_CATEGORIES[category].icon} <span className="ml-0.5 sm:ml-1">{SKILL_CATEGORIES[category].label}</span>
             </button>
           ))}
         </div>
@@ -237,8 +237,8 @@ export default function SkillsSelector({
           )}
         </div>
       ) : (
-        <div className="max-h-64 overflow-y-auto border-2 border-gray-200 rounded-lg p-3 bg-gray-50 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        <div className="max-h-64 overflow-y-auto border-2 border-gray-200 rounded-lg p-2.5 sm:p-3 bg-gray-50 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-2">
             {filteredSkills.map((skill) => {
               const isSelected = selectedSkills.includes(skill.name);
               return (
@@ -246,7 +246,7 @@ export default function SkillsSelector({
                   key={skill.id}
                   type="button"
                   onClick={() => toggleSkill(skill.name)}
-                  className={`text-xs px-2.5 py-2 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full min-h-[2.75rem] flex items-start ${
+                  className={`text-xs sm:text-xs px-2.5 py-2 sm:py-2 rounded-lg border-2 transition-all duration-200 font-medium text-left min-w-0 w-full min-h-[3rem] sm:min-h-[2.75rem] flex items-start ${
                     isSelected
                       ? isBlue
                         ? "ds-skill-tag-blue border-blue-500 scale-105 shadow-md"

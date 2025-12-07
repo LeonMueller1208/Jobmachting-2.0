@@ -253,14 +253,14 @@ export default function EditApplicant() {
                 {/* Work Values */}
                 <div>
                   <label className="ds-label">Was ist dir wichtig? (1-2 Werte)</label>
-                  <div className="space-y-2">
+                  <div className="space-y-3 sm:space-y-2">
                     {[
                       { id: "security", label: "🛡️ Sicherheit & Stabilität" },
                       { id: "fun", label: "🎉 Spaß & Atmosphäre" },
                       { id: "development", label: "📈 Entwicklung & Lernen" },
                       { id: "purpose", label: "🌍 Sinn & Beitrag" }
                     ].map(option => (
-                      <label key={option.id} className="flex items-center gap-2 cursor-pointer">
+                      <label key={option.id} className="flex items-center gap-3 sm:gap-2 cursor-pointer py-1 sm:py-0">
                         <input
                           type="checkbox"
                           checked={workValues.includes(option.id)}
@@ -273,9 +273,9 @@ export default function EditApplicant() {
                               setWorkValues(workValues.filter(v => v !== option.id));
                             }
                           }}
-                          className="w-4 h-4 text-purple-600"
+                          className="w-5 h-5 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0"
                         />
-                        <span className="text-sm">{option.label}</span>
+                        <span className="text-base sm:text-sm">{option.label}</span>
                       </label>
                     ))}
                   </div>
