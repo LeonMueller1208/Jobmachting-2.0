@@ -33,7 +33,6 @@ export default function JobStep2Description({ description, setDescription }: Job
           rows={7}
           maxLength={maxChars}
           placeholder="Kurz & knackig! Beschreiben Sie:&#10;• Die Hauptaufgaben (2-3 Punkte)&#10;• Must-Have Skills&#10;• Was Sie bieten (Remote, Benefits, etc.)"
-          autoFocus
         />
         <div className="flex justify-between items-center mt-2">
           <p className={`text-xs ${charCount < minChars ? 'text-orange-600' : charCount > 400 ? 'text-orange-600' : 'text-gray-500'}`}>

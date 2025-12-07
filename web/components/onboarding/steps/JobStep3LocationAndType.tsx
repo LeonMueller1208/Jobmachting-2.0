@@ -50,7 +50,6 @@ export default function JobStep3LocationAndType({
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           className="ds-input ds-input-focus-green text-lg"
-          autoFocus
         >
           <option value="">Standort wählen...</option>
           {availableLocations.map(city => (

@@ -33,7 +33,6 @@ export default function Step2Location({ location, setLocation }: Step2LocationPr
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           className="ds-input ds-input-focus-blue text-lg"
-          autoFocus
         >
           <option value="">Standort wählen...</option>
           {availableLocations.map(city => (

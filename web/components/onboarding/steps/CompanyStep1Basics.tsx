@@ -30,7 +30,6 @@ export default function CompanyStep1Basics({ name, email, setName, setEmail }: C
           onChange={(e) => setName(e.target.value)}
           className="ds-input ds-input-focus-green text-lg"
           placeholder="Ihre Firma GmbH"
-          autoFocus
         />
       </div>
 

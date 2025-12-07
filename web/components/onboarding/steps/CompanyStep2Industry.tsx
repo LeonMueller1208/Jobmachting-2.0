@@ -31,7 +31,6 @@ export default function CompanyStep2Industry({ industry, setIndustry }: CompanyS
           value={industry}
           onChange={(e) => setIndustry(e.target.value)}
           className="ds-input ds-input-focus-green text-lg"
-          autoFocus
         >
           <option value="">Branche wählen...</option>
           {availableIndustries.map(ind => (

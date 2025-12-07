@@ -33,7 +33,6 @@ export default function CompanyStep3Location({ location, setLocation }: CompanyS
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           className="ds-input ds-input-focus-green text-lg"
-          autoFocus
         >
           <option value="">Standort wählen...</option>
           {availableLocations.map(city => (

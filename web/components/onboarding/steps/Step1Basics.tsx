@@ -30,7 +30,6 @@ export default function Step1Basics({ name, email, setName, setEmail }: Step1Bas
           onChange={(e) => setName(e.target.value)}
           className="ds-input ds-input-focus-blue text-lg"
           placeholder="Max Mustermann"
-          autoFocus
         />
       </div>
 

@@ -33,7 +33,6 @@ export default function Step7Bio({ bio, setBio, onSkip }: Step7BioProps) {
           rows={6}
           maxLength={maxChars}
           placeholder="Erzähle über deine Interessen, beruflichen Ziele, Stärken oder was dich ausmacht..."
-          autoFocus
         />
         <div className="flex justify-between items-center mt-2">
           <p className="text-xs text-gray-500">

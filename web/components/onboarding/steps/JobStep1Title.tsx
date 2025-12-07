@@ -28,7 +28,6 @@ export default function JobStep1Title({ title, setTitle }: JobStep1TitleProps) {
           onChange={(e) => setTitle(e.target.value)}
           className="ds-input ds-input-focus-green text-lg"
           placeholder="z.B. Senior React Developer"
-          autoFocus
         />
       </div>
 

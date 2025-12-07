@@ -32,7 +32,6 @@ export default function JobStep7Industry({ industry, setIndustry, onSkip }: JobS
           value={industry}
           onChange={(e) => setIndustry(e.target.value)}
           className="ds-input ds-input-focus-green text-lg"
-          autoFocus
         >
           <option value="">Branche wählen...</option>
           {availableIndustries.map(ind => (

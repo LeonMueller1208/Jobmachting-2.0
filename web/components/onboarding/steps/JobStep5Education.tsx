@@ -43,7 +43,6 @@ export default function JobStep5Education({
           value={requiredEducation}
           onChange={(e) => setRequiredEducation(e.target.value)}
           className="ds-input ds-input-focus-green text-lg"
-          autoFocus
         >
           <option value="">Abschluss wählen...</option>
           {availableEducation.map(edu => (
