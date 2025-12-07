@@ -3,12 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Header from "@/components/Header";
-
-const availableSkills = [
-  "JavaScript", "Python", "Java", "React", "SQL", "HTML/CSS", "Node.js", "TypeScript",
-  "Projektmanagement", "Teamführung", "Kommunikation", "Kundenbetreuung", "Marketing", "Verkauf",
-  "Buchhaltung", "Datenanalyse", "Präsentationen", "MS Office", "Qualitätssicherung", "Logistik"
-];
+import SkillsSelector from "@/components/SkillsSelector";
 
 const availableIndustries = [
   "IT & Software", "Finanzwesen", "Gesundheitswesen", "E-Commerce", "Automotive", 
@@ -91,15 +86,6 @@ export default function EditJob() {
     }
   }, [jobId, router]);
 
-  function addSkill(skill: string) {
-    if (!requiredSkills.includes(skill)) {
-      setRequiredSkills([...requiredSkills, skill]);
-    }
-  }
-
-  function removeSkill(skill: string) {
-    setRequiredSkills(requiredSkills.filter(s => s !== skill));
-  }
 
   async function handleUpdate() {
     if (!title || !description || requiredSkills.length === 0 || !location) {
@@ -293,43 +279,12 @@ export default function EditJob() {
             </div>
 
             <div>
-              <label className="ds-label">Erforderliche Skills * (mindestens 1)</label>
-              <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-[var(--border-radius-input)] p-4 mb-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {availableSkills.map(skill => (
-                    <button
-                      key={skill}
-                      type="button"
-                      onClick={() => requiredSkills.includes(skill) ? removeSkill(skill) : addSkill(skill)}
-                      className={`text-sm px-3 py-2 rounded-[var(--border-radius-input)] border transition-all duration-300 ${
-                        requiredSkills.includes(skill) 
-                          ? 'ds-skill-tag-green' 
-                          : 'ds-skill-tag-default'
-                      }`}
-                    >
-                      {skill}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {requiredSkills.length > 0 && (
-                <div>
-                  <p className="text-sm ds-body-light mb-2">Ausgewählte Skills:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {requiredSkills.map(skill => (
-                      <span key={skill} className="inline-flex items-center gap-2 ds-skill-tag-green">
-                        {skill}
-                        <button 
-                          onClick={() => removeSkill(skill)}
-                          className="hover:text-[var(--accent-green-dark)] transition-colors duration-300"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <SkillsSelector
+                selectedSkills={requiredSkills}
+                onSkillsChange={setRequiredSkills}
+                colorScheme="green"
+                label="Erforderliche Skills"
+              />
             </div>
 
             {/* Soft Factors Section */}

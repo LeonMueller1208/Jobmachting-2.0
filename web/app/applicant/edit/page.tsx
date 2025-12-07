@@ -3,12 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
-
-const availableSkills = [
-  "JavaScript", "Python", "Java", "React", "SQL", "HTML/CSS", "Node.js", "TypeScript",
-  "Projektmanagement", "Teamführung", "Kommunikation", "Kundenbetreuung", "Marketing", "Verkauf",
-  "Buchhaltung", "Datenanalyse", "Präsentationen", "MS Office", "Qualitätssicherung", "Logistik"
-];
+import SkillsSelector from "@/components/SkillsSelector";
 
 const availableIndustries = [
   "IT & Software", "Finanzwesen", "Gesundheitswesen", "E-Commerce", "Automotive", 
@@ -64,15 +59,6 @@ export default function EditApplicant() {
     }
   }, []);
 
-  function addSkill(skill: string) {
-    if (!skills.includes(skill)) {
-      setSkills([...skills, skill]);
-    }
-  }
-
-  function removeSkill(skill: string) {
-    setSkills(skills.filter(s => s !== skill));
-  }
 
   async function handleUpdate() {
     if (!applicant || !name || skills.length === 0 || !location) {
@@ -246,43 +232,12 @@ export default function EditApplicant() {
             </div>
 
             <div>
-              <label className="ds-label">Skills * (mindestens 1)</label>
-              <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-[var(--border-radius-input)] p-4 mb-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {availableSkills.map(skill => (
-                    <button
-                      key={skill}
-                      type="button"
-                      onClick={() => skills.includes(skill) ? removeSkill(skill) : addSkill(skill)}
-                      className={`text-sm px-3 py-2 rounded-[var(--border-radius-input)] border transition-all duration-300 ${
-                        skills.includes(skill) 
-                          ? 'ds-skill-tag-blue' 
-                          : 'ds-skill-tag-default'
-                      }`}
-                    >
-                      {skill}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {skills.length > 0 && (
-                <div>
-                  <p className="text-sm ds-body-light mb-2">Ausgewählte Skills:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.map(skill => (
-                      <span key={skill} className="inline-flex items-center gap-2 ds-skill-tag-blue">
-                        {skill}
-                        <button 
-                          onClick={() => removeSkill(skill)}
-                          className="hover:text-[var(--accent-blue-dark)] transition-colors duration-300"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <SkillsSelector
+                selectedSkills={skills}
+                onSkillsChange={setSkills}
+                colorScheme="blue"
+                label="Skills"
+              />
             </div>
 
             {/* Soft Factors Section */}
