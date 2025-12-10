@@ -454,6 +454,26 @@ export default function ApplicantDashboard() {
             )}
           </span>
         </div>
+
+        {/* Info Box: Top 20 Matches */}
+        {matchedJobs.length < filteredJobs.length && (
+          <div className="mb-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+            <div className="flex items-start gap-3">
+              <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-blue-900">
+                  Wir zeigen dir die <strong>Top {matchedJobs.length} passendsten Stellen</strong> von insgesamt <strong>{filteredJobs.length} Stellen</strong>
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  Die Stellen sind nach Match-Score sortiert – die besten Matches zuerst! 🎯
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid gap-4 sm:gap-5">
           {matchedJobs.map(job => (
             <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
@@ -632,6 +652,25 @@ export default function ApplicantDashboard() {
             </div>
           ))}
         </div>
+
+        {/* Info Box: Top 20 Matches (Bottom) */}
+        {matchedJobs.length < filteredJobs.length && (
+          <div className="mt-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+            <div className="flex items-start gap-3">
+              <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-blue-900">
+                  Du siehst die <strong>Top {matchedJobs.length} passendsten Stellen</strong> von insgesamt <strong>{filteredJobs.length} Stellen</strong>
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  Die Stellen sind nach Match-Score sortiert – die besten Matches zuerst! 🎯
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
           </>
         )}
 
