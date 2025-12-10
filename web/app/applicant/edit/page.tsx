@@ -202,6 +202,7 @@ export default function EditApplicant() {
               </div>
               <div>
                 <label className="ds-label">Höchster Abschluss</label>
+                <p className="text-xs text-gray-500 mb-2">💡 Tipp: Du kannst auch deinen aktuellen oder angestrebten Abschluss angeben (z.B. wenn du gerade im Master studierst, wähle "Master")</p>
                 <select
                   value={education}
                   onChange={(e) => setEducation(e.target.value)}
