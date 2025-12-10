@@ -132,38 +132,43 @@ export default function ApplicantDashboard() {
       
       // Safety check: ensure data is an array
       if (Array.isArray(data)) {
-        // Load interest status for each job if applicant is logged in
+        // Load interest status for all jobs at once if applicant is logged in
         if (applicant?.id) {
-          const jobsWithInterests = await Promise.all(
-            data.map(async (job: Job) => {
-              try {
-                const interestRes = await fetch(`/api/interests?applicantId=${applicant.id}&jobId=${job.id}`);
-                if (interestRes.ok) {
-                  const interest = await interestRes.json();
-                  
-                  // Handle null response (no interest exists yet)
-                  if (!interest || interest === null) {
-                    return { ...job, interestStatus: null };
-                  }
-                  
-                  // Check if status is valid
+          try {
+            // Fetch all interests for this applicant in a single API call
+            const interestRes = await fetch(`/api/interests?applicantId=${applicant.id}`);
+            if (interestRes.ok) {
+              const interests = await interestRes.json();
+              
+              // Create a map of jobId -> interest status for quick lookup
+              const interestMap = new Map<string, "INTERESTED" | "NOT_INTERESTED">();
+              if (Array.isArray(interests)) {
+                interests.forEach((interest: any) => {
                   if (interest.status === "INTERESTED" || interest.status === "NOT_INTERESTED") {
-                    return {
-                      ...job,
-                      interestStatus: interest.status
-                    };
+                    const jobId = interest.jobId || interest.job?.id;
+                    if (jobId) {
+                      interestMap.set(jobId, interest.status);
+                    }
                   }
-                  
-                  return { ...job, interestStatus: null };
-                }
-                return { ...job, interestStatus: null };
-              } catch (error) {
-                console.error(`Error fetching interest for job ${job.id}:`, error);
-                return { ...job, interestStatus: null };
+                });
               }
-            })
-          );
-          setJobs(jobsWithInterests);
+              
+              // Map jobs with their interest status
+              const jobsWithInterests = data.map((job: Job) => ({
+                ...job,
+                interestStatus: interestMap.get(job.id) || null
+              }));
+              
+              setJobs(jobsWithInterests);
+            } else {
+              // If interest fetch fails, just set jobs without interest status
+              setJobs(data);
+            }
+          } catch (error) {
+            console.error("Error fetching interests:", error);
+            // If error occurs, just set jobs without interest status
+            setJobs(data);
+          }
         } else {
           setJobs(data);
         }
