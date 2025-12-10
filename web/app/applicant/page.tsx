@@ -333,7 +333,7 @@ export default function ApplicantDashboard() {
           <div className="flex gap-1.5 sm:gap-2">
             <button
               onClick={() => setActiveTab("jobs")}
-              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base whitespace-nowrap min-w-0 ${
+              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base whitespace-nowrap min-w-0 ${
                 activeTab === "jobs"
                   ? "bg-[var(--accent-blue)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -344,7 +344,7 @@ export default function ApplicantDashboard() {
             </button>
             <button
               onClick={() => setActiveTab("chats")}
-              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all relative text-xs sm:text-base whitespace-nowrap min-w-0 ${
+              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all relative text-sm sm:text-base whitespace-nowrap min-w-0 ${
                 activeTab === "chats"
                   ? "bg-[var(--accent-blue)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -359,7 +359,7 @@ export default function ApplicantDashboard() {
             </button>
             <button
               onClick={() => setActiveTab("preferences")}
-              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base whitespace-nowrap min-w-0 ${
+              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base whitespace-nowrap min-w-0 ${
                 activeTab === "preferences"
                   ? "bg-[var(--accent-blue)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
