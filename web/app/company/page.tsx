@@ -58,7 +58,7 @@ export default function CompanyDashboard() {
   const [filteredInterests, setFilteredInterests] = useState<Interest[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"jobs" | "interests" | "analytics">("jobs");
+  const [activeTab, setActiveTab] = useState<"jobs" | "interests" | "analytics" | "chats">("jobs");
   const [analytics, setAnalytics] = useState<any>(null);
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
   const [chats, setChats] = useState<any[]>([]);
@@ -304,7 +304,7 @@ export default function CompanyDashboard() {
 
         {/* Tab Navigation */}
         <div className="ds-card p-2 mb-6 sm:mb-8">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button
               onClick={() => setActiveTab("jobs")}
               className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
@@ -328,6 +328,22 @@ export default function CompanyDashboard() {
               <span className="sm:hidden">👥 Bewerber</span>
             </button>
             <button
+              onClick={() => setActiveTab("chats")}
+              className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base relative ${
+                activeTab === "chats"
+                  ? "bg-[var(--accent-green)] text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              <span className="hidden sm:inline">💬 Chats</span>
+              <span className="sm:hidden">💬</span>
+              {chats.length > 0 && chats.some((chat: any) => chat._count && chat._count.messages > 0) && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {chats.reduce((sum: number, chat: any) => sum + (chat._count?.messages || 0), 0)}
+                </span>
+              )}
+            </button>
+            <button
               onClick={() => setActiveTab("analytics")}
               className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
                 activeTab === "analytics"
@@ -344,54 +360,6 @@ export default function CompanyDashboard() {
         {/* Jobs Tab */}
         {activeTab === "jobs" && (
           <>
-            {/* Chats Overview */}
-            {chats.length > 0 && (
-              <div className="mb-6 sm:mb-8">
-                <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Chats</h2>
-                <div className="grid gap-4">
-                  {chats.map(chat => (
-                    <div key={chat.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
-                              Chat mit {chat.applicant.name}
-                            </h3>
-                            {chat._count && chat._count.messages > 0 && (
-                              <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full shadow-lg">
-                                {chat._count.messages}
-                              </span>
-                            )}
-                          </div>
-                          <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
-                          {chat.messages && chat.messages.length > 0 && (
-                            <p className="ds-body-light text-xs sm:text-sm mt-1">
-                              Letzte Nachricht: {new Date(chat.messages[0].createdAt).toLocaleDateString('de-DE')}
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => setChatModal({
-                            isOpen: true,
-                            applicantId: chat.applicant.id,
-                            applicantName: chat.applicant.name,
-                            jobId: chat.job.id,
-                            jobTitle: chat.job.title
-                          })}
-                          className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
-                        >
-                          <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                          </svg>
-                          Chat öffnen
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Jobs List - Enhanced Design */}
             <div className="mb-6 sm:mb-8">
               <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Stellenangebote</h2>
@@ -702,6 +670,72 @@ export default function CompanyDashboard() {
               ))}
             </div>
           )}
+          </div>
+        )}
+
+        {/* Chats Tab */}
+        {activeTab === "chats" && (
+          <div className="space-y-6">
+            {chats.length === 0 ? (
+              <div className="ds-card p-8 text-center">
+                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl ds-heading mb-2">Noch keine Chats</h3>
+                <p className="ds-body-light">
+                  Sobald Bewerber Interesse an Ihren Stellen zeigen und Sie antworten, erscheinen Ihre Chats hier.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-6 sm:mb-8">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Chats</h2>
+                  <div className="grid gap-4">
+                    {chats.map(chat => (
+                      <div key={chat.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
+                                Chat mit {chat.applicant.name}
+                              </h3>
+                              {chat._count && chat._count.messages > 0 && (
+                                <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full shadow-lg">
+                                  {chat._count.messages}
+                                </span>
+                              )}
+                            </div>
+                            <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
+                            {chat.messages && chat.messages.length > 0 && (
+                              <p className="ds-body-light text-xs sm:text-sm mt-1">
+                                Letzte Nachricht: {new Date(chat.messages[0].createdAt).toLocaleDateString('de-DE')}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => setChatModal({
+                              isOpen: true,
+                              applicantId: chat.applicant.id,
+                              applicantName: chat.applicant.name,
+                              jobId: chat.job.id,
+                              jobTitle: chat.job.title
+                            })}
+                            className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
+                          >
+                            <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            Chat öffnen
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 
