@@ -141,12 +141,20 @@ export default function ApplicantDashboard() {
                 if (interestRes.ok) {
                   const interest = await interestRes.json();
                   
-                  return {
-                    ...job,
-                    interestStatus: interest?.status === "INTERESTED" || interest?.status === "NOT_INTERESTED" 
-                      ? interest.status 
-                      : null
-                  };
+                  // Handle null response (no interest exists yet)
+                  if (!interest || interest === null) {
+                    return { ...job, interestStatus: null };
+                  }
+                  
+                  // Check if status is valid
+                  if (interest.status === "INTERESTED" || interest.status === "NOT_INTERESTED") {
+                    return {
+                      ...job,
+                      interestStatus: interest.status
+                    };
+                  }
+                  
+                  return { ...job, interestStatus: null };
                 }
                 return { ...job, interestStatus: null };
               } catch (error) {
@@ -186,15 +194,18 @@ export default function ApplicantDashboard() {
       });
       
       if (res.ok) {
+        const responseData = await res.json();
         const message = status === "INTERESTED" ? "Interesse erfolgreich bekundet!" : "Interesse zurückgezogen!";
         setSuccessMessage(message);
         setShowSuccess(true);
         
         // Update the job's interest status in the local state
+        // Use the status from response if available, otherwise use the status we sent
+        const updatedStatus = responseData?.status || status;
         setJobs(prevJobs => 
           prevJobs.map(job => 
             job.id === jobId 
-              ? { ...job, interestStatus: status }
+              ? { ...job, interestStatus: updatedStatus }
               : job
           )
         );
