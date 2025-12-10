@@ -33,8 +33,24 @@ export default function Step4Education({ education, setEducation, onSkip }: Step
 
       {/* Education Dropdown */}
       <div>
-        <label className="ds-label">Höchster Abschluss (optional)</label>
-        <p className="text-xs text-gray-500 mb-2">💡 Tipp: Du kannst auch deinen aktuellen oder angestrebten Abschluss angeben (z.B. wenn du gerade im Master studierst, wähle "Master")</p>
+        <label className="ds-label text-lg font-semibold mb-3 block">Höchster Abschluss (optional)</label>
+        
+        {/* Prominent Info Box */}
+        <div className="bg-blue-100 border-2 border-blue-400 rounded-lg p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <svg className="w-6 h-6 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="text-base font-semibold text-blue-900 mb-1">💡 Wichtig zu wissen:</p>
+              <p className="text-sm sm:text-base text-blue-800 font-medium">
+                Du kannst auch deinen <strong>aktuellen oder angestrebten</strong> Abschluss angeben! 
+                Wenn du gerade im Master studierst, wähle einfach <strong>"Master"</strong> – du musst nicht bis zum Abschluss warten.
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <select
           value={education}
           onChange={(e) => setEducation(e.target.value)}
