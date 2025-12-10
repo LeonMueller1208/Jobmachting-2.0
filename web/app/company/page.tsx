@@ -277,7 +277,7 @@ export default function CompanyDashboard() {
     <div className="ds-background min-h-screen">
       <Header title="Unternehmen Dashboard" showLogout={true} userType="company" />
       
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 w-full overflow-x-hidden">
         {/* Welcome Card - Mobile Optimized */}
         <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -365,7 +365,7 @@ export default function CompanyDashboard() {
               <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Stellenangebote</h2>
               <div className="grid gap-4 sm:gap-5">
                 {jobs.map(job => (
-                  <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)]">
+                  <div key={job.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)] overflow-hidden">
                     {/* Header Section */}
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
                       <div className="min-w-0 flex-1">
