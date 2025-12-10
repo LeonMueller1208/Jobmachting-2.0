@@ -165,53 +165,80 @@ export default function JobStep6Skills({ requiredSkills, setRequiredSkills }: Jo
       </div>
 
       {/* Category Tabs */}
-      <div className="border-b-2 border-gray-200">
-        <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <button
-            onClick={() => {
-              setActiveCategory("all");
-              setSearchQuery("");
-            }}
-            className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 whitespace-nowrap ${
-              activeCategory === "all"
-                ? "bg-green-500 text-white shadow-md"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Alle
-          </button>
-          {(Object.keys(SKILL_CATEGORIES) as SkillCategory[]).map((category) => (
+      <div>
+        <label className="ds-label mb-2 block">
+          Kategorien
+          <span className="text-xs font-normal text-gray-500 ml-2">
+            (Wähle eine Kategorie, um Skills zu filtern)
+          </span>
+        </label>
+        <div className="border-b-2 border-gray-200 pb-2">
+          <div className="flex flex-wrap gap-1.5 overflow-x-auto scrollbar-hide">
             <button
-              key={category}
               onClick={() => {
-                setActiveCategory(category);
+                setActiveCategory("all");
                 setSearchQuery("");
               }}
-              className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-all duration-200 whitespace-nowrap ${
-                activeCategory === category
+              className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 ${
+                activeCategory === "all"
                   ? "bg-green-500 text-white shadow-md"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {SKILL_CATEGORIES[category].icon} <span className="ml-1">{SKILL_CATEGORIES[category].label}</span>
+              Alle
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                activeCategory === "all"
+                  ? "bg-white/20 text-white"
+                  : "bg-gray-200 text-gray-600"
+              }`}>
+                {ALL_SKILLS.length}
+              </span>
             </button>
-          ))}
+            {(Object.keys(SKILL_CATEGORIES) as SkillCategory[]).map((category) => {
+              const categorySkills = getSkillsByCategory(category);
+              return (
+                <button
+                  key={category}
+                  onClick={() => {
+                    setActiveCategory(category);
+                    setSearchQuery("");
+                  }}
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium text-xs transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 ${
+                    activeCategory === category
+                      ? "bg-green-500 text-white shadow-md"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {SKILL_CATEGORIES[category].icon}
+                  <span className="ml-0.5 sm:ml-1">{SKILL_CATEGORIES[category].label}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    activeCategory === category
+                      ? "bg-white/20 text-white"
+                      : "bg-gray-200 text-gray-600"
+                  }`}>
+                    {categorySkills.length}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Skills Grid */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <label className="ds-label">
-            {activeCategory === "all" ? "Alle Skills" : SKILL_CATEGORIES[activeCategory].label} *
-            {filteredSkills.length > 0 && (
-              <span className="text-sm font-normal text-gray-500 ml-2">
-                ({filteredSkills.length} verfügbar)
-              </span>
+      {!searchQuery && (
+        <div className="mt-3 mb-2 px-3 py-2 rounded-lg bg-green-50 border border-green-200">
+          <p className="text-sm font-medium text-gray-700">
+            {activeCategory === "all" ? (
+              <>📋 Skills: <strong>Alle Kategorien</strong></>
+            ) : (
+              <>{SKILL_CATEGORIES[activeCategory].icon} Skills in: <strong>{SKILL_CATEGORIES[activeCategory].label}</strong></>
             )}
-          </label>
+            <span className="text-xs text-gray-500 ml-2">({filteredSkills.length} verfügbar)</span>
+          </p>
         </div>
-        
+      )}
+      <div>
         {filteredSkills.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
             <p className="text-gray-500 font-medium">

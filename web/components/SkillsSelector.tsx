@@ -243,12 +243,16 @@ export default function SkillsSelector({
       </div>
 
       {/* Skills Grid */}
-      {activeCategory !== "all" && !searchQuery && (
+      {!searchQuery && (
         <div className={`mt-3 mb-2 px-3 py-2 rounded-lg ${
           isBlue ? "bg-blue-50 border border-blue-200" : "bg-green-50 border border-green-200"
         }`}>
           <p className="text-sm font-medium text-gray-700">
-            {SKILL_CATEGORIES[activeCategory].icon} Skills in: <strong>{SKILL_CATEGORIES[activeCategory].label}</strong>
+            {activeCategory === "all" ? (
+              <>📋 Skills: <strong>Alle Kategorien</strong></>
+            ) : (
+              <>{SKILL_CATEGORIES[activeCategory].icon} Skills in: <strong>{SKILL_CATEGORIES[activeCategory].label}</strong></>
+            )}
             <span className="text-xs text-gray-500 ml-2">({filteredSkills.length} verfügbar)</span>
           </p>
         </div>
