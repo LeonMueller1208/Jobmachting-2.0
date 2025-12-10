@@ -5,13 +5,42 @@ interface Step3ExperienceProps {
   setExperience: (value: number) => void;
 }
 
+// Helper function to get experience options
+const getExperienceOptions = () => {
+  const options = [];
+  // 0-5 years (exact)
+  for (let i = 0; i <= 5; i++) {
+    options.push({ value: i, label: i === 0 ? "Keine Erfahrung" : i === 1 ? "1 Jahr" : `${i} Jahre` });
+  }
+  // Ranges
+  options.push({ value: 6, label: "5-10 Jahre" });
+  options.push({ value: 11, label: "10-15 Jahre" });
+  options.push({ value: 16, label: "15-20 Jahre" });
+  options.push({ value: 21, label: "Über 20 Jahre" });
+  return options;
+};
+
+// Helper function to get display label for experience value
+const getExperienceDisplayLabel = (value: number) => {
+  if (value === 0) return "Keine Erfahrung";
+  if (value === 1) return "1 Jahr";
+  if (value >= 2 && value <= 5) return `${value} Jahre`;
+  if (value === 6) return "5-10 Jahre";
+  if (value === 11) return "10-15 Jahre";
+  if (value === 16) return "15-20 Jahre";
+  if (value === 21) return "Über 20 Jahre";
+  return `${value} Jahre`;
+};
+
 export default function Step3Experience({ experience, setExperience }: Step3ExperienceProps) {
+  const experienceOptions = getExperienceOptions();
+  
   // Visual representation based on experience
   const getExperienceIcon = () => {
     if (experience === 0) return "🚀";
     if (experience <= 2) return "🌱";
     if (experience <= 5) return "💼";
-    if (experience <= 10) return "🏆";
+    if (experience <= 6 || (experience > 6 && experience <= 11)) return "🏆";
     return "👑";
   };
 
@@ -19,7 +48,7 @@ export default function Step3Experience({ experience, setExperience }: Step3Expe
     if (experience === 0) return "Berufseinsteiger";
     if (experience <= 2) return "Junior Level";
     if (experience <= 5) return "Mid Level";
-    if (experience <= 10) return "Senior Level";
+    if (experience === 6 || (experience > 6 && experience <= 11)) return "Senior Level";
     return "Expert Level";
   };
 
@@ -44,9 +73,9 @@ export default function Step3Experience({ experience, setExperience }: Step3Expe
           onChange={(e) => setExperience(Number(e.target.value))}
           className="ds-input ds-input-focus-blue text-lg"
         >
-          {[...Array(51)].map((_, i) => (
-            <option key={i} value={i}>
-              {i === 0 ? "Keine Erfahrung" : i === 1 ? "1 Jahr" : `${i} Jahre`}
+          {experienceOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>
@@ -60,8 +89,8 @@ export default function Step3Experience({ experience, setExperience }: Step3Expe
           {experience === 0 && "Perfekt für Einstiegspositionen!"}
           {experience > 0 && experience <= 2 && "Ideal für Junior-Rollen!"}
           {experience > 2 && experience <= 5 && "Passend für Mid-Level Jobs!"}
-          {experience > 5 && experience <= 10 && "Perfekt für Senior-Positionen!"}
-          {experience > 10 && "Ideal für Leadership-Rollen!"}
+          {(experience === 6 || (experience > 6 && experience <= 11)) && "Perfekt für Senior-Positionen!"}
+          {(experience === 16 || experience === 21) && "Ideal für Leadership-Rollen!"}
         </p>
       </div>
 

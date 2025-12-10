@@ -224,11 +224,23 @@ export default function EditJob() {
                   onChange={(e) => setMinExperience(Number(e.target.value))}
                   className="ds-input ds-input-focus-green"
                 >
-                  {[...Array(21)].map((_, i) => (
-                    <option key={i} value={i}>
-                      {i === 0 ? "Keine Erfahrung erforderlich" : i === 1 ? "1 Jahr" : `${i} Jahre`}
-                    </option>
-                  ))}
+                  {(() => {
+                    const options = [];
+                    // 0-5 years (exact)
+                    for (let i = 0; i <= 5; i++) {
+                      options.push(
+                        <option key={i} value={i}>
+                          {i === 0 ? "Keine Erfahrung erforderlich" : i === 1 ? "1 Jahr" : `${i} Jahre`}
+                        </option>
+                      );
+                    }
+                    // Ranges
+                    options.push(<option key={6} value={6}>5-10 Jahre</option>);
+                    options.push(<option key={11} value={11}>10-15 Jahre</option>);
+                    options.push(<option key={16} value={16}>15-20 Jahre</option>);
+                    options.push(<option key={21} value={21}>Über 20 Jahre</option>);
+                    return options;
+                  })()}
                 </select>
               </div>
             </div>

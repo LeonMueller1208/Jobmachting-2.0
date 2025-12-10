@@ -172,14 +172,28 @@ function findPartialMatch(skill: string, applicantSkills: Set<string>): boolean 
   return false;
 }
 
+// Helper function to convert experience value to comparable number
+// Handles ranges: 6 = 5-10 (use 7.5), 11 = 10-15 (use 12.5), 16 = 15-20 (use 17.5), 21 = 20+ (use 25)
+function getExperienceValue(exp: number): number {
+  if (exp <= 5) return exp; // Exact values 0-5
+  if (exp === 6) return 7.5; // 5-10 range, use midpoint
+  if (exp === 11) return 12.5; // 10-15 range, use midpoint
+  if (exp === 16) return 17.5; // 15-20 range, use midpoint
+  if (exp === 21) return 25; // Over 20, use representative value
+  return exp; // Fallback for any other values
+}
+
 function computeExperienceScore(applicantExp: number, minExp: number): number {
-  if (applicantExp >= minExp) {
+  const applicantValue = getExperienceValue(applicantExp);
+  const minValue = getExperienceValue(minExp);
+  
+  if (applicantValue >= minValue) {
     // Bonus for having more experience than required (up to a point)
-    const excessExp = Math.min(applicantExp - minExp, 5); // Cap bonus at 5 years
+    const excessExp = Math.min(applicantValue - minValue, 5); // Cap bonus at 5 years
     return Math.min(1 + (excessExp * 0.1), 1.3); // Max 30% bonus
   } else {
     // Penalty for insufficient experience
-    return Math.max(applicantExp / Math.max(1, minExp), 0.1);
+    return Math.max(applicantValue / Math.max(1, minValue), 0.1);
   }
 }
 
@@ -373,26 +387,32 @@ function getExperienceOverqualificationGap(
   applicantExperience: number,
   jobMinExperience: number
 ): number {
+  const applicantValue = getExperienceValue(applicantExperience);
+  const jobValue = getExperienceValue(jobMinExperience);
+  
   // Special case: Jobs requiring 0 years (entry-level/simple jobs)
   // Any experience counts as overqualification
-  if (jobMinExperience === 0 && applicantExperience > 0) {
-    if (applicantExperience <= 2) return 1; // Junior with experience at 0-year job
+  if (jobValue === 0 && applicantValue > 0) {
+    if (applicantValue <= 2) return 1; // Junior with experience at 0-year job
     return 2; // Mid/Senior at 0-year job
   }
   
   // For jobs with experience requirements: allow up to 2 years over without penalty
-  if (applicantExperience <= jobMinExperience + 2) return 0;
+  if (applicantValue <= jobValue + 2) return 0;
   
   // Determine job level from required experience
-  const jobLevel = jobMinExperience <= 2 ? 'junior' : jobMinExperience <= 5 ? 'mid' : 'senior';
+  const jobLevel = jobValue <= 2 ? 'junior' : jobValue <= 5 ? 'mid' : jobValue <= 12.5 ? 'senior' : 'expert';
   
   // Determine applicant level from their experience
-  const applicantLevel = applicantExperience <= 2 ? 'junior' : applicantExperience <= 5 ? 'mid' : 'senior';
+  const applicantLevel = applicantValue <= 2 ? 'junior' : applicantValue <= 5 ? 'mid' : applicantValue <= 12.5 ? 'senior' : 'expert';
   
   // Calculate overqualification gap
   if (jobLevel === 'junior' && applicantLevel === 'senior') return 2; // Senior applying to Junior
   if (jobLevel === 'junior' && applicantLevel === 'mid') return 1; // Mid applying to Junior
+  if (jobLevel === 'junior' && applicantLevel === 'expert') return 2; // Expert applying to Junior
   if (jobLevel === 'mid' && applicantLevel === 'senior') return 1; // Senior applying to Mid
+  if (jobLevel === 'mid' && applicantLevel === 'expert') return 2; // Expert applying to Mid
+  if (jobLevel === 'senior' && applicantLevel === 'expert') return 1; // Expert applying to Senior
   
   return 0; // No significant overqualification
 }
@@ -459,16 +479,19 @@ function getExperienceUnderqualificationGap(
   applicantExperience: number,
   jobMinExperience: number
 ): number {
+  const applicantValue = getExperienceValue(applicantExperience);
+  const jobValue = getExperienceValue(jobMinExperience);
+  
   // If applicant meets or exceeds requirement, no penalty
-  if (applicantExperience >= jobMinExperience) return 0;
+  if (applicantValue >= jobValue) return 0;
   
   // Determine job level from required experience (with Executive level for 10+ years)
   let jobLevel: 'junior' | 'mid' | 'senior' | 'executive';
-  if (jobMinExperience <= 2) {
+  if (jobValue <= 2) {
     jobLevel = 'junior';
-  } else if (jobMinExperience <= 5) {
+  } else if (jobValue <= 5) {
     jobLevel = 'mid';
-  } else if (jobMinExperience <= 9) {
+  } else if (jobValue <= 12.5) {
     jobLevel = 'senior';
   } else {
     jobLevel = 'executive'; // 10+ years = C-Level, Director, etc.
@@ -476,11 +499,11 @@ function getExperienceUnderqualificationGap(
   
   // Determine applicant level from their experience
   let applicantLevel: 'junior' | 'mid' | 'senior' | 'executive';
-  if (applicantExperience <= 2) {
+  if (applicantValue <= 2) {
     applicantLevel = 'junior';
-  } else if (applicantExperience <= 5) {
+  } else if (applicantValue <= 5) {
     applicantLevel = 'mid';
-  } else if (applicantExperience <= 9) {
+  } else if (applicantValue <= 12.5) {
     applicantLevel = 'senior';
   } else {
     applicantLevel = 'executive';

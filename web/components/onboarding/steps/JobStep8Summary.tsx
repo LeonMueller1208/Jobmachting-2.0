@@ -48,6 +48,11 @@ export default function JobStep8Summary({ formData, onEdit }: JobStep8SummaryPro
   const getExperienceLabel = (years: number) => {
     if (years === 0) return "Keine Erfahrung erforderlich";
     if (years === 1) return "1 Jahr";
+    if (years >= 2 && years <= 5) return `${years} Jahre`;
+    if (years === 6) return "5-10 Jahre";
+    if (years === 11) return "10-15 Jahre";
+    if (years === 16) return "15-20 Jahre";
+    if (years === 21) return "Über 20 Jahre";
     return `${years} Jahre`;
   };
 

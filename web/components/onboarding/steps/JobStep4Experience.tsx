@@ -5,13 +5,30 @@ interface JobStep4ExperienceProps {
   setMinExperience: (value: number) => void;
 }
 
+// Helper function to get experience options
+const getExperienceOptions = () => {
+  const options = [];
+  // 0-5 years (exact)
+  for (let i = 0; i <= 5; i++) {
+    options.push({ value: i, label: i === 0 ? "Keine Erfahrung erforderlich" : i === 1 ? "1 Jahr" : `${i} Jahre` });
+  }
+  // Ranges
+  options.push({ value: 6, label: "5-10 Jahre" });
+  options.push({ value: 11, label: "10-15 Jahre" });
+  options.push({ value: 16, label: "15-20 Jahre" });
+  options.push({ value: 21, label: "Über 20 Jahre" });
+  return options;
+};
+
 export default function JobStep4Experience({ minExperience, setMinExperience }: JobStep4ExperienceProps) {
+  const experienceOptions = getExperienceOptions();
+  
   // Visual representation based on experience
   const getExperienceIcon = () => {
     if (minExperience === 0) return "🚀";
     if (minExperience <= 2) return "🌱";
     if (minExperience <= 5) return "💼";
-    if (minExperience <= 10) return "🏆";
+    if (minExperience === 6 || (minExperience > 6 && minExperience <= 11)) return "🏆";
     return "👑";
   };
 
@@ -19,7 +36,7 @@ export default function JobStep4Experience({ minExperience, setMinExperience }: 
     if (minExperience === 0) return "Einstiegsposition";
     if (minExperience <= 2) return "Junior Level";
     if (minExperience <= 5) return "Mid Level";
-    if (minExperience <= 10) return "Senior Level";
+    if (minExperience === 6 || (minExperience > 6 && minExperience <= 11)) return "Senior Level";
     return "Expert/Leadership Level";
   };
 
@@ -44,9 +61,9 @@ export default function JobStep4Experience({ minExperience, setMinExperience }: 
           onChange={(e) => setMinExperience(Number(e.target.value))}
           className="ds-input ds-input-focus-green text-lg"
         >
-          {[...Array(21)].map((_, i) => (
-            <option key={i} value={i}>
-              {i === 0 ? "Keine Erfahrung erforderlich" : i === 1 ? "1 Jahr" : `${i} Jahre`}
+          {experienceOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>
@@ -60,8 +77,8 @@ export default function JobStep4Experience({ minExperience, setMinExperience }: 
           {minExperience === 0 && "Perfekt für Berufseinsteiger und Quereinsteiger!"}
           {minExperience > 0 && minExperience <= 2 && "Ideal für Junior-Profile mit ersten Erfahrungen!"}
           {minExperience > 2 && minExperience <= 5 && "Passend für erfahrene Mid-Level Kandidaten!"}
-          {minExperience > 5 && minExperience <= 10 && "Für Senior-Profile mit umfassender Expertise!"}
-          {minExperience > 10 && "Für hochspezialisierte Experten und Führungskräfte!"}
+          {(minExperience === 6 || (minExperience > 6 && minExperience <= 11)) && "Für Senior-Profile mit umfassender Expertise!"}
+          {(minExperience === 16 || minExperience === 21) && "Für hochspezialisierte Experten und Führungskräfte!"}
         </p>
       </div>
 
