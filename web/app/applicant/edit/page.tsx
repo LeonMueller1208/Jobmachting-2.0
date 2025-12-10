@@ -213,24 +213,24 @@ export default function EditApplicant() {
                 </select>
               </div>
               <div>
-                <label className="ds-label text-base font-semibold mb-3 block">Höchster Abschluss</label>
-                
-                {/* Prominent Info Box */}
-                <div className="bg-blue-100 border-2 border-blue-400 rounded-lg p-4 mb-4">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <label className="ds-label flex items-center gap-2">
+                  Höchster Abschluss
+                  <div className="group relative">
+                    <svg className="w-4 h-4 text-gray-400 hover:text-blue-600 cursor-help transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <div>
-                      <p className="text-sm font-semibold text-blue-900 mb-1">💡 Wichtig zu wissen:</p>
-                      <p className="text-sm text-blue-800 font-medium">
+                    {/* Tooltip */}
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                      <p className="font-semibold mb-1">💡 Wichtig zu wissen:</p>
+                      <p>
                         Du kannst auch deinen <strong>aktuellen oder angestrebten</strong> Abschluss angeben! 
                         Wenn du gerade im Master studierst, wähle einfach <strong>"Master"</strong> – du musst nicht bis zum Abschluss warten.
                       </p>
+                      {/* Arrow */}
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                     </div>
                   </div>
-                </div>
-                
+                </label>
                 <select
                   value={education}
                   onChange={(e) => setEducation(e.target.value)}
