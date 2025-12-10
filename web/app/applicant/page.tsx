@@ -329,21 +329,22 @@ export default function ApplicantDashboard() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="ds-card p-2 mb-6 sm:mb-8">
-          <div className="flex gap-2">
+        <div className="ds-card p-2 mb-6 sm:mb-8 overflow-hidden">
+          <div className="flex gap-1.5 sm:gap-2">
             <button
               onClick={() => setActiveTab("jobs")}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base whitespace-nowrap min-w-0 ${
                 activeTab === "jobs"
                   ? "bg-[var(--accent-blue)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              💼 Stellenangebote
+              <span className="hidden sm:inline">💼 Stellenangebote</span>
+              <span className="sm:hidden">💼 Stellen</span>
             </button>
             <button
               onClick={() => setActiveTab("chats")}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all relative ${
+              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all relative text-xs sm:text-base whitespace-nowrap min-w-0 ${
                 activeTab === "chats"
                   ? "bg-[var(--accent-blue)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
@@ -358,13 +359,14 @@ export default function ApplicantDashboard() {
             </button>
             <button
               onClick={() => setActiveTab("preferences")}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base whitespace-nowrap min-w-0 ${
                 activeTab === "preferences"
                   ? "bg-[var(--accent-blue)] text-white"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              📊 Meine Präferenzen
+              <span className="hidden sm:inline">📊 Meine Präferenzen</span>
+              <span className="sm:hidden">📊 Präferenzen</span>
             </button>
           </div>
         </div>
@@ -443,11 +445,11 @@ export default function ApplicantDashboard() {
         </div>
 
         {/* Jobs List - Enhanced Design */}
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading">
             Passende Stellen
           </h2>
-          <span className="ds-body-light text-sm sm:text-base">
+          <span className="ds-body-light text-xs sm:text-sm sm:text-base">
             {matchedJobs.length < filteredJobs.length ? (
               <>
                 Top {matchedJobs.length} von {filteredJobs.length} {filteredJobs.length === 1 ? 'Stelle' : 'Stellen'} angezeigt
@@ -479,9 +481,9 @@ export default function ApplicantDashboard() {
           </div>
         )}
 
-        <div className="grid gap-4 sm:gap-5">
+        <div className="grid gap-4 sm:gap-5 w-full">
           {matchedJobs.map(job => (
-            <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
+            <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)] w-full max-w-full">
               {/* Header Section */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
                 <div className="min-w-0 flex-1">
