@@ -6,6 +6,38 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const companyId = searchParams.get("companyId");
+    const applicantId = searchParams.get("applicantId");
+    const jobId = searchParams.get("jobId");
+    
+    // If both applicantId and jobId are provided, return specific interest
+    if (applicantId && jobId) {
+      const interest = await prisma.interest.findUnique({
+        where: {
+          applicantId_jobId: {
+            applicantId,
+            jobId
+          }
+        },
+        include: {
+          applicant: true,
+          job: true
+        }
+      });
+      return NextResponse.json(interest || null);
+    }
+    
+    // If only applicantId is provided, return all interests for that applicant
+    if (applicantId) {
+      const interests = await prisma.interest.findMany({
+        where: { applicantId },
+        include: {
+          applicant: true,
+          job: true
+        },
+        orderBy: { createdAt: "desc" }
+      });
+      return NextResponse.json(interests);
+    }
     
     if (companyId) {
       const interests = await prisma.interest.findMany({
