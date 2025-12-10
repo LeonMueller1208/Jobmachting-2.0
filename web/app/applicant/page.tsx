@@ -448,9 +448,14 @@ export default function ApplicantDashboard() {
             Passende Stellen
           </h2>
           <span className="ds-body-light text-sm sm:text-base">
-            {matchedJobs.length} {matchedJobs.length === 1 ? 'Stelle' : 'Stellen'} gefunden
-            {matchedJobs.length === 20 && filteredJobs.length > 20 && (
-              <span className="text-xs ml-2">(Top 20 angezeigt)</span>
+            {matchedJobs.length < filteredJobs.length ? (
+              <>
+                Top {matchedJobs.length} von {filteredJobs.length} {filteredJobs.length === 1 ? 'Stelle' : 'Stellen'} angezeigt
+              </>
+            ) : (
+              <>
+                {matchedJobs.length} {matchedJobs.length === 1 ? 'Stelle' : 'Stellen'} gefunden
+              </>
             )}
           </span>
         </div>
