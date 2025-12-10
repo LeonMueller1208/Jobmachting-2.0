@@ -308,7 +308,7 @@ export default function ApplicantDashboard() {
     <div className="ds-background min-h-screen">
       <Header title="Bewerber Dashboard" showLogout={true} userType="applicant" />
       
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 w-full overflow-x-hidden">
         {/* Welcome Card - Mobile Optimized */}
         <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -481,9 +481,9 @@ export default function ApplicantDashboard() {
           </div>
         )}
 
-        <div className="grid gap-4 sm:gap-5 w-full">
+        <div className="grid gap-4 sm:gap-5">
           {matchedJobs.map(job => (
-            <div key={job.id} className="ds-card p-5 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)] w-full max-w-full">
+            <div key={job.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)] overflow-hidden">
               {/* Header Section */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
                 <div className="min-w-0 flex-1">

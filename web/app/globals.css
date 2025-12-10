@@ -52,6 +52,7 @@ body {
 /* Global Design System Classes */
 .ds-card {
   @apply bg-white rounded-[var(--border-radius-card)] shadow-[var(--shadow-card)] border border-gray-100;
+  box-sizing: border-box;
 }
 
 .ds-card-hover {
