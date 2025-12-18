@@ -1,21 +1,6 @@
--- Drop old columns from Applicant table (if they exist)
-DO $$ 
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Applicant' AND column_name = 'workValues') THEN
-        ALTER TABLE "Applicant" DROP COLUMN "workValues";
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Applicant' AND column_name = 'teamStyle') THEN
-        ALTER TABLE "Applicant" DROP COLUMN "teamStyle";
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Applicant' AND column_name = 'workEnvironment') THEN
-        ALTER TABLE "Applicant" DROP COLUMN "workEnvironment";
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Applicant' AND column_name = 'motivation') THEN
-        ALTER TABLE "Applicant" DROP COLUMN "motivation";
-    END IF;
-END $$;
-
 -- Add new columns to Applicant table (if they don't exist)
+-- NOTE: We keep the old columns (workValues, teamStyle, workEnvironment, motivation) for now
+-- to maintain compatibility with production. They can be removed in a later migration.
 DO $$ 
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Applicant' AND column_name = 'hierarchy') THEN
@@ -38,24 +23,9 @@ BEGIN
     END IF;
 END $$;
 
--- Drop old columns from Job table (if they exist)
-DO $$ 
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Job' AND column_name = 'workValues') THEN
-        ALTER TABLE "Job" DROP COLUMN "workValues";
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Job' AND column_name = 'teamStyle') THEN
-        ALTER TABLE "Job" DROP COLUMN "teamStyle";
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Job' AND column_name = 'workEnvironment') THEN
-        ALTER TABLE "Job" DROP COLUMN "workEnvironment";
-    END IF;
-    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Job' AND column_name = 'motivation') THEN
-        ALTER TABLE "Job" DROP COLUMN "motivation";
-    END IF;
-END $$;
-
 -- Add new columns to Job table (if they don't exist)
+-- NOTE: We keep the old columns (workValues, teamStyle, workEnvironment, motivation) for now
+-- to maintain compatibility with production. They can be removed in a later migration.
 DO $$ 
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'Job' AND column_name = 'hierarchy') THEN
