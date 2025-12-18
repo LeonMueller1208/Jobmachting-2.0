@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd web && npx prisma db push --accept-data-loss --skip-generate && npx prisma generate && npm run build",
+  "buildCommand": "cd web && npx prisma migrate deploy && npx prisma generate && npm run build",
   "outputDirectory": "web/.next",
   "installCommand": "cd web && npm install",
   "framework": "nextjs",
