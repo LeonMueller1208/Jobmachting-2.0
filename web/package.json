@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma migrate deploy && prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx seed-frankfurt.ts",
-    "seed:watch": "tsx watch seed-frankfurt.ts"
+    "seed:watch": "tsx watch seed-frankfurt.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
