@@ -302,12 +302,12 @@ export default function ApplicantDashboard() {
         education: applicant.education || undefined,
         bio: applicant.bio || undefined,
         industry: applicant.industry || undefined,
-        hierarchy: applicant.hierarchy || undefined,
-        autonomy: applicant.autonomy || undefined,
-        teamwork: applicant.teamwork || undefined,
-        workStructure: applicant.workStructure || undefined,
-        feedback: applicant.feedback || undefined,
-        flexibility: applicant.flexibility || undefined
+        hierarchy: (applicant.hierarchy !== null && applicant.hierarchy !== undefined) ? applicant.hierarchy : undefined,
+        autonomy: (applicant.autonomy !== null && applicant.autonomy !== undefined) ? applicant.autonomy : undefined,
+        teamwork: (applicant.teamwork !== null && applicant.teamwork !== undefined) ? applicant.teamwork : undefined,
+        workStructure: (applicant.workStructure !== null && applicant.workStructure !== undefined) ? applicant.workStructure : undefined,
+        feedback: (applicant.feedback !== null && applicant.feedback !== undefined) ? applicant.feedback : undefined,
+        flexibility: (applicant.flexibility !== null && applicant.flexibility !== undefined) ? applicant.flexibility : undefined
       },
       job: {
         requiredSkills: jobSkills,
@@ -317,12 +317,12 @@ export default function ApplicantDashboard() {
         title: job.title || "",
         description: job.description || "",
         industry: job.industry || undefined,
-        hierarchy: job.hierarchy || undefined,
-        autonomy: job.autonomy || undefined,
-        teamwork: job.teamwork || undefined,
-        workStructure: job.workStructure || undefined,
-        feedback: job.feedback || undefined,
-        flexibility: job.flexibility || undefined
+        hierarchy: (job.hierarchy !== null && job.hierarchy !== undefined) ? job.hierarchy : undefined,
+        autonomy: (job.autonomy !== null && job.autonomy !== undefined) ? job.autonomy : undefined,
+        teamwork: (job.teamwork !== null && job.teamwork !== undefined) ? job.teamwork : undefined,
+        workStructure: (job.workStructure !== null && job.workStructure !== undefined) ? job.workStructure : undefined,
+        feedback: (job.feedback !== null && job.feedback !== undefined) ? job.feedback : undefined,
+        flexibility: (job.flexibility !== null && job.flexibility !== undefined) ? job.flexibility : undefined
       }
     });
     
