@@ -40,7 +40,7 @@ export default function JobStep12Flexibility({ flexibility, setFlexibility }: Pr
           🔄 Wie wichtig sind flexible Arbeitszeiten oder Arbeitsorte für diese Stelle?
         </h2>
         <p className="text-gray-600 text-sm sm:text-base">
-          Beschreibt die Flexibilität dieser Position
+          Beschreibt, welche Flexibilität ihr für diese Position anbietet
         </p>
       </div>
 

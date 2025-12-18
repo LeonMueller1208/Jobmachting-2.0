@@ -23,8 +23,8 @@ export default function JobStep10WorkStructure({ workStructure, setWorkStructure
         <p className="text-gray-600 text-sm sm:text-base mb-4">
           Diese Stelle bietet einen strukturierten und planbaren Arbeitsalltag.
         </p>
-        <p className="text-sm text-gray-500">
-          Bewerte auf einer Skala von 1 bis 5
+        <p className="text-sm text-gray-500 mb-2">
+          Bewerte auf einer Skala von 1 bis 5, wie sehr dies auf eure Stelle zutrifft
         </p>
       </div>
 

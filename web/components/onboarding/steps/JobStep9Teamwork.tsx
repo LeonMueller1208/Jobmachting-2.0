@@ -40,7 +40,7 @@ export default function JobStep9Teamwork({ teamwork, setTeamwork }: Props) {
           👥 Wie wichtig ist Teamarbeit in dieser Stelle?
         </h2>
         <p className="text-gray-600 text-sm sm:text-base">
-          Beschreibt die Arbeitsweise für diese Position
+          Beschreibt, wie wichtig Teamarbeit für diese Position ist
         </p>
       </div>
 

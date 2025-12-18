@@ -40,7 +40,7 @@ export default function JobStep7Hierarchy({ hierarchy, setHierarchy }: Props) {
           🏛️ Welche Art von Hierarchie hat euer Unternehmen?
         </h2>
         <p className="text-gray-600 text-sm sm:text-base">
-          Beschreibt die Hierarchiestruktur eures Teams
+          Beschreibt die Hierarchiestruktur eures Teams und eures Unternehmens
         </p>
       </div>
 

@@ -40,7 +40,7 @@ export default function JobStep8Autonomy({ autonomy, setAutonomy }: Props) {
           🎯 Wie viel Entscheidungsfreiheit bietet diese Stelle?
         </h2>
         <p className="text-gray-600 text-sm sm:text-base">
-          Beschreibt das Maß an Autonomie in dieser Position
+          Beschreibt, wie viel Autonomie der/die Mitarbeiter:in in dieser Position hat
         </p>
       </div>
 

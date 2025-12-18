@@ -16,32 +16,60 @@ interface Props {
   colorScheme?: "blue" | "green";
 }
 
-const HIERARCHY_OPTIONS = [
+const HIERARCHY_OPTIONS_APPLICANT = [
   { value: 1, label: "Sehr flach", description: "Entscheidungen auf Augenhöhe" },
   { value: 2, label: "Eher flach", description: "Führung gibt Orientierung" },
   { value: 3, label: "Eher klar", description: "Feste Ebenen helfen mir" },
   { value: 4, label: "Sehr klar", description: "Hierarchie gibt mir Sicherheit" }
 ];
 
-const AUTONOMY_OPTIONS = [
+const HIERARCHY_OPTIONS_JOB = [
+  { value: 1, label: "Sehr flach", description: "Entscheidungen auf Augenhöhe" },
+  { value: 2, label: "Eher flach", description: "Führung gibt Orientierung" },
+  { value: 3, label: "Eher klar", description: "Feste Ebenen helfen" },
+  { value: 4, label: "Sehr klar", description: "Hierarchie gibt Sicherheit" }
+];
+
+const AUTONOMY_OPTIONS_APPLICANT = [
   { value: 1, label: "Sehr wenig", description: "Klare Vorgaben sind mir wichtig" },
   { value: 2, label: "Etwas", description: "Mit klaren Rahmenbedingungen" },
   { value: 3, label: "Viel", description: "Ich treffe viele Entscheidungen selbst" },
   { value: 4, label: "Sehr viel", description: "Maximale Eigenverantwortung" }
 ];
 
-const TEAMWORK_OPTIONS = [
+const AUTONOMY_OPTIONS_JOB = [
+  { value: 1, label: "Sehr wenig", description: "Klare Vorgaben sind wichtig" },
+  { value: 2, label: "Etwas", description: "Mit klaren Rahmenbedingungen" },
+  { value: 3, label: "Viel", description: "Viele Entscheidungen selbst treffen" },
+  { value: 4, label: "Sehr viel", description: "Maximale Eigenverantwortung" }
+];
+
+const TEAMWORK_OPTIONS_APPLICANT = [
   { value: 1, label: "Sehr wichtig", description: "Ich arbeite fast immer im Team" },
   { value: 2, label: "Wichtig", description: "Mischung aus Team- und Einzelarbeit" },
   { value: 3, label: "Eher unwichtig", description: "Ich arbeite meist allein" },
   { value: 4, label: "Unwichtig", description: "Ich arbeite am liebsten selbstständig" }
 ];
 
-const FLEXIBILITY_OPTIONS = [
+const TEAMWORK_OPTIONS_JOB = [
+  { value: 1, label: "Sehr wichtig", description: "Fast immer im Team arbeiten" },
+  { value: 2, label: "Wichtig", description: "Mischung aus Team- und Einzelarbeit" },
+  { value: 3, label: "Eher unwichtig", description: "Meist allein arbeiten" },
+  { value: 4, label: "Unwichtig", description: "Am liebsten selbstständig arbeiten" }
+];
+
+const FLEXIBILITY_OPTIONS_APPLICANT = [
   { value: 1, label: "Sehr wichtig", description: "Ohne Flexibilität geht es nicht" },
   { value: 2, label: "Wichtig", description: "Ein Plus, aber kein Muss" },
   { value: 3, label: "Eher unwichtig", description: "Feste Zeiten sind okay" },
   { value: 4, label: "Unwichtig", description: "Feste Strukturen bevorzuge ich" }
+];
+
+const FLEXIBILITY_OPTIONS_JOB = [
+  { value: 1, label: "Sehr wichtig", description: "Flexibilität ist essentiell" },
+  { value: 2, label: "Wichtig", description: "Flexibilität ist ein Plus" },
+  { value: 3, label: "Eher unwichtig", description: "Feste Zeiten sind okay" },
+  { value: 4, label: "Unwichtig", description: "Feste Strukturen bevorzugt" }
 ];
 
 const SCALE_OPTIONS = [
@@ -69,6 +97,12 @@ export default function CultureFitSelector({
 }: Props) {
   const accentColor = colorScheme === "blue" ? "blue" : "green";
   const inputClass = `ds-input ds-input-focus-${accentColor}`;
+  const isJob = colorScheme === "green";
+  
+  const HIERARCHY_OPTIONS = isJob ? HIERARCHY_OPTIONS_JOB : HIERARCHY_OPTIONS_APPLICANT;
+  const AUTONOMY_OPTIONS = isJob ? AUTONOMY_OPTIONS_JOB : AUTONOMY_OPTIONS_APPLICANT;
+  const TEAMWORK_OPTIONS = isJob ? TEAMWORK_OPTIONS_JOB : TEAMWORK_OPTIONS_APPLICANT;
+  const FLEXIBILITY_OPTIONS = isJob ? FLEXIBILITY_OPTIONS_JOB : FLEXIBILITY_OPTIONS_APPLICANT;
 
   return (
     <div className="space-y-6">
@@ -125,7 +159,12 @@ export default function CultureFitSelector({
 
       {/* Work Structure */}
       <div>
-        <label className="ds-label">Arbeitsstruktur: Ich arbeite am liebsten in einem strukturierten und planbaren Arbeitsalltag.</label>
+        <label className="ds-label">
+          {isJob 
+            ? "Arbeitsstruktur: Diese Stelle bietet einen strukturierten und planbaren Arbeitsalltag."
+            : "Arbeitsstruktur: Ich arbeite am liebsten in einem strukturierten und planbaren Arbeitsalltag."
+          }
+        </label>
         <select
           value={workStructure || ""}
           onChange={(e) => setWorkStructure(Number(e.target.value))}
@@ -142,7 +181,12 @@ export default function CultureFitSelector({
 
       {/* Feedback */}
       <div>
-        <label className="ds-label">Feedback & Kommunikation: Ich wünsche mir regelmäßiges und klares Feedback zu meiner Arbeit.</label>
+        <label className="ds-label">
+          {isJob
+            ? "Feedback & Kommunikation: In dieser Stelle gibt es regelmäßiges und klares Feedback zur Arbeit."
+            : "Feedback & Kommunikation: Ich wünsche mir regelmäßiges und klares Feedback zu meiner Arbeit."
+          }
+        </label>
         <select
           value={feedback || ""}
           onChange={(e) => setFeedback(Number(e.target.value))}
