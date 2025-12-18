@@ -10,38 +10,50 @@ interface JobStep8SummaryProps {
     requiredEducation: string;
     requiredSkills: string[];
     industry: string;
-    workValues: string[];
-    teamStyle: string;
-    workEnvironment: string;
-    motivation: string;
+    hierarchy: number;
+    autonomy: number;
+    teamwork: number;
+    workStructure: number;
+    feedback: number;
+    flexibility: number;
   };
   onEdit: (step: number) => void;
 }
 
-const WORK_VALUES_LABELS: { [key: string]: string } = {
-  security: "🛡️ Sicherheit & Stabilität",
-  fun: "🎉 Spaß & Atmosphäre",
-  development: "📈 Entwicklung & Lernen",
-  purpose: "🌍 Sinn & Beitrag"
+const HIERARCHY_LABELS: { [key: number]: string } = {
+  1: "Sehr flach – Entscheidungen auf Augenhöhe",
+  2: "Eher flach – Führung gibt Orientierung",
+  3: "Eher klar – feste Ebenen helfen",
+  4: "Sehr klar – Hierarchie gibt Sicherheit"
 };
 
-const TEAM_STYLE_LABELS: { [key: string]: string } = {
-  close: "👥 Eng im Team",
-  balanced: "🤝 Ausgewogen",
-  independent: "🎯 Eigenständig"
+const AUTONOMY_LABELS: { [key: number]: string } = {
+  1: "Sehr wenig – klare Vorgaben sind wichtig",
+  2: "Etwas – mit klaren Rahmenbedingungen",
+  3: "Viel – viele Entscheidungen selbst treffen",
+  4: "Sehr viel – maximale Eigenverantwortung"
 };
 
-const WORK_ENV_LABELS: { [key: string]: string } = {
-  quiet: "🤫 Ruhig & konzentriert",
-  lively: "💬 Lebendig & kommunikativ",
-  structured: "📋 Strukturiert & organisiert"
+const TEAMWORK_LABELS: { [key: number]: string } = {
+  1: "Sehr wichtig – fast immer im Team arbeiten",
+  2: "Wichtig – Mischung aus Team- und Einzelarbeit",
+  3: "Eher unwichtig – meist allein arbeiten",
+  4: "Unwichtig – am liebsten selbstständig arbeiten"
 };
 
-const MOTIVATION_LABELS: { [key: string]: string } = {
-  recognition: "🏆 Anerkennung",
-  responsibility: "🎯 Verantwortung",
-  success: "📊 Erfolg",
-  learning: "💡 Lernen & Innovation"
+const FLEXIBILITY_LABELS: { [key: number]: string } = {
+  1: "Sehr wichtig – Flexibilität ist essentiell",
+  2: "Wichtig – Flexibilität ist ein Plus",
+  3: "Eher unwichtig – feste Zeiten sind okay",
+  4: "Unwichtig – feste Strukturen bevorzugt"
+};
+
+const SCALE_LABELS: { [key: number]: string } = {
+  1: "Trifft gar nicht zu",
+  2: "Trifft eher nicht zu",
+  3: "Neutral",
+  4: "Trifft eher zu",
+  5: "Trifft voll zu"
 };
 
 export default function JobStep8Summary({ formData, onEdit }: JobStep8SummaryProps) {
@@ -168,27 +180,29 @@ export default function JobStep8Summary({ formData, onEdit }: JobStep8SummaryPro
             </button>
           </div>
           <div className="space-y-3 text-sm">
-            <div>
-              <span className="font-medium text-gray-700">Was euch wichtig ist:</span>
-              <div className="mt-1 flex flex-wrap gap-2">
-                {formData.workValues.map(val => (
-                  <span key={val} className="px-3 py-1 bg-white rounded-full text-xs font-medium text-purple-700 border border-purple-200">
-                    {WORK_VALUES_LABELS[val] || val}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <p>
+              <span className="font-medium text-gray-700">Hierarchie:</span>{" "}
+              <span className="text-gray-800">{HIERARCHY_LABELS[formData.hierarchy] || "Nicht angegeben"}</span>
+            </p>
+            <p>
+              <span className="font-medium text-gray-700">Autonomie:</span>{" "}
+              <span className="text-gray-800">{AUTONOMY_LABELS[formData.autonomy] || "Nicht angegeben"}</span>
+            </p>
             <p>
               <span className="font-medium text-gray-700">Teamarbeit:</span>{" "}
-              <span className="text-gray-800">{TEAM_STYLE_LABELS[formData.teamStyle] || formData.teamStyle}</span>
+              <span className="text-gray-800">{TEAMWORK_LABELS[formData.teamwork] || "Nicht angegeben"}</span>
             </p>
             <p>
-              <span className="font-medium text-gray-700">Arbeitsumfeld:</span>{" "}
-              <span className="text-gray-800">{WORK_ENV_LABELS[formData.workEnvironment] || formData.workEnvironment}</span>
+              <span className="font-medium text-gray-700">Arbeitsstruktur:</span>{" "}
+              <span className="text-gray-800">{SCALE_LABELS[formData.workStructure] || "Nicht angegeben"}</span>
             </p>
             <p>
-              <span className="font-medium text-gray-700">Motivation:</span>{" "}
-              <span className="text-gray-800">{MOTIVATION_LABELS[formData.motivation] || formData.motivation}</span>
+              <span className="font-medium text-gray-700">Feedback & Kommunikation:</span>{" "}
+              <span className="text-gray-800">{SCALE_LABELS[formData.feedback] || "Nicht angegeben"}</span>
+            </p>
+            <p>
+              <span className="font-medium text-gray-700">Flexibilität:</span>{" "}
+              <span className="text-gray-800">{FLEXIBILITY_LABELS[formData.flexibility] || "Nicht angegeben"}</span>
             </p>
           </div>
         </div>

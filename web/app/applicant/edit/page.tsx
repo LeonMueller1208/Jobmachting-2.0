@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import SkillsSelector from "@/components/SkillsSelector";
+import CultureFitSelector from "@/components/CultureFitSelector";
 
 const availableIndustries = [
   "IT & Software", "Finanzwesen", "Gesundheitswesen", "E-Commerce", "Automotive", 
@@ -28,10 +29,12 @@ export default function EditApplicant() {
   const [education, setEducation] = useState("");
   const [bio, setBio] = useState("");
   const [industry, setIndustry] = useState("");
-  const [workValues, setWorkValues] = useState<string[]>([]);
-  const [teamStyle, setTeamStyle] = useState("");
-  const [workEnvironment, setWorkEnvironment] = useState("");
-  const [motivation, setMotivation] = useState("");
+  const [hierarchy, setHierarchy] = useState<number>(0);
+  const [autonomy, setAutonomy] = useState<number>(0);
+  const [teamwork, setTeamwork] = useState<number>(0);
+  const [workStructure, setWorkStructure] = useState<number>(0);
+  const [feedback, setFeedback] = useState<number>(0);
+  const [flexibility, setFlexibility] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -52,10 +55,12 @@ export default function EditApplicant() {
       setEducation(data.education || "");
       setBio(data.bio || "");
       setIndustry(data.industry || "");
-      setWorkValues(Array.isArray(data.workValues) ? data.workValues : (data.workValues ? [data.workValues] : []));
-      setTeamStyle(data.teamStyle || "");
-      setWorkEnvironment(data.workEnvironment || "");
-      setMotivation(data.motivation || "");
+      setHierarchy(data.hierarchy || 0);
+      setAutonomy(data.autonomy || 0);
+      setTeamwork(data.teamwork || 0);
+      setWorkStructure(data.workStructure || 0);
+      setFeedback(data.feedback || 0);
+      setFlexibility(data.flexibility || 0);
     }
   }, []);
 
@@ -80,10 +85,12 @@ export default function EditApplicant() {
           education, 
           bio, 
           industry,
-          workValues,
-          teamStyle,
-          workEnvironment,
-          motivation
+          hierarchy,
+          autonomy,
+          teamwork,
+          workStructure,
+          feedback,
+          flexibility
         }),
       });
       
@@ -278,84 +285,21 @@ export default function EditApplicant() {
                 Diese Angaben helfen uns, Jobs zu finden, die kulturell zu dir passen.
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Work Values */}
-                <div>
-                  <label className="ds-label">Was ist dir wichtig? (1-2 Werte)</label>
-                  <div className="space-y-3 sm:space-y-2">
-                    {[
-                      { id: "security", label: "🛡️ Sicherheit & Stabilität" },
-                      { id: "fun", label: "🎉 Spaß & Atmosphäre" },
-                      { id: "development", label: "📈 Entwicklung & Lernen" },
-                      { id: "purpose", label: "🌍 Sinn & Beitrag" }
-                    ].map(option => (
-                      <label key={option.id} className="flex items-center gap-3 sm:gap-2 cursor-pointer py-1 sm:py-0">
-                        <input
-                          type="checkbox"
-                          checked={workValues.includes(option.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              if (workValues.length < 2) {
-                                setWorkValues([...workValues, option.id]);
-                              }
-                            } else {
-                              setWorkValues(workValues.filter(v => v !== option.id));
-                            }
-                          }}
-                          className="w-5 h-5 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0"
-                        />
-                        <span className="text-base sm:text-sm">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Team Style */}
-                <div>
-                  <label className="ds-label">Teamarbeit</label>
-                  <select
-                    value={teamStyle}
-                    onChange={(e) => setTeamStyle(e.target.value)}
-                    className="ds-input ds-input-focus-blue"
-                  >
-                    <option value="">Wählen...</option>
-                    <option value="close">👥 Eng im Team</option>
-                    <option value="balanced">🤝 Ausgewogen</option>
-                    <option value="independent">🎯 Eigenständig</option>
-                  </select>
-                </div>
-
-                {/* Work Environment */}
-                <div>
-                  <label className="ds-label">Arbeitsumfeld</label>
-                  <select
-                    value={workEnvironment}
-                    onChange={(e) => setWorkEnvironment(e.target.value)}
-                    className="ds-input ds-input-focus-blue"
-                  >
-                    <option value="">Wählen...</option>
-                    <option value="quiet">🤫 Ruhig & konzentriert</option>
-                    <option value="lively">💬 Lebendig & kommunikativ</option>
-                    <option value="structured">📋 Strukturiert & organisiert</option>
-                  </select>
-                </div>
-
-                {/* Motivation */}
-                <div>
-                  <label className="ds-label">Motivation</label>
-                  <select
-                    value={motivation}
-                    onChange={(e) => setMotivation(e.target.value)}
-                    className="ds-input ds-input-focus-blue"
-                  >
-                    <option value="">Wählen...</option>
-                    <option value="recognition">🏆 Anerkennung</option>
-                    <option value="responsibility">🎯 Verantwortung</option>
-                    <option value="success">📊 Erfolg</option>
-                    <option value="learning">💡 Lernen & Innovation</option>
-                  </select>
-                </div>
-              </div>
+              <CultureFitSelector
+                hierarchy={hierarchy}
+                autonomy={autonomy}
+                teamwork={teamwork}
+                workStructure={workStructure}
+                feedback={feedback}
+                flexibility={flexibility}
+                setHierarchy={setHierarchy}
+                setAutonomy={setAutonomy}
+                setTeamwork={setTeamwork}
+                setWorkStructure={setWorkStructure}
+                setFeedback={setFeedback}
+                setFlexibility={setFlexibility}
+                colorScheme="blue"
+              />
             </div>
 
             <div>

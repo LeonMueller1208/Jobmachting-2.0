@@ -16,10 +16,12 @@ type Applicant = {
   education?: string | null;
   bio?: string | null; 
   industry?: string | null;
-  workValues?: string[] | any;
-  teamStyle?: string | null;
-  workEnvironment?: string | null;
-  motivation?: string | null;
+  hierarchy?: number | null;
+  autonomy?: number | null;
+  teamwork?: number | null;
+  workStructure?: number | null;
+  feedback?: number | null;
+  flexibility?: number | null;
 };
 
 type Job = { 
@@ -32,10 +34,12 @@ type Job = {
   requiredEducation?: string | null;
   jobType?: string | null;
   industry?: string | null; 
-  workValues?: string[] | any;
-  teamStyle?: string | null;
-  workEnvironment?: string | null;
-  motivation?: string | null;
+  hierarchy?: number | null;
+  autonomy?: number | null;
+  teamwork?: number | null;
+  workStructure?: number | null;
+  feedback?: number | null;
+  flexibility?: number | null;
   company: { id: string; name: string; location: string };
   matchScore?: number;
   culturalFit?: number | null;
@@ -265,10 +269,12 @@ export default function ApplicantDashboard() {
         education: applicant.education || undefined,
         bio: applicant.bio || undefined,
         industry: applicant.industry || undefined,
-        workValues: applicant.workValues,
-        teamStyle: applicant.teamStyle || undefined,
-        workEnvironment: applicant.workEnvironment || undefined,
-        motivation: applicant.motivation || undefined
+        hierarchy: applicant.hierarchy || undefined,
+        autonomy: applicant.autonomy || undefined,
+        teamwork: applicant.teamwork || undefined,
+        workStructure: applicant.workStructure || undefined,
+        feedback: applicant.feedback || undefined,
+        flexibility: applicant.flexibility || undefined
       },
       job: { 
         requiredSkills: jobSkills, 
@@ -278,10 +284,12 @@ export default function ApplicantDashboard() {
         title: job.title || "",
         description: job.description || "",
         industry: job.industry || undefined,
-        workValues: job.workValues,
-        teamStyle: job.teamStyle || undefined,
-        workEnvironment: job.workEnvironment || undefined,
-        motivation: job.motivation || undefined
+        hierarchy: job.hierarchy || undefined,
+        autonomy: job.autonomy || undefined,
+        teamwork: job.teamwork || undefined,
+        workStructure: job.workStructure || undefined,
+        feedback: job.feedback || undefined,
+        flexibility: job.flexibility || undefined
       },
     });
     
@@ -294,10 +302,12 @@ export default function ApplicantDashboard() {
         education: applicant.education || undefined,
         bio: applicant.bio || undefined,
         industry: applicant.industry || undefined,
-        workValues: applicant.workValues,
-        teamStyle: applicant.teamStyle || undefined,
-        workEnvironment: applicant.workEnvironment || undefined,
-        motivation: applicant.motivation || undefined
+        hierarchy: applicant.hierarchy || undefined,
+        autonomy: applicant.autonomy || undefined,
+        teamwork: applicant.teamwork || undefined,
+        workStructure: applicant.workStructure || undefined,
+        feedback: applicant.feedback || undefined,
+        flexibility: applicant.flexibility || undefined
       },
       job: {
         requiredSkills: jobSkills,
@@ -307,10 +317,12 @@ export default function ApplicantDashboard() {
         title: job.title || "",
         description: job.description || "",
         industry: job.industry || undefined,
-        workValues: job.workValues,
-        teamStyle: job.teamStyle || undefined,
-        workEnvironment: job.workEnvironment || undefined,
-        motivation: job.motivation || undefined
+        hierarchy: job.hierarchy || undefined,
+        autonomy: job.autonomy || undefined,
+        teamwork: job.teamwork || undefined,
+        workStructure: job.workStructure || undefined,
+        feedback: job.feedback || undefined,
+        flexibility: job.flexibility || undefined
       }
     });
     

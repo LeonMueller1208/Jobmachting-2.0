@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, name, skills, location, experience, education, bio, industry, workValues, teamStyle, workEnvironment, motivation } = body ?? {};
+    const { email, name, skills, location, experience, education, bio, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility } = body ?? {};
     
     if (!email || !name || !Array.isArray(skills) || skills.length === 0 || !location) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
@@ -40,10 +40,12 @@ export async function POST(request: Request) {
         education: education || null,
         bio: bio || null, 
         industry: industry || null,
-        workValues: workValues || null,
-        teamStyle: teamStyle || null,
-        workEnvironment: workEnvironment || null,
-        motivation: motivation || null
+        hierarchy: hierarchy ? Number(hierarchy) : null,
+        autonomy: autonomy ? Number(autonomy) : null,
+        teamwork: teamwork ? Number(teamwork) : null,
+        workStructure: workStructure ? Number(workStructure) : null,
+        feedback: feedback ? Number(feedback) : null,
+        flexibility: flexibility ? Number(flexibility) : null
       },
       create: { 
         email, 
@@ -54,10 +56,12 @@ export async function POST(request: Request) {
         education: education || null,
         bio: bio || null, 
         industry: industry || null,
-        workValues: workValues || null,
-        teamStyle: teamStyle || null,
-        workEnvironment: workEnvironment || null,
-        motivation: motivation || null
+        hierarchy: hierarchy ? Number(hierarchy) : null,
+        autonomy: autonomy ? Number(autonomy) : null,
+        teamwork: teamwork ? Number(teamwork) : null,
+        workStructure: workStructure ? Number(workStructure) : null,
+        feedback: feedback ? Number(feedback) : null,
+        flexibility: flexibility ? Number(flexibility) : null
       },
     });
     

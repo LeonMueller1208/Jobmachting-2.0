@@ -6,10 +6,12 @@ export type MatchingInput = {
     education?: string;
     bio?: string;
     industry?: string;
-    workValues?: string[] | any;
-    teamStyle?: string;
-    workEnvironment?: string;
-    motivation?: string;
+    hierarchy?: number;
+    autonomy?: number;
+    teamwork?: number;
+    workStructure?: number;
+    feedback?: number;
+    flexibility?: number;
   };
   job: { 
     requiredSkills: string[]; 
@@ -19,10 +21,12 @@ export type MatchingInput = {
     title: string;
     description?: string;
     industry?: string;
-    workValues?: string[] | any;
-    teamStyle?: string;
-    workEnvironment?: string;
-    motivation?: string;
+    hierarchy?: number;
+    autonomy?: number;
+    teamwork?: number;
+    workStructure?: number;
+    feedback?: number;
+    flexibility?: number;
   };
 };
 
@@ -670,62 +674,89 @@ export function applyPreferenceBoost(baseScore: number, boostFactor: number): nu
 }
 
 /**
+ * Calculates score for Multiple Choice questions (4 options)
+ * Based on distance: 0 = 100%, 1 = 75%, 2 = 50%, 3 = 25%
+ */
+function calculateMultipleChoiceScore(applicantValue: number, jobValue: number): number {
+  const distance = Math.abs(applicantValue - jobValue);
+  
+  switch (distance) {
+    case 0: return 100;  // Exact match
+    case 1: return 75;   // 1 step away
+    case 2: return 50;   // 2 steps away
+    case 3: return 25;   // 3 steps away (maximum distance)
+    default: return 0;
+  }
+}
+
+/**
+ * Calculates score for Likert Scale questions (1-5)
+ * Based on distance: 0 = 100%, 1 = 80%, 2 = 60%, 3 = 40%, 4 = 20%
+ */
+function calculateScaleScore(applicantValue: number, jobValue: number): number {
+  const distance = Math.abs(applicantValue - jobValue);
+  
+  switch (distance) {
+    case 0: return 100;  // Exact match
+    case 1: return 80;   // 1 step away
+    case 2: return 60;   // 2 steps away
+    case 3: return 40;   // 3 steps away
+    case 4: return 20;   // 4 steps away (maximum distance)
+    default: return 0;
+  }
+}
+
+/**
  * Computes Cultural Fit Score based on soft factors
  * @param applicant - Applicant with soft factor preferences
  * @param job - Job with soft factor requirements
  * @returns Cultural fit score (0-100) or null if no data available
  */
 export function computeCulturalFit({ applicant, job }: MatchingInput): number | null {
-  let totalFactors = 0;
-  let matchedFactors = 0;
+  const scores: number[] = [];
 
-  // 1. Work Values (can have multiple, so check for overlap)
-  if (applicant.workValues && job.workValues) {
-    totalFactors++;
-    const applicantValues = Array.isArray(applicant.workValues) 
-      ? applicant.workValues 
-      : (typeof applicant.workValues === 'string' ? [applicant.workValues] : []);
-    const jobValues = Array.isArray(job.workValues) 
-      ? job.workValues 
-      : (typeof job.workValues === 'string' ? [job.workValues] : []);
-    
-    // Check if there's any overlap
-    const hasOverlap = applicantValues.some(val => jobValues.includes(val));
-    if (hasOverlap) {
-      matchedFactors++;
-    }
+  // 1. Hierarchy (Multiple Choice: 1-4)
+  if (applicant.hierarchy !== undefined && applicant.hierarchy !== null && 
+      job.hierarchy !== undefined && job.hierarchy !== null) {
+    scores.push(calculateMultipleChoiceScore(applicant.hierarchy, job.hierarchy));
   }
 
-  // 2. Team Style (exact match)
-  if (applicant.teamStyle && job.teamStyle) {
-    totalFactors++;
-    if (applicant.teamStyle === job.teamStyle) {
-      matchedFactors++;
-    }
+  // 2. Autonomy (Multiple Choice: 1-4)
+  if (applicant.autonomy !== undefined && applicant.autonomy !== null && 
+      job.autonomy !== undefined && job.autonomy !== null) {
+    scores.push(calculateMultipleChoiceScore(applicant.autonomy, job.autonomy));
   }
 
-  // 3. Work Environment (exact match)
-  if (applicant.workEnvironment && job.workEnvironment) {
-    totalFactors++;
-    if (applicant.workEnvironment === job.workEnvironment) {
-      matchedFactors++;
-    }
+  // 3. Teamwork (Multiple Choice: 1-4)
+  if (applicant.teamwork !== undefined && applicant.teamwork !== null && 
+      job.teamwork !== undefined && job.teamwork !== null) {
+    scores.push(calculateMultipleChoiceScore(applicant.teamwork, job.teamwork));
   }
 
-  // 4. Motivation (exact match)
-  if (applicant.motivation && job.motivation) {
-    totalFactors++;
-    if (applicant.motivation === job.motivation) {
-      matchedFactors++;
-    }
+  // 4. Work Structure (Likert Scale: 1-5)
+  if (applicant.workStructure !== undefined && applicant.workStructure !== null && 
+      job.workStructure !== undefined && job.workStructure !== null) {
+    scores.push(calculateScaleScore(applicant.workStructure, job.workStructure));
+  }
+
+  // 5. Feedback & Communication (Likert Scale: 1-5)
+  if (applicant.feedback !== undefined && applicant.feedback !== null && 
+      job.feedback !== undefined && job.feedback !== null) {
+    scores.push(calculateScaleScore(applicant.feedback, job.feedback));
+  }
+
+  // 6. Flexibility (Multiple Choice: 1-4)
+  if (applicant.flexibility !== undefined && applicant.flexibility !== null && 
+      job.flexibility !== undefined && job.flexibility !== null) {
+    scores.push(calculateMultipleChoiceScore(applicant.flexibility, job.flexibility));
   }
 
   // If no soft factors are available, return null
-  if (totalFactors === 0) {
+  if (scores.length === 0) {
     return null;
   }
 
-  // Calculate percentage
-  const culturalFitScore = (matchedFactors / totalFactors) * 100;
-  return Math.round(culturalFitScore * 10) / 10; // Round to 1 decimal place
+  // Calculate average of all scores
+  const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+  return Math.round(averageScore * 10) / 10; // Round to 1 decimal place
 }

@@ -11,13 +11,15 @@ import JobStep4Experience from "./steps/JobStep4Experience";
 import JobStep5Education from "./steps/JobStep5Education";
 import JobStep6Skills from "./steps/JobStep6Skills";
 import JobStep7Industry from "./steps/JobStep7Industry";
-import JobStep8WorkValues from "./steps/JobStep8WorkValues";
-import JobStep9TeamStyle from "./steps/JobStep9TeamStyle";
-import JobStep10WorkEnvironment from "./steps/JobStep10WorkEnvironment";
-import JobStep11Motivation from "./steps/JobStep11Motivation";
-import JobStep12Summary from "./steps/JobStep8Summary";
+import JobStep7Hierarchy from "./steps/JobStep7Hierarchy";
+import JobStep8Autonomy from "./steps/JobStep8Autonomy";
+import JobStep9Teamwork from "./steps/JobStep9Teamwork";
+import JobStep10WorkStructure from "./steps/JobStep10WorkStructure";
+import JobStep11Feedback from "./steps/JobStep11Feedback";
+import JobStep12Flexibility from "./steps/JobStep12Flexibility";
+import JobStep13Summary from "./steps/JobStep8Summary";
 
-const TOTAL_STEPS = 12;
+const TOTAL_STEPS = 14;
 const DRAFT_KEY = "job_onboarding_draft";
 
 export default function MultiStepJobForm() {
@@ -39,10 +41,12 @@ export default function MultiStepJobForm() {
   const [requiredEducation, setRequiredEducation] = useState("");
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
   const [industry, setIndustry] = useState("");
-  const [workValues, setWorkValues] = useState<string[]>([]);
-  const [teamStyle, setTeamStyle] = useState("");
-  const [workEnvironment, setWorkEnvironment] = useState("");
-  const [motivation, setMotivation] = useState("");
+  const [hierarchy, setHierarchy] = useState<number>(0);
+  const [autonomy, setAutonomy] = useState<number>(0);
+  const [teamwork, setTeamwork] = useState<number>(0);
+  const [workStructure, setWorkStructure] = useState<number>(0);
+  const [feedback, setFeedback] = useState<number>(0);
+  const [flexibility, setFlexibility] = useState<number>(0);
 
   // Scroll to top on initial load
   useEffect(() => {
@@ -87,10 +91,12 @@ export default function MultiStepJobForm() {
         requiredEducation,
         requiredSkills,
         industry,
-        workValues,
-        teamStyle,
-        workEnvironment,
-        motivation,
+        hierarchy,
+        autonomy,
+        teamwork,
+        workStructure,
+        feedback,
+        flexibility,
         currentStep,
         timestamp: Date.now()
       };
@@ -110,10 +116,12 @@ export default function MultiStepJobForm() {
       setRequiredEducation(parsed.requiredEducation || "");
       setRequiredSkills(parsed.requiredSkills || []);
       setIndustry(parsed.industry || "");
-      setWorkValues(parsed.workValues || []);
-      setTeamStyle(parsed.teamStyle || "");
-      setWorkEnvironment(parsed.workEnvironment || "");
-      setMotivation(parsed.motivation || "");
+      setHierarchy(parsed.hierarchy || 0);
+      setAutonomy(parsed.autonomy || 0);
+      setTeamwork(parsed.teamwork || 0);
+      setWorkStructure(parsed.workStructure || 0);
+      setFeedback(parsed.feedback || 0);
+      setFlexibility(parsed.flexibility || 0);
       setCurrentStep(parsed.currentStep || 1);
     }
     setShowDraftModal(false);
@@ -142,20 +150,28 @@ export default function MultiStepJobForm() {
       alert("Bitte mindestens 1 Skill auswählen");
       return;
     }
-    if (currentStep === 8 && workValues.length === 0) {
-      alert("Bitte mindestens einen Wert auswählen");
+    if (currentStep === 8 && !hierarchy) {
+      alert("Bitte eine Hierarchie-Option auswählen");
       return;
     }
-    if (currentStep === 9 && !teamStyle) {
-      alert("Bitte einen Teamstil auswählen");
+    if (currentStep === 9 && !autonomy) {
+      alert("Bitte eine Autonomie-Option auswählen");
       return;
     }
-    if (currentStep === 10 && !workEnvironment) {
-      alert("Bitte ein Arbeitsumfeld auswählen");
+    if (currentStep === 10 && !teamwork) {
+      alert("Bitte eine Teamarbeit-Option auswählen");
       return;
     }
-    if (currentStep === 11 && !motivation) {
-      alert("Bitte einen Motivator auswählen");
+    if (currentStep === 11 && !workStructure) {
+      alert("Bitte eine Bewertung für Arbeitsstruktur auswählen");
+      return;
+    }
+    if (currentStep === 12 && !feedback) {
+      alert("Bitte eine Bewertung für Feedback auswählen");
+      return;
+    }
+    if (currentStep === 13 && !flexibility) {
+      alert("Bitte eine Flexibilität-Option auswählen");
       return;
     }
 
@@ -179,7 +195,7 @@ export default function MultiStepJobForm() {
   }
 
   async function handleSubmit() {
-    if (!title || !description || requiredSkills.length === 0 || !location || workValues.length === 0 || !teamStyle || !workEnvironment || !motivation) {
+    if (!title || !description || requiredSkills.length === 0 || !location || !hierarchy || !autonomy || !teamwork || !workStructure || !feedback || !flexibility) {
       setErrorMessage("Bitte alle Pflichtfelder ausfüllen");
       setShowError(true);
       return;
@@ -207,10 +223,12 @@ export default function MultiStepJobForm() {
           requiredEducation,
           jobType,
           industry,
-          workValues,
-          teamStyle,
-          workEnvironment,
-          motivation,
+          hierarchy,
+          autonomy,
+          teamwork,
+          workStructure,
+          feedback,
+          flexibility,
           companyId: company.id,
         }),
       });
@@ -244,10 +262,12 @@ export default function MultiStepJobForm() {
     requiredEducation,
     requiredSkills,
     industry,
-    workValues,
-    teamStyle,
-    workEnvironment,
-    motivation
+    hierarchy,
+    autonomy,
+    teamwork,
+    workStructure,
+    feedback,
+    flexibility
   };
 
   return (
@@ -290,19 +310,25 @@ export default function MultiStepJobForm() {
               <JobStep7Industry industry={industry} setIndustry={setIndustry} onSkip={skipStep} />
             )}
             {currentStep === 8 && (
-              <JobStep8WorkValues workValues={workValues} setWorkValues={setWorkValues} />
+              <JobStep7Hierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} />
             )}
             {currentStep === 9 && (
-              <JobStep9TeamStyle teamStyle={teamStyle} setTeamStyle={setTeamStyle} />
+              <JobStep8Autonomy autonomy={autonomy} setAutonomy={setAutonomy} />
             )}
             {currentStep === 10 && (
-              <JobStep10WorkEnvironment workEnvironment={workEnvironment} setWorkEnvironment={setWorkEnvironment} />
+              <JobStep9Teamwork teamwork={teamwork} setTeamwork={setTeamwork} />
             )}
             {currentStep === 11 && (
-              <JobStep11Motivation motivation={motivation} setMotivation={setMotivation} />
+              <JobStep10WorkStructure workStructure={workStructure} setWorkStructure={setWorkStructure} />
             )}
             {currentStep === 12 && (
-              <JobStep12Summary formData={formData} onEdit={goToStep} />
+              <JobStep11Feedback feedback={feedback} setFeedback={setFeedback} />
+            )}
+            {currentStep === 13 && (
+              <JobStep12Flexibility flexibility={flexibility} setFlexibility={setFlexibility} />
+            )}
+            {currentStep === 14 && (
+              <JobStep13Summary formData={formData} onEdit={goToStep} />
             )}
           </StepTransition>
 

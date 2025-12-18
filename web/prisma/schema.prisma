@@ -17,10 +17,12 @@ model Applicant {
   education       String?    // Highest degree: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion"
   bio             String?
   industry        String?
-  workValues      Json?      // Array: ["security", "fun", "development", "purpose"]
-  teamStyle       String?    // "close" | "balanced" | "independent"
-  workEnvironment String?    // "quiet" | "lively" | "structured"
-  motivation      String?    // "recognition" | "responsibility" | "success" | "learning"
+  hierarchy       Int?       // 1-4: "very_flat" | "rather_flat" | "rather_clear" | "very_clear"
+  autonomy        Int?       // 1-4: "very_little" | "some" | "much" | "very_much"
+  teamwork        Int?       // 1-4: "very_important" | "important" | "rather_unimportant" | "unimportant"
+  workStructure   Int?       // 1-5: Likert scale
+  feedback        Int?       // 1-5: Likert scale
+  flexibility     Int?       // 1-4: "very_important" | "important" | "rather_unimportant" | "unimportant"
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   interests       Interest[]
@@ -52,10 +54,12 @@ model Job {
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   industry          String?
-  workValues        Json?      // Array: ["security", "fun", "development", "purpose"]
-  teamStyle         String?    // "close" | "balanced" | "independent"
-  workEnvironment   String?    // "quiet" | "lively" | "structured"
-  motivation        String?    // "recognition" | "responsibility" | "success" | "learning"
+  hierarchy         Int?       // 1-4: "very_flat" | "rather_flat" | "rather_clear" | "very_clear"
+  autonomy          Int?       // 1-4: "very_little" | "some" | "much" | "very_much"
+  teamwork          Int?       // 1-4: "very_important" | "important" | "rather_unimportant" | "unimportant"
+  workStructure     Int?       // 1-5: Likert scale
+  feedback          Int?       // 1-5: Likert scale
+  flexibility       Int?       // 1-4: "very_important" | "important" | "rather_unimportant" | "unimportant"
   interests         Interest[]
   chats             Chat[]
   company           Company    @relation(fields: [companyId], references: [id])

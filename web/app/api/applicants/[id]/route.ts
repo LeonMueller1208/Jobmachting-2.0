@@ -15,10 +15,12 @@ export async function PUT(
       education, 
       bio, 
       industry,
-      workValues,
-      teamStyle,
-      workEnvironment,
-      motivation
+      hierarchy,
+      autonomy,
+      teamwork,
+      workStructure,
+      feedback,
+      flexibility
     } = await request.json();
 
     const updatedApplicant = await prisma.applicant.update({
@@ -31,10 +33,12 @@ export async function PUT(
         education: education || null,
         bio: bio || null,
         industry: industry || null,
-        workValues: workValues || null,
-        teamStyle: teamStyle || null,
-        workEnvironment: workEnvironment || null,
-        motivation: motivation || null,
+        hierarchy: hierarchy ? Number(hierarchy) : null,
+        autonomy: autonomy ? Number(autonomy) : null,
+        teamwork: teamwork ? Number(teamwork) : null,
+        workStructure: workStructure ? Number(workStructure) : null,
+        feedback: feedback ? Number(feedback) : null,
+        flexibility: flexibility ? Number(flexibility) : null,
       },
     });
     return NextResponse.json(updatedApplicant);

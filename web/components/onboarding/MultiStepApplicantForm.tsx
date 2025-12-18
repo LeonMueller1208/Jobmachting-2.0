@@ -10,14 +10,16 @@ import Step3Experience from "./steps/Step3Experience";
 import Step4Education from "./steps/Step4Education";
 import Step5Skills from "./steps/Step5Skills";
 import Step6Industry from "./steps/Step6Industry";
-import Step7WorkValues from "./steps/Step7WorkValues";
-import Step8TeamStyle from "./steps/Step8TeamStyle";
-import Step9WorkEnvironment from "./steps/Step9WorkEnvironment";
-import Step10Motivation from "./steps/Step10Motivation";
-import Step11Bio from "./steps/Step7Bio";
-import Step12Summary from "./steps/Step8Summary";
+import Step7Hierarchy from "./steps/Step7Hierarchy";
+import Step8Autonomy from "./steps/Step8Autonomy";
+import Step9Teamwork from "./steps/Step9Teamwork";
+import Step10WorkStructure from "./steps/Step10WorkStructure";
+import Step11Feedback from "./steps/Step11Feedback";
+import Step12Flexibility from "./steps/Step12Flexibility";
+import Step13Bio from "./steps/Step7Bio";
+import Step14Summary from "./steps/Step8Summary";
 
-const TOTAL_STEPS = 12;
+const TOTAL_STEPS = 14;
 const DRAFT_KEY = "applicant_onboarding_draft";
 
 export default function MultiStepApplicantForm() {
@@ -35,10 +37,12 @@ export default function MultiStepApplicantForm() {
   const [education, setEducation] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [industry, setIndustry] = useState("");
-  const [workValues, setWorkValues] = useState<string[]>([]);
-  const [teamStyle, setTeamStyle] = useState("");
-  const [workEnvironment, setWorkEnvironment] = useState("");
-  const [motivation, setMotivation] = useState("");
+  const [hierarchy, setHierarchy] = useState<number>(0);
+  const [autonomy, setAutonomy] = useState<number>(0);
+  const [teamwork, setTeamwork] = useState<number>(0);
+  const [workStructure, setWorkStructure] = useState<number>(0);
+  const [feedback, setFeedback] = useState<number>(0);
+  const [flexibility, setFlexibility] = useState<number>(0);
   const [bio, setBio] = useState("");
 
   // Scroll to top on initial load
@@ -84,10 +88,12 @@ export default function MultiStepApplicantForm() {
         education,
         skills,
         industry,
-        workValues,
-        teamStyle,
-        workEnvironment,
-        motivation,
+        hierarchy,
+        autonomy,
+        teamwork,
+        workStructure,
+        feedback,
+        flexibility,
         bio,
         currentStep,
         timestamp: Date.now()
@@ -107,10 +113,12 @@ export default function MultiStepApplicantForm() {
       setEducation(parsed.education || "");
       setSkills(parsed.skills || []);
       setIndustry(parsed.industry || "");
-      setWorkValues(parsed.workValues || []);
-      setTeamStyle(parsed.teamStyle || "");
-      setWorkEnvironment(parsed.workEnvironment || "");
-      setMotivation(parsed.motivation || "");
+      setHierarchy(parsed.hierarchy || 0);
+      setAutonomy(parsed.autonomy || 0);
+      setTeamwork(parsed.teamwork || 0);
+      setWorkStructure(parsed.workStructure || 0);
+      setFeedback(parsed.feedback || 0);
+      setFlexibility(parsed.flexibility || 0);
       setBio(parsed.bio || "");
       setCurrentStep(parsed.currentStep || 1);
     }
@@ -136,20 +144,28 @@ export default function MultiStepApplicantForm() {
       alert("Bitte mindestens 1 Skill auswählen");
       return;
     }
-    if (currentStep === 7 && workValues.length === 0) {
-      alert("Bitte mindestens einen Wert auswählen");
+    if (currentStep === 7 && !hierarchy) {
+      alert("Bitte eine Hierarchie-Option auswählen");
       return;
     }
-    if (currentStep === 8 && !teamStyle) {
-      alert("Bitte einen Teamstil auswählen");
+    if (currentStep === 8 && !autonomy) {
+      alert("Bitte eine Autonomie-Option auswählen");
       return;
     }
-    if (currentStep === 9 && !workEnvironment) {
-      alert("Bitte ein Arbeitsumfeld auswählen");
+    if (currentStep === 9 && !teamwork) {
+      alert("Bitte eine Teamarbeit-Option auswählen");
       return;
     }
-    if (currentStep === 10 && !motivation) {
-      alert("Bitte einen Motivator auswählen");
+    if (currentStep === 10 && !workStructure) {
+      alert("Bitte eine Bewertung für Arbeitsstruktur auswählen");
+      return;
+    }
+    if (currentStep === 11 && !feedback) {
+      alert("Bitte eine Bewertung für Feedback auswählen");
+      return;
+    }
+    if (currentStep === 12 && !flexibility) {
+      alert("Bitte eine Flexibilität-Option auswählen");
       return;
     }
 
@@ -173,7 +189,7 @@ export default function MultiStepApplicantForm() {
   }
 
   async function handleSubmit() {
-    if (!name || !email || skills.length === 0 || !location || workValues.length === 0 || !teamStyle || !workEnvironment || !motivation) {
+    if (!name || !email || skills.length === 0 || !location || !hierarchy || !autonomy || !teamwork || !workStructure || !feedback || !flexibility) {
       alert("Bitte alle Pflichtfelder ausfüllen");
       return;
     }
@@ -192,10 +208,12 @@ export default function MultiStepApplicantForm() {
           education, 
           bio, 
           industry,
-          workValues,
-          teamStyle,
-          workEnvironment,
-          motivation
+          hierarchy,
+          autonomy,
+          teamwork,
+          workStructure,
+          feedback,
+          flexibility
         }),
       });
 
@@ -218,7 +236,7 @@ export default function MultiStepApplicantForm() {
     }
   }
 
-  const formData = { name, email, location, experience, education, skills, industry, workValues, teamStyle, workEnvironment, motivation, bio };
+  const formData = { name, email, location, experience, education, skills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, bio };
 
   return (
     <>
@@ -248,22 +266,28 @@ export default function MultiStepApplicantForm() {
               <Step6Industry industry={industry} setIndustry={setIndustry} onSkip={skipStep} />
             )}
             {currentStep === 7 && (
-              <Step7WorkValues workValues={workValues} setWorkValues={setWorkValues} />
+              <Step7Hierarchy hierarchy={hierarchy} setHierarchy={setHierarchy} />
             )}
             {currentStep === 8 && (
-              <Step8TeamStyle teamStyle={teamStyle} setTeamStyle={setTeamStyle} />
+              <Step8Autonomy autonomy={autonomy} setAutonomy={setAutonomy} />
             )}
             {currentStep === 9 && (
-              <Step9WorkEnvironment workEnvironment={workEnvironment} setWorkEnvironment={setWorkEnvironment} />
+              <Step9Teamwork teamwork={teamwork} setTeamwork={setTeamwork} />
             )}
             {currentStep === 10 && (
-              <Step10Motivation motivation={motivation} setMotivation={setMotivation} />
+              <Step10WorkStructure workStructure={workStructure} setWorkStructure={setWorkStructure} />
             )}
             {currentStep === 11 && (
-              <Step11Bio bio={bio} setBio={setBio} onSkip={skipStep} />
+              <Step11Feedback feedback={feedback} setFeedback={setFeedback} />
             )}
             {currentStep === 12 && (
-              <Step12Summary formData={formData} onEdit={goToStep} />
+              <Step12Flexibility flexibility={flexibility} setFlexibility={setFlexibility} />
+            )}
+            {currentStep === 13 && (
+              <Step13Bio bio={bio} setBio={setBio} onSkip={skipStep} />
+            )}
+            {currentStep === 14 && (
+              <Step14Summary formData={formData} onEdit={goToStep} />
             )}
           </StepTransition>
 

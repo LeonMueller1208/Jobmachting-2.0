@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, requiredSkills, location, minExperience, requiredEducation, jobType, industry, workValues, teamStyle, workEnvironment, motivation, companyId } = body ?? {};
+    const { title, description, requiredSkills, location, minExperience, requiredEducation, jobType, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, companyId } = body ?? {};
     
     if (!title || !description || !Array.isArray(requiredSkills) || requiredSkills.length === 0 || !location || !companyId) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
@@ -45,10 +45,12 @@ export async function POST(request: Request) {
         requiredEducation: requiredEducation || null,
         jobType: jobType || null,
         industry: industry || null,
-        workValues: workValues || null,
-        teamStyle: teamStyle || null,
-        workEnvironment: workEnvironment || null,
-        motivation: motivation || null,
+        hierarchy: hierarchy ? Number(hierarchy) : null,
+        autonomy: autonomy ? Number(autonomy) : null,
+        teamwork: teamwork ? Number(teamwork) : null,
+        workStructure: workStructure ? Number(workStructure) : null,
+        feedback: feedback ? Number(feedback) : null,
+        flexibility: flexibility ? Number(flexibility) : null,
         companyId,
       },
       include: { company: true },

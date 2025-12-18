@@ -9,39 +9,51 @@ interface Step8SummaryProps {
     education: string;
     skills: string[];
     industry: string;
-    workValues: string[];
-    teamStyle: string;
-    workEnvironment: string;
-    motivation: string;
+    hierarchy: number;
+    autonomy: number;
+    teamwork: number;
+    workStructure: number;
+    feedback: number;
+    flexibility: number;
     bio: string;
   };
   onEdit: (step: number) => void;
 }
 
-const WORK_VALUES_LABELS: { [key: string]: string } = {
-  security: "🛡️ Sicherheit & Stabilität",
-  fun: "🎉 Spaß & Atmosphäre",
-  development: "📈 Entwicklung & Lernen",
-  purpose: "🌍 Sinn & Beitrag"
+const HIERARCHY_LABELS: { [key: number]: string } = {
+  1: "Sehr flach – Entscheidungen auf Augenhöhe",
+  2: "Eher flach – Führung gibt Orientierung",
+  3: "Eher klar – feste Ebenen helfen mir",
+  4: "Sehr klar – Hierarchie gibt mir Sicherheit"
 };
 
-const TEAM_STYLE_LABELS: { [key: string]: string } = {
-  close: "👥 Eng im Team",
-  balanced: "🤝 Ausgewogen",
-  independent: "🎯 Eigenständig"
+const AUTONOMY_LABELS: { [key: number]: string } = {
+  1: "Sehr wenig – klare Vorgaben sind mir wichtig",
+  2: "Etwas – mit klaren Rahmenbedingungen",
+  3: "Viel – ich treffe viele Entscheidungen selbst",
+  4: "Sehr viel – maximale Eigenverantwortung"
 };
 
-const WORK_ENV_LABELS: { [key: string]: string } = {
-  quiet: "🤫 Ruhig & konzentriert",
-  lively: "💬 Lebendig & kommunikativ",
-  structured: "📋 Strukturiert & organisiert"
+const TEAMWORK_LABELS: { [key: number]: string } = {
+  1: "Sehr wichtig – ich arbeite fast immer im Team",
+  2: "Wichtig – Mischung aus Team- und Einzelarbeit",
+  3: "Eher unwichtig – ich arbeite meist allein",
+  4: "Unwichtig – ich arbeite am liebsten selbstständig"
 };
 
-const MOTIVATION_LABELS: { [key: string]: string } = {
-  recognition: "🏆 Anerkennung",
-  responsibility: "🎯 Verantwortung",
-  success: "📊 Erfolg",
-  learning: "💡 Lernen & Innovation"
+const FLEXIBILITY_LABELS: { [key: number]: string } = {
+  1: "Sehr wichtig – ohne Flexibilität geht es nicht",
+  2: "Wichtig – ein Plus, aber kein Muss",
+  3: "Eher unwichtig – feste Zeiten sind okay",
+  4: "Unwichtig – feste Strukturen bevorzuge ich"
+};
+
+const SCALE_LABELS: { [key: number]: string } = {
+  1: "Trifft gar nicht zu",
+  2: "Trifft eher nicht zu",
+  3: "Neutral",
+  4: "Trifft eher zu",
+  5: "Trifft voll zu"
 };
 
 export default function Step8Summary({ formData, onEdit }: Step8SummaryProps) {
@@ -160,27 +172,29 @@ export default function Step8Summary({ formData, onEdit }: Step8SummaryProps) {
             </button>
           </div>
           <div className="space-y-3 text-sm">
-            <div>
-              <span className="font-medium text-gray-700">Was dir wichtig ist:</span>
-              <div className="mt-1 flex flex-wrap gap-2">
-                {formData.workValues.map(val => (
-                  <span key={val} className="px-3 py-1 bg-white rounded-full text-xs font-medium text-purple-700 border border-purple-200">
-                    {WORK_VALUES_LABELS[val] || val}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <p>
+              <span className="font-medium text-gray-700">Hierarchie:</span>{" "}
+              <span className="text-gray-800">{HIERARCHY_LABELS[formData.hierarchy] || "Nicht angegeben"}</span>
+            </p>
+            <p>
+              <span className="font-medium text-gray-700">Autonomie:</span>{" "}
+              <span className="text-gray-800">{AUTONOMY_LABELS[formData.autonomy] || "Nicht angegeben"}</span>
+            </p>
             <p>
               <span className="font-medium text-gray-700">Teamarbeit:</span>{" "}
-              <span className="text-gray-800">{TEAM_STYLE_LABELS[formData.teamStyle] || formData.teamStyle}</span>
+              <span className="text-gray-800">{TEAMWORK_LABELS[formData.teamwork] || "Nicht angegeben"}</span>
             </p>
             <p>
-              <span className="font-medium text-gray-700">Arbeitsumfeld:</span>{" "}
-              <span className="text-gray-800">{WORK_ENV_LABELS[formData.workEnvironment] || formData.workEnvironment}</span>
+              <span className="font-medium text-gray-700">Arbeitsstruktur:</span>{" "}
+              <span className="text-gray-800">{SCALE_LABELS[formData.workStructure] || "Nicht angegeben"}</span>
             </p>
             <p>
-              <span className="font-medium text-gray-700">Motivation:</span>{" "}
-              <span className="text-gray-800">{MOTIVATION_LABELS[formData.motivation] || formData.motivation}</span>
+              <span className="font-medium text-gray-700">Feedback & Kommunikation:</span>{" "}
+              <span className="text-gray-800">{SCALE_LABELS[formData.feedback] || "Nicht angegeben"}</span>
+            </p>
+            <p>
+              <span className="font-medium text-gray-700">Flexibilität:</span>{" "}
+              <span className="text-gray-800">{FLEXIBILITY_LABELS[formData.flexibility] || "Nicht angegeben"}</span>
             </p>
           </div>
         </div>
@@ -191,7 +205,7 @@ export default function Step8Summary({ formData, onEdit }: Step8SummaryProps) {
             <div className="flex justify-between items-start mb-3">
               <h3 className="font-semibold text-gray-800 text-lg">✍️ Über dich</h3>
               <button
-                onClick={() => onEdit(11)}
+                onClick={() => onEdit(13)}
                 className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
               >
                 Bearbeiten
