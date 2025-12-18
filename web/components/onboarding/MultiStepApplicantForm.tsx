@@ -100,7 +100,7 @@ export default function MultiStepApplicantForm() {
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [name, email, location, experience, education, skills, industry, workValues, teamStyle, workEnvironment, motivation, bio, currentStep]);
+  }, [name, email, location, experience, education, skills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, bio, currentStep]);
 
   function loadDraft() {
     const draft = localStorage.getItem(DRAFT_KEY);

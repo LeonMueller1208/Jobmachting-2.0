@@ -102,7 +102,7 @@ export default function MultiStepJobForm() {
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [title, description, location, jobType, minExperience, requiredEducation, requiredSkills, industry, workValues, teamStyle, workEnvironment, motivation, currentStep]);
+  }, [title, description, location, jobType, minExperience, requiredEducation, requiredSkills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, currentStep]);
 
   function loadDraft() {
     const draft = localStorage.getItem(DRAFT_KEY);
