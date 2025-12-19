@@ -123,10 +123,12 @@ export async function POST(
     return NextResponse.json(template, { status: 201 });
   } catch (error) {
     console.error("Error creating chat template:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Full error:", error);
     return NextResponse.json(
       {
         error: "internal",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details: errorMessage,
       },
       { status: 500 }
     );
