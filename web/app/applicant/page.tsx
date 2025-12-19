@@ -877,33 +877,43 @@ export default function ApplicantDashboard() {
                 </div>
               ) : (
                 <div className="grid gap-4">
-                    {chats.map(chat => (
-                      <div key={chat.id} className={`ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)] ${chatFilter === "archived" ? "opacity-75" : ""}`}>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
-                                Chat mit {chat.company.name}
-                              </h3>
-                              {chat._count && chat._count.messages > 0 && chatFilter === "active" && (
-                                <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full shadow-lg">
-                                  {chat._count.messages}
-                                </span>
-                              )}
-                            </div>
-                            <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
-                            <div className="flex flex-col gap-1 mt-1">
-                              {chat.messages && chat.messages.length > 0 ? (
-                                <p className="ds-body-light text-xs sm:text-sm">
-                                  Letzte Nachricht: {formatLastMessageTime(chat.messages[0].createdAt)}
-                                </p>
-                              ) : (
-                                <p className="ds-body-light text-xs sm:text-sm">
-                                  Chat gestartet: {formatChatStartDate(chat.createdAt)}
-                                </p>
-                              )}
-                            </div>
+                  {chats.map(chat => (
+                    <div key={chat.id} className={`ds-card p-3 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)] ${chatFilter === "archived" ? "opacity-75" : ""}`}>
+                      <div className="flex flex-col gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm sm:text-lg ds-subheading mb-1 break-words">
+                              Chat mit {chat.company.name}
+                            </h3>
+                            {chat._count && chat._count.messages > 0 && chatFilter === "active" && (
+                              <span className="inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 text-xs font-bold text-white bg-red-500 rounded-full shadow-lg">
+                                {chat._count.messages}
+                              </span>
+                            )}
                           </div>
+                          <p className="ds-body-light text-xs sm:text-base">{chat.job.title}</p>
+                          <div className="flex flex-col gap-1 mt-1">
+                            {chat.messages && chat.messages.length > 0 ? (
+                              <p className="ds-body-light text-xs">
+                                Letzte Nachricht: {formatLastMessageTime(chat.messages[0].createdAt)}
+                              </p>
+                            ) : (
+                              <p className="ds-body-light text-xs">
+                                Chat gestartet: {formatChatStartDate(chat.createdAt)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <button
+                            onClick={() => openChat(chat)}
+                            className="ds-button-primary-green text-xs sm:text-base py-2"
+                          >
+                            <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            Chat öffnen
+                          </button>
                           <div className="flex gap-2">
                             {chatFilter === "active" && (
                               <button
@@ -911,13 +921,13 @@ export default function ApplicantDashboard() {
                                   e.stopPropagation();
                                   archiveChat(chat.id, true);
                                 }}
-                                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1"
+                                className="px-2 sm:px-3 py-2 text-xs sm:text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1 flex-1 sm:flex-initial justify-center"
                                 title="Chat archivieren"
                               >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                                 </svg>
-                                <span className="hidden sm:inline">Archivieren</span>
+                                <span>Archivieren</span>
                               </button>
                             )}
                             {chatFilter === "archived" && (
@@ -926,25 +936,17 @@ export default function ApplicantDashboard() {
                                   e.stopPropagation();
                                   archiveChat(chat.id, false);
                                 }}
-                                className="px-3 py-2 text-sm text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-1"
+                                className="px-2 sm:px-3 py-2 text-xs sm:text-sm text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-1 flex-1 sm:flex-initial justify-center"
                                 title="Chat wiederherstellen"
                               >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
-                                <span className="hidden sm:inline">Wiederherstellen</span>
+                                <span>Wiederherstellen</span>
                               </button>
                             )}
-                            <button
-                              onClick={() => openChat(chat)}
-                              className="ds-button-primary-green text-sm sm:text-base flex-1 sm:flex-initial"
-                            >
-                              <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                              </svg>
-                              Chat öffnen
-                            </button>
                           </div>
+                        </div>
                         </div>
                       </div>
                   ))}
