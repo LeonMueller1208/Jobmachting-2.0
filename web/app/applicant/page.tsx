@@ -134,6 +134,13 @@ export default function ApplicantDashboard() {
         if (applicant?.id) {
           fetchChats(applicant.id);
         }
+        
+        // Show feedback message
+        if (archived) {
+          alert('Chat wurde archiviert. Du findest ihn unter "Archivierte Chats".');
+        } else {
+          alert('Chat wurde wiederhergestellt.');
+        }
       }
     } catch (error) {
       console.error('Error archiving chat:', error);

@@ -202,6 +202,13 @@ export default function CompanyDashboard() {
         if (company?.id) {
           fetchChats(company.id);
         }
+        
+        // Show feedback message
+        if (archived) {
+          alert('Chat wurde archiviert. Sie finden ihn unter "Archivierte Chats".');
+        } else {
+          alert('Chat wurde wiederhergestellt.');
+        }
       }
     } catch (error) {
       console.error('Error archiving chat:', error);
