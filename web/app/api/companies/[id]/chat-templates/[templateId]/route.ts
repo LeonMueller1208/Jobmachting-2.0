@@ -7,11 +7,10 @@ import { prisma } from "@/lib/prisma";
  */
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string; templateId: string } }
+  { params }: { params: Promise<{ id: string; templateId: string }> }
 ) {
   try {
-    const companyId = params.id;
-    const templateId = params.templateId;
+    const { id: companyId, templateId } = await params;
     const body = await request.json();
     const { name, content } = body;
 
@@ -80,11 +79,10 @@ export async function PUT(
  */
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string; templateId: string } }
+  { params }: { params: Promise<{ id: string; templateId: string }> }
 ) {
   try {
-    const companyId = params.id;
-    const templateId = params.templateId;
+    const { id: companyId, templateId } = await params;
 
     if (!companyId || !templateId) {
       return NextResponse.json(

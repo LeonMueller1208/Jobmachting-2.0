@@ -8,10 +8,10 @@ import { DEFAULT_TEMPLATES } from "@/lib/chatTemplates";
  */
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const companyId = params.id;
+    const { id: companyId } = await params;
 
     if (!companyId) {
       return NextResponse.json(
@@ -77,10 +77,10 @@ export async function GET(
  */
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const companyId = params.id;
+    const { id: companyId } = await params;
     const body = await request.json();
     const { name, content } = body;
 
