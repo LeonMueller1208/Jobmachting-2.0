@@ -120,6 +120,7 @@ export default function ApplicantDashboard() {
       const response = await fetch(`/api/chats?userId=${applicantId}&userType=applicant&filter=${chatFilter}`);
       if (response.ok) {
         const chatsData = await response.json();
+        console.log('Fetched chats:', chatsData, 'Filter:', chatFilter);
         setChats(Array.isArray(chatsData) ? chatsData : []);
       }
     } catch (error) {
@@ -130,6 +131,7 @@ export default function ApplicantDashboard() {
 
   async function archiveChat(chatId: string, archived: boolean) {
     try {
+      console.log('Archiving chat:', chatId, 'archived:', archived, 'current filter:', chatFilter);
       const response = await fetch(`/api/chats/${chatId}/archive`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -137,7 +139,10 @@ export default function ApplicantDashboard() {
       });
       
       if (response.ok) {
-        // Refresh chats list
+        const result = await response.json();
+        console.log('Archive response:', result);
+        
+        // Refresh chats list - this will use the current chatFilter
         if (applicant?.id) {
           fetchChats(applicant.id);
         }
