@@ -31,16 +31,17 @@ model Applicant {
 }
 
 model Company {
-  id           String   @id @default(cuid())
+  id           String        @id @default(cuid())
   name         String
-  email        String   @unique
-  passwordHash String?  // Hashed password (optional for backward compatibility with existing accounts)
+  email        String        @unique
+  passwordHash String?        // Hashed password (optional for backward compatibility with existing accounts)
   industry     String
   location     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   jobs         Job[]
   chats        Chat[]
+  chatTemplates ChatTemplate[]
 }
 
 model Job {
@@ -110,4 +111,17 @@ model Message {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
   chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+model ChatTemplate {
+  id        String   @id @default(cuid())
+  companyId String
+  name      String
+  content   String
+  isDefault Boolean  @default(false) // true for predefined templates
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
 }

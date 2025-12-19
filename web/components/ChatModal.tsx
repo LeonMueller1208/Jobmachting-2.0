@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { formatChatStartDate } from "@/lib/dateUtils";
+import { replacePlaceholders, type PlaceholderData } from "@/lib/chatTemplates";
 
 type Chat = {
   id: string;
@@ -36,6 +37,8 @@ interface ChatModalProps {
   chatCreatedAt: string;
   userType: 'applicant' | 'company';
   onMessagesRead?: () => void;
+  companyName?: string;
+  applicantEmail?: string;
 }
 
 export default function ChatModal({
@@ -48,20 +51,27 @@ export default function ChatModal({
   jobTitle,
   chatCreatedAt,
   userType,
-  onMessagesRead
+  onMessagesRead,
+  companyName = '',
+  applicantEmail = ''
 }: ChatModalProps) {
   const [chat, setChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       createOrGetChat();
+      if (userType === 'company' && companyId) {
+        fetchTemplates();
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, userType, companyId]);
 
   useEffect(() => {
     if (chat) {
@@ -132,18 +142,56 @@ export default function ChatModal({
     }
   }
 
+  async function fetchTemplates() {
+    try {
+      const response = await fetch(`/api/companies/${companyId}/chat-templates`);
+      if (response.ok) {
+        const data = await response.json();
+        setTemplates(data);
+      }
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+    }
+  }
+
+  function handleTemplateSelect(template: any) {
+    if (userType === 'company') {
+      const placeholderData: PlaceholderData = {
+        applicantName,
+        jobTitle,
+        companyName: companyName || '',
+        applicantEmail: applicantEmail || '',
+      };
+      const filledTemplate = replacePlaceholders(template.content, placeholderData);
+      setNewMessage(filledTemplate);
+      setShowTemplateDropdown(false);
+    }
+  }
+
   async function sendMessage() {
     if (!newMessage.trim() || !chat || sending) return;
 
     setSending(true);
     try {
+      // Replace placeholders before sending (in case user edited the template)
+      let messageContent = newMessage.trim();
+      if (userType === 'company') {
+        const placeholderData: PlaceholderData = {
+          applicantName,
+          jobTitle,
+          companyName: companyName || '',
+          applicantEmail: applicantEmail || '',
+        };
+        messageContent = replacePlaceholders(messageContent, placeholderData);
+      }
+
       const response = await fetch(`/api/chats/${chat.id}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           senderId: userType === 'applicant' ? applicantId : companyId,
           senderType: userType,
-          content: newMessage.trim()
+          content: messageContent
         })
       });
 
@@ -240,6 +288,47 @@ export default function ChatModal({
         {/* Input */}
         <div className="border-t border-gray-200 p-3 sm:p-4 bg-gray-50">
           <div className="flex space-x-2">
+            {userType === 'company' && templates.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowTemplateDropdown(!showTemplateDropdown)}
+                  className="px-2 sm:px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors touch-manipulation min-w-[44px] min-h-[60px] sm:min-h-[44px] flex items-center justify-center shrink-0"
+                  title="Vorlage verwenden"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </button>
+                {showTemplateDropdown && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowTemplateDropdown(false)}
+                    />
+                    <div className="absolute bottom-full left-0 mb-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
+                      <div className="p-2 border-b border-gray-200">
+                        <p className="text-xs font-semibold text-gray-700">Vorlage auswählen</p>
+                      </div>
+                      {templates.map((template) => (
+                        <button
+                          key={template.id}
+                          onClick={() => handleTemplateSelect(template)}
+                          className="w-full text-left p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                        >
+                          <div className="font-medium text-sm text-gray-900 mb-1">
+                            {template.name}
+                          </div>
+                          <div className="text-xs text-gray-600 line-clamp-2">
+                            {template.content.substring(0, 80)}
+                            {template.content.length > 80 ? '...' : ''}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             <textarea
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}

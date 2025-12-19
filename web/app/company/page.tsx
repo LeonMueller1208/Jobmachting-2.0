@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import ChatModal from "@/components/ChatModal";
+import ChatTemplateManager from "@/components/ChatTemplateManager";
 import { computeMatchingScore } from "@/lib/matching";
 import { formatLastMessageTime, formatChatStartDate } from "@/lib/dateUtils";
 
@@ -733,6 +734,9 @@ export default function CompanyDashboard() {
         {/* Chats Tab */}
         {activeTab === "chats" && (
           <div className="space-y-6">
+            {/* Chat Templates Manager */}
+            {company && <ChatTemplateManager companyId={company.id} />}
+            
             <div className="mb-6 sm:mb-8">
               <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Chats</h2>
               
@@ -1149,6 +1153,8 @@ export default function CompanyDashboard() {
         chatCreatedAt={chatModal.chatCreatedAt || new Date().toISOString()}
         userType="company"
         onMessagesRead={fetchData}
+        companyName={company?.name || ''}
+        applicantEmail={chats.find(c => c.applicant.id === chatModal.applicantId)?.applicant.email || ''}
       />
 
       {/* Applicant Details Modal */}
