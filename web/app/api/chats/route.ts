@@ -100,7 +100,9 @@ export async function POST(request: NextRequest) {
       data: {
         applicantId,
         companyId,
-        jobId
+        jobId,
+        archivedByApplicant: false,
+        archivedByCompany: false
       },
       include: {
         applicant: {
