@@ -340,8 +340,8 @@ export default function ChatModal({
               onKeyPress={handleKeyPress}
               placeholder="Nachricht eingeben..."
               className="flex-1 border border-gray-300 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-              style={{ fontSize: '16px' }}
-              rows={2}
+              style={{ fontSize: '16px', minHeight: '80px' }}
+              rows={3}
               disabled={sending}
             />
             <button
