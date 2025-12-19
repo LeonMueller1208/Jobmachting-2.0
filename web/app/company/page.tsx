@@ -832,6 +832,7 @@ export default function CompanyDashboard() {
                               Chat öffnen
                             </button>
                           </div>
+                        </div>
                       </div>
                     ))}
                   </div>
