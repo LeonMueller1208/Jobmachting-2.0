@@ -22,6 +22,8 @@ export default function MultiStepCompanyForm() {
   // Form Data
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [industry, setIndustry] = useState("");
   const [location, setLocation] = useState("");
 
@@ -91,9 +93,19 @@ export default function MultiStepCompanyForm() {
 
   function nextStep() {
     // Validation per step
-    if (currentStep === 1 && (!name || !email)) {
-      alert("Bitte Name und E-Mail eingeben");
-      return;
+    if (currentStep === 1) {
+      if (!name || !email) {
+        alert("Bitte Name und E-Mail eingeben");
+        return;
+      }
+      if (!password || password.length < 8) {
+        alert("Bitte ein Passwort mit mindestens 8 Zeichen eingeben");
+        return;
+      }
+      if (password !== passwordConfirm) {
+        alert("Die Passwörter stimmen nicht überein");
+        return;
+      }
     }
     if (currentStep === 2 && !industry) {
       alert("Bitte Branche wählen");
@@ -119,8 +131,8 @@ export default function MultiStepCompanyForm() {
   }
 
   async function handleSubmit() {
-    if (!name || !email || !industry || !location) {
-      alert("Bitte alle Felder ausfüllen");
+    if (!name || !email || !password || password.length < 8 || password !== passwordConfirm || !industry || !location) {
+      alert("Bitte alle Felder ausfüllen und Passwort bestätigen");
       return;
     }
 
@@ -129,7 +141,7 @@ export default function MultiStepCompanyForm() {
       const res = await fetch("/api/companies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, industry, location }),
+        body: JSON.stringify({ name, email, password, industry, location }),
       });
 
       if (res.ok) {
@@ -163,7 +175,16 @@ export default function MultiStepCompanyForm() {
           {/* Step Content */}
           <StepTransition direction={direction}>
             {currentStep === 1 && (
-              <CompanyStep1Basics name={name} email={email} setName={setName} setEmail={setEmail} />
+              <CompanyStep1Basics 
+                name={name} 
+                email={email} 
+                password={password}
+                passwordConfirm={passwordConfirm}
+                setName={setName} 
+                setEmail={setEmail}
+                setPassword={setPassword}
+                setPasswordConfirm={setPasswordConfirm}
+              />
             )}
             {currentStep === 2 && (
               <CompanyStep2Industry industry={industry} setIndustry={setIndustry} />

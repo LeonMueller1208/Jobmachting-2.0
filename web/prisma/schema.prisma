@@ -11,6 +11,7 @@ model Applicant {
   id              String     @id @default(cuid())
   name            String
   email           String     @unique
+  passwordHash    String?    // Hashed password (optional for backward compatibility with existing accounts)
   skills          Json
   location        String
   experience      Int
@@ -30,15 +31,16 @@ model Applicant {
 }
 
 model Company {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  industry  String
-  location  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  jobs      Job[]
-  chats     Chat[]
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String?  // Hashed password (optional for backward compatibility with existing accounts)
+  industry     String
+  location     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  jobs         Job[]
+  chats        Chat[]
 }
 
 model Job {

@@ -32,6 +32,8 @@ export default function MultiStepApplicantForm() {
   // Form Data
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState(0);
   const [education, setEducation] = useState("");
@@ -77,7 +79,7 @@ export default function MultiStepApplicantForm() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep]);
 
-  // Auto-save to localStorage on every change
+  // Auto-save to localStorage on every change (don't save passwords for security)
   useEffect(() => {
     if (name || email || location || skills.length > 0) {
       const draft = {
@@ -132,9 +134,19 @@ export default function MultiStepApplicantForm() {
 
   function nextStep() {
     // Validation per step
-    if (currentStep === 1 && (!name || !email)) {
-      alert("Bitte Name und E-Mail eingeben");
-      return;
+    if (currentStep === 1) {
+      if (!name || !email) {
+        alert("Bitte Name und E-Mail eingeben");
+        return;
+      }
+      if (!password || password.length < 8) {
+        alert("Bitte ein Passwort mit mindestens 8 Zeichen eingeben");
+        return;
+      }
+      if (password !== passwordConfirm) {
+        alert("Die Passwörter stimmen nicht überein");
+        return;
+      }
     }
     if (currentStep === 2 && !location) {
       alert("Bitte Standort wählen");
@@ -189,8 +201,8 @@ export default function MultiStepApplicantForm() {
   }
 
   async function handleSubmit() {
-    if (!name || !email || skills.length === 0 || !location || !hierarchy || !autonomy || !teamwork || !workStructure || !feedback || !flexibility) {
-      alert("Bitte alle Pflichtfelder ausfüllen");
+    if (!name || !email || !password || password.length < 8 || password !== passwordConfirm || skills.length === 0 || !location || !hierarchy || !autonomy || !teamwork || !workStructure || !feedback || !flexibility) {
+      alert("Bitte alle Pflichtfelder ausfüllen und Passwort bestätigen");
       return;
     }
 
@@ -201,7 +213,8 @@ export default function MultiStepApplicantForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           name, 
-          email, 
+          email,
+          password,
           skills, 
           location, 
           experience, 
@@ -248,7 +261,16 @@ export default function MultiStepApplicantForm() {
           {/* Step Content */}
           <StepTransition direction={direction}>
             {currentStep === 1 && (
-              <Step1Basics name={name} email={email} setName={setName} setEmail={setEmail} />
+              <Step1Basics 
+                name={name} 
+                email={email} 
+                password={password}
+                passwordConfirm={passwordConfirm}
+                setName={setName} 
+                setEmail={setEmail}
+                setPassword={setPassword}
+                setPasswordConfirm={setPasswordConfirm}
+              />
             )}
             {currentStep === 2 && (
               <Step2Location location={location} setLocation={setLocation} />
