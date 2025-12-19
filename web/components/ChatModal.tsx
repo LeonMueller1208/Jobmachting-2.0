@@ -33,6 +33,7 @@ interface ChatModalProps {
   jobId: string;
   applicantName: string;
   jobTitle: string;
+  chatCreatedAt: string;
   userType: 'applicant' | 'company';
   onMessagesRead?: () => void;
 }

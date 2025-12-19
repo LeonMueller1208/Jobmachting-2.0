@@ -18,6 +18,7 @@ interface ApplicantChatModalProps {
   companyName: string;
   jobTitle: string;
   applicantId: string;
+  chatCreatedAt: string;
   onMessagesRead?: () => void;
 }
 
