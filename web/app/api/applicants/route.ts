@@ -63,8 +63,6 @@ export async function GET(request: Request) {
   }
 }
 
-import { hashPassword, validatePassword } from "@/lib/auth";
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
