@@ -46,6 +46,7 @@ export default function ChatModal({
   jobId,
   applicantName,
   jobTitle,
+  chatCreatedAt,
   userType,
   onMessagesRead
 }: ChatModalProps) {
@@ -175,11 +176,9 @@ export default function ChatModal({
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Chat mit {applicantName}</h3>
             <p className="text-sm text-gray-500">{jobTitle}</p>
-            {chat && (
-              <p className="text-xs text-gray-400 mt-1">
-                Chat gestartet: {formatChatStartDate(chat.createdAt)}
-              </p>
-            )}
+            <p className="text-xs text-gray-400 mt-1">
+              {formatChatStartDate(chatCreatedAt)}
+            </p>
           </div>
           <button
             onClick={onClose}
