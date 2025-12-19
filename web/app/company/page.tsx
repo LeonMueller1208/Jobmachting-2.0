@@ -251,7 +251,7 @@ export default function CompanyDashboard() {
       applicantName: interest.applicant.name,
       jobId: interest.job.id,
       jobTitle: interest.job.title,
-      chatCreatedAt: interest.createdAt
+      chatCreatedAt: undefined
     });
   }
 
