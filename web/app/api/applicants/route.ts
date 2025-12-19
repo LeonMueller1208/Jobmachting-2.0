@@ -84,44 +84,67 @@ export async function POST(request: Request) {
     }
     
     // Hash password if provided
-    const passwordHash = password ? await hashPassword(password) : undefined;
+    let passwordHash: string | null = null;
+    if (password) {
+      try {
+        passwordHash = await hashPassword(password);
+      } catch (error) {
+        console.error("Password hashing error:", error);
+        return NextResponse.json(
+          { error: "Fehler beim Verschlüsseln des Passworts" },
+          { status: 500 }
+        );
+      }
+    }
+    
+    // Build update and create objects
+    const updateData: any = { 
+      name, 
+      skills, 
+      location, 
+      experience: Number(experience) || 0, 
+      education: education || null,
+      bio: bio || null, 
+      industry: industry || null,
+      hierarchy: hierarchy ? Number(hierarchy) : null,
+      autonomy: autonomy ? Number(autonomy) : null,
+      teamwork: teamwork ? Number(teamwork) : null,
+      workStructure: workStructure ? Number(workStructure) : null,
+      feedback: feedback ? Number(feedback) : null,
+      flexibility: flexibility ? Number(flexibility) : null,
+    };
+    
+    // Only add passwordHash if it exists (migration might not be applied yet)
+    if (passwordHash !== null) {
+      updateData.passwordHash = passwordHash;
+    }
+    
+    const createData: any = { 
+      email, 
+      name,
+      skills, 
+      location, 
+      experience: Number(experience) || 0, 
+      education: education || null,
+      bio: bio || null, 
+      industry: industry || null,
+      hierarchy: hierarchy ? Number(hierarchy) : null,
+      autonomy: autonomy ? Number(autonomy) : null,
+      teamwork: teamwork ? Number(teamwork) : null,
+      workStructure: workStructure ? Number(workStructure) : null,
+      feedback: feedback ? Number(feedback) : null,
+      flexibility: flexibility ? Number(flexibility) : null
+    };
+    
+    // Only add passwordHash if it exists (migration might not be applied yet)
+    if (passwordHash !== null) {
+      createData.passwordHash = passwordHash;
+    }
     
     const upserted = await prisma.applicant.upsert({
       where: { email },
-      update: { 
-        name, 
-        skills, 
-        location, 
-        experience: Number(experience) || 0, 
-        education: education || null,
-        bio: bio || null, 
-        industry: industry || null,
-        hierarchy: hierarchy ? Number(hierarchy) : null,
-        autonomy: autonomy ? Number(autonomy) : null,
-        teamwork: teamwork ? Number(teamwork) : null,
-        workStructure: workStructure ? Number(workStructure) : null,
-        feedback: feedback ? Number(feedback) : null,
-        flexibility: flexibility ? Number(flexibility) : null,
-        // Only update passwordHash if password is provided
-        ...(passwordHash && { passwordHash })
-      },
-      create: { 
-        email, 
-        name,
-        passwordHash: passwordHash || null, // Allow null for backward compatibility, but recommend setting password
-        skills, 
-        location, 
-        experience: Number(experience) || 0, 
-        education: education || null,
-        bio: bio || null, 
-        industry: industry || null,
-        hierarchy: hierarchy ? Number(hierarchy) : null,
-        autonomy: autonomy ? Number(autonomy) : null,
-        teamwork: teamwork ? Number(teamwork) : null,
-        workStructure: workStructure ? Number(workStructure) : null,
-        feedback: feedback ? Number(feedback) : null,
-        flexibility: flexibility ? Number(flexibility) : null
-      },
+      update: updateData,
+      create: createData,
     });
     
     // Remove passwordHash from response (security)

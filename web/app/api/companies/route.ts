@@ -92,16 +92,34 @@ export async function POST(request: Request) {
     }
     
     // Hash password if provided
-    const passwordHash = password ? await hashPassword(password) : null;
+    let passwordHash: string | null = null;
+    if (password) {
+      try {
+        passwordHash = await hashPassword(password);
+      } catch (error) {
+        console.error("Password hashing error:", error);
+        return NextResponse.json(
+          { error: "Fehler beim Verschlüsseln des Passworts" },
+          { status: 500 }
+        );
+      }
+    }
+    
+    // Build create data object
+    const createData: any = { 
+      email, 
+      name, 
+      industry, 
+      location,
+    };
+    
+    // Only add passwordHash if it exists (migration might not be applied yet)
+    if (passwordHash !== null) {
+      createData.passwordHash = passwordHash;
+    }
     
     const company = await prisma.company.create({
-      data: { 
-        email, 
-        name, 
-        industry, 
-        location,
-        passwordHash: passwordHash || null, // Allow null for backward compatibility
-      },
+      data: createData,
     });
     
     // Remove passwordHash from response (security)
