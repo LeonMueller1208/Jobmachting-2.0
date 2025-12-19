@@ -738,30 +738,49 @@ export default function CompanyDashboard() {
               
               {/* Filter Tabs - Always visible */}
               <div className="flex gap-2 mb-4 border-b-2 border-gray-200">
-                    <button
-                      onClick={() => setChatFilter("active")}
-                      className={`px-4 py-2 font-semibold text-sm sm:text-base transition-colors ${
-                        chatFilter === "active"
-                          ? "text-blue-600 border-b-2 border-blue-600"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      Aktive Chats
-                    </button>
-                    <button
-                      onClick={() => setChatFilter("archived")}
-                      className={`px-4 py-2 font-semibold text-sm sm:text-base transition-colors ${
-                        chatFilter === "archived"
-                          ? "text-blue-600 border-b-2 border-blue-600"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      Archivierte Chats
-                    </button>
-                  </div>
+                <button
+                  onClick={() => setChatFilter("active")}
+                  className={`px-4 py-2 font-semibold text-sm sm:text-base transition-colors ${
+                    chatFilter === "active"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Aktive Chats
+                </button>
+                <button
+                  onClick={() => setChatFilter("archived")}
+                  className={`px-4 py-2 font-semibold text-sm sm:text-base transition-colors ${
+                    chatFilter === "archived"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Archivierte Chats
+                </button>
+              </div>
 
-                  <div className="grid gap-4">
-                    {chats.map(chat => (
+              {/* Chat List or Empty State */}
+              {chats.length === 0 ? (
+                <div className="ds-card p-8 text-center">
+                  <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl ds-heading mb-2">
+                    {chatFilter === "archived" ? "Keine archivierten Chats" : "Noch keine Chats"}
+                  </h3>
+                  <p className="ds-body-light">
+                    {chatFilter === "archived" 
+                      ? "Sie haben noch keine Chats archiviert. Archivierte Chats erscheinen hier."
+                      : "Sobald Bewerber Interesse an Ihren Stellen zeigen und Sie antworten, erscheinen Ihre Chats hier."
+                    }
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {chats.map(chat => (
                       <div key={chat.id} className={`ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)] ${chatFilter === "archived" ? "opacity-75" : ""}`}>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                           <div className="min-w-0 flex-1">
