@@ -67,11 +67,13 @@ export default function ApplicantDashboard() {
     chatId: string;
     companyName: string;
     jobTitle: string;
+    chatCreatedAt?: string;
   }>({
     isOpen: false,
     chatId: '',
     companyName: '',
-    jobTitle: ''
+    jobTitle: '',
+    chatCreatedAt: undefined
   });
   const [jobDetailsModal, setJobDetailsModal] = useState<{
     isOpen: boolean;
