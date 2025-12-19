@@ -69,12 +69,14 @@ export default function CompanyDashboard() {
     applicantName: string;
     jobId: string;
     jobTitle: string;
+    chatCreatedAt?: string;
   }>({
     isOpen: false,
     applicantId: '',
     applicantName: '',
     jobId: '',
-    jobTitle: ''
+    jobTitle: '',
+    chatCreatedAt: undefined
   });
   const [applicantDetailsModal, setApplicantDetailsModal] = useState<{
     isOpen: boolean;
@@ -248,7 +250,8 @@ export default function CompanyDashboard() {
       applicantId: interest.applicant.id,
       applicantName: interest.applicant.name,
       jobId: interest.job.id,
-      jobTitle: interest.job.title
+      jobTitle: interest.job.title,
+      chatCreatedAt: interest.createdAt
     });
   }
 
@@ -258,7 +261,8 @@ export default function CompanyDashboard() {
       applicantId: '',
       applicantName: '',
       jobId: '',
-      jobTitle: ''
+      jobTitle: '',
+      chatCreatedAt: undefined
     });
   }
 
@@ -822,7 +826,8 @@ export default function CompanyDashboard() {
                                 applicantId: chat.applicant.id,
                                 applicantName: chat.applicant.name,
                                 jobId: chat.job.id,
-                                jobTitle: chat.job.title
+                                jobTitle: chat.job.title,
+                                chatCreatedAt: chat.createdAt
                               })}
                               className="ds-button-primary-blue text-sm sm:text-base flex-1 sm:flex-initial"
                             >
@@ -1122,6 +1127,7 @@ export default function CompanyDashboard() {
         companyId={company?.id || ''}
         jobId={chatModal.jobId}
         jobTitle={chatModal.jobTitle}
+        chatCreatedAt={chatModal.chatCreatedAt || new Date().toISOString()}
         userType="company"
         onMessagesRead={fetchData}
       />

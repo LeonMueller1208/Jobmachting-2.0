@@ -1122,6 +1122,7 @@ export default function ApplicantDashboard() {
         companyName={chatModal.companyName}
         jobTitle={chatModal.jobTitle}
         applicantId={applicant.id}
+        chatCreatedAt={chatModal.chatCreatedAt || new Date().toISOString()}
         onMessagesRead={() => fetchChats(applicant.id)}
       />
 
