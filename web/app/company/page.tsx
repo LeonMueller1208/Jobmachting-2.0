@@ -831,7 +831,7 @@ export default function CompanyDashboard() {
                               </svg>
                               Chat öffnen
                             </button>
-                        </div>
+                          </div>
                       </div>
                     ))}
                   </div>
