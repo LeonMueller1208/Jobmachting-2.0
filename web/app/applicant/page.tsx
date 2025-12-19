@@ -142,16 +142,24 @@ export default function ApplicantDashboard() {
         const result = await response.json();
         console.log('Archive response:', result);
         
-        // Refresh chats list - this will use the current chatFilter
-        if (applicant?.id) {
+        // If restoring from archive, switch to active tab
+        if (!archived && chatFilter === "archived") {
+          setChatFilter("active");
+        }
+        // If archiving from active, switch to archived tab to show where it went
+        else if (archived && chatFilter === "active") {
+          setChatFilter("archived");
+        }
+        // Otherwise just refresh the current list
+        else if (applicant?.id) {
           fetchChats(applicant.id);
         }
         
         // Show feedback message
         if (archived) {
-          alert('Chat wurde archiviert. Du findest ihn unter "Archivierte Chats".');
+          alert('Chat wurde archiviert und in "Archivierte Chats" verschoben.');
         } else {
-          alert('Chat wurde wiederhergestellt.');
+          alert('Chat wurde wiederhergestellt und in "Aktive Chats" verschoben.');
         }
       }
     } catch (error) {
