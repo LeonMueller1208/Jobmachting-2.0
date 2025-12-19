@@ -379,7 +379,8 @@ export default function ApplicantDashboard() {
       isOpen: true,
       chatId: chat.id,
       companyName: chat.company.name,
-      jobTitle: chat.job.title
+      jobTitle: chat.job.title,
+      chatCreatedAt: chat.createdAt
     });
   }
 
@@ -388,7 +389,8 @@ export default function ApplicantDashboard() {
       isOpen: false,
       chatId: '',
       companyName: '',
-      jobTitle: ''
+      jobTitle: '',
+      chatCreatedAt: undefined
     });
   }
 
