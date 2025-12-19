@@ -55,22 +55,15 @@ export async function POST(
       }
     });
 
-    // Update chat's updatedAt timestamp and automatically unarchive if archived
-    // If applicant sends message, unarchive for applicant (they're active again)
-    // If company sends message, unarchive for company (they're active again)
-    const updateData: any = {
-      updatedAt: new Date()
-    };
-    
-    if (senderType === 'applicant') {
-      updateData.archivedByApplicant = false;
-    } else if (senderType === 'company') {
-      updateData.archivedByCompany = false;
-    }
-
+    // Update chat's updatedAt timestamp and automatically unarchive for BOTH sides
+    // When someone sends a message, the chat becomes active for both participants
     await prisma.chat.update({
       where: { id: chatId },
-      data: updateData
+      data: {
+        updatedAt: new Date(),
+        archivedByApplicant: false,
+        archivedByCompany: false
+      }
     });
 
     return NextResponse.json(message);
