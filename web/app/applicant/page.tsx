@@ -102,6 +102,13 @@ export default function ApplicantDashboard() {
   useEffect(() => {
     fetchJobs();
   }, [applicant?.id]);
+
+  // Reload chats when chatFilter changes
+  useEffect(() => {
+    if (applicant?.id) {
+      fetchChats(applicant.id);
+    }
+  }, [chatFilter, applicant?.id]);
   
   function handleCloseWelcome() {
     localStorage.setItem("applicant_welcome_shown", "true");
