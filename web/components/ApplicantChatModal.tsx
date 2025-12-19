@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { formatChatStartDate } from "@/lib/dateUtils";
 
 type Message = {
   id: string;
@@ -27,6 +28,7 @@ export default function ApplicantChatModal({
   companyName,
   jobTitle,
   applicantId,
+  chatCreatedAt,
   onMessagesRead
 }: ApplicantChatModalProps) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -129,6 +131,11 @@ export default function ApplicantChatModal({
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Chat mit {companyName}</h3>
             <p className="text-sm text-gray-500">{jobTitle}</p>
+            {chatCreatedAt && (
+              <p className="text-xs text-gray-400 mt-1">
+                Chat gestartet: {formatChatStartDate(chatCreatedAt)}
+              </p>
+            )}
           </div>
           <button
             onClick={onClose}

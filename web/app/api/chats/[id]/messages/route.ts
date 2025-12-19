@@ -55,10 +55,22 @@ export async function POST(
       }
     });
 
-    // Update chat's updatedAt timestamp
+    // Update chat's updatedAt timestamp and automatically unarchive if archived
+    // If applicant sends message, unarchive for applicant (they're active again)
+    // If company sends message, unarchive for company (they're active again)
+    const updateData: any = {
+      updatedAt: new Date()
+    };
+    
+    if (senderType === 'applicant') {
+      updateData.archivedByApplicant = false;
+    } else if (senderType === 'company') {
+      updateData.archivedByCompany = false;
+    }
+
     await prisma.chat.update({
       where: { id: chatId },
-      data: { updatedAt: new Date() }
+      data: updateData
     });
 
     return NextResponse.json(message);

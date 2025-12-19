@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import ChatModal from "@/components/ChatModal";
 import { computeMatchingScore } from "@/lib/matching";
+import { formatLastMessageTime, formatChatStartDate } from "@/lib/dateUtils";
 
 type Company = { 
   id: string; 
@@ -87,6 +88,7 @@ export default function CompanyDashboard() {
     matchScore: 0
   });
   const [interestFilter, setInterestFilter] = useState<"active" | "archived">("active");
+  const [chatFilter, setChatFilter] = useState<"active" | "archived">("active");
   const [rejectModal, setRejectModal] = useState<{
     isOpen: boolean;
     interestId: string;
@@ -135,20 +137,20 @@ export default function CompanyDashboard() {
         return;
       }
       
-      const [jobsRes, interestsRes, chatsRes] = await Promise.all([
+      const [jobsRes, interestsRes] = await Promise.all([
         fetch(`/api/jobs?companyId=${company.id}`),
-        fetch(`/api/interests?companyId=${company.id}`),
-        fetch(`/api/chats?userId=${company.id}&userType=company`)
+        fetch(`/api/interests?companyId=${company.id}`)
       ]);
       
       const jobsData = await jobsRes.json();
       const interestsData = await interestsRes.json();
-      const chatsData = await chatsRes.json();
       
       setJobs(Array.isArray(jobsData) ? jobsData : []);
       setInterests(Array.isArray(interestsData) ? interestsData : []);
       setFilteredInterests(Array.isArray(interestsData) ? interestsData : []);
-      setChats(Array.isArray(chatsData) ? chatsData : []);
+      
+      // Fetch chats separately with filter
+      fetchChats(company.id);
     } catch (error) {
       console.error("Error fetching data:", error);
       setJobs([]);
@@ -169,6 +171,39 @@ export default function CompanyDashboard() {
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
+    }
+  }
+
+  async function fetchChats(companyId: string) {
+    try {
+      const response = await fetch(`/api/chats?userId=${companyId}&userType=company&filter=${chatFilter}`);
+      if (response.ok) {
+        const chatsData = await response.json();
+        setChats(Array.isArray(chatsData) ? chatsData : []);
+      }
+    } catch (error) {
+      console.error('Error fetching chats:', error);
+      setChats([]);
+    }
+  }
+
+  async function archiveChat(chatId: string, archived: boolean) {
+    try {
+      const response = await fetch(`/api/chats/${chatId}/archive`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userType: 'company', archived })
+      });
+      
+      if (response.ok) {
+        // Refresh chats list
+        if (company?.id) {
+          fetchChats(company.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error archiving chat:', error);
+      alert('Fehler beim Archivieren des Chats');
     }
   }
 
@@ -199,6 +234,13 @@ export default function CompanyDashboard() {
   useEffect(() => {
     applyFilters(selectedJobId, interestFilter);
   }, [interests, selectedJobId, interestFilter]);
+
+  // Fetch chats when filter changes
+  useEffect(() => {
+    if (company?.id) {
+      fetchChats(company.id);
+    }
+  }, [company?.id, chatFilter]);
 
   function openChat(interest: Interest) {
     setChatModal({
@@ -692,30 +734,90 @@ export default function CompanyDashboard() {
               <>
                 <div className="mb-6 sm:mb-8">
                   <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Chats</h2>
+                  
+                  {/* Filter Tabs */}
+                  <div className="flex gap-2 mb-4 border-b-2 border-gray-200">
+                    <button
+                      onClick={() => setChatFilter("active")}
+                      className={`px-4 py-2 font-semibold text-sm sm:text-base transition-colors ${
+                        chatFilter === "active"
+                          ? "text-blue-600 border-b-2 border-blue-600"
+                          : "text-gray-500 hover:text-gray-700"
+                      }`}
+                    >
+                      Aktive Chats
+                    </button>
+                    <button
+                      onClick={() => setChatFilter("archived")}
+                      className={`px-4 py-2 font-semibold text-sm sm:text-base transition-colors ${
+                        chatFilter === "archived"
+                          ? "text-blue-600 border-b-2 border-blue-600"
+                          : "text-gray-500 hover:text-gray-700"
+                      }`}
+                    >
+                      Archivierte Chats
+                    </button>
+                  </div>
+
                   <div className="grid gap-4">
                     {chats.map(chat => (
-                      <div key={chat.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)]">
+                      <div key={chat.id} className={`ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)] ${chatFilter === "archived" ? "opacity-75" : ""}`}>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <h3 className="text-base sm:text-lg ds-subheading mb-1 break-words">
                                 Chat mit {chat.applicant.name}
                               </h3>
-                              {chat._count && chat._count.messages > 0 && (
+                              {chat._count && chat._count.messages > 0 && chatFilter === "active" && (
                                 <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full shadow-lg">
                                   {chat._count.messages}
                                 </span>
                               )}
                             </div>
                             <p className="ds-body-light text-sm sm:text-base">{chat.job.title}</p>
-                            {chat.messages && chat.messages.length > 0 && (
-                              <p className="ds-body-light text-xs sm:text-sm mt-1">
-                                Letzte Nachricht: {new Date(chat.messages[0].createdAt).toLocaleDateString('de-DE')}
-                              </p>
-                            )}
+                            <div className="flex flex-col gap-1 mt-1">
+                              {chat.messages && chat.messages.length > 0 ? (
+                                <p className="ds-body-light text-xs sm:text-sm">
+                                  Letzte Nachricht: {formatLastMessageTime(chat.messages[0].createdAt)}
+                                </p>
+                              ) : (
+                                <p className="ds-body-light text-xs sm:text-sm">
+                                  Chat gestartet: {formatChatStartDate(chat.createdAt)}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          <button
-                            onClick={() => setChatModal({
+                          <div className="flex gap-2">
+                            {chatFilter === "active" && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  archiveChat(chat.id, true);
+                                }}
+                                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                                title="Chat archivieren"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                </svg>
+                              </button>
+                            )}
+                            {chatFilter === "archived" && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  archiveChat(chat.id, false);
+                                }}
+                                className="px-3 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Chat wiederherstellen"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                              </button>
+                            )}
+                            <button
+                              onClick={() => setChatModal({
                               isOpen: true,
                               applicantId: chat.applicant.id,
                               applicantName: chat.applicant.name,

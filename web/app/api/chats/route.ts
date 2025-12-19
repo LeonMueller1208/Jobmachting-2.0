@@ -7,15 +7,35 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const userType = searchParams.get('userType'); // 'applicant' or 'company'
+    const filter = searchParams.get('filter'); // 'active' or 'archived' (default: 'active')
 
     if (!userId || !userType) {
       return NextResponse.json({ error: 'Missing userId or userType' }, { status: 400 });
     }
 
+    // Build where clause based on user type and archive filter
+    const whereClause: any = userType === 'applicant' 
+      ? { applicantId: userId }
+      : { companyId: userId };
+
+    // Add archive filter
+    if (filter === 'archived') {
+      if (userType === 'applicant') {
+        whereClause.archivedByApplicant = true;
+      } else {
+        whereClause.archivedByCompany = true;
+      }
+    } else {
+      // Default: show active chats (not archived)
+      if (userType === 'applicant') {
+        whereClause.archivedByApplicant = false;
+      } else {
+        whereClause.archivedByCompany = false;
+      }
+    }
+
     const chats = await prisma.chat.findMany({
-      where: userType === 'applicant' 
-        ? { applicantId: userId }
-        : { companyId: userId },
+      where: whereClause,
       include: {
         applicant: {
           select: { id: true, name: true, email: true }

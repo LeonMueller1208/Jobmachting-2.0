@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { formatChatStartDate } from "@/lib/dateUtils";
 
 type Chat = {
   id: string;
@@ -173,6 +174,11 @@ export default function ChatModal({
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Chat mit {applicantName}</h3>
             <p className="text-sm text-gray-500">{jobTitle}</p>
+            {chat && (
+              <p className="text-xs text-gray-400 mt-1">
+                Chat gestartet: {formatChatStartDate(chat.createdAt)}
+              </p>
+            )}
           </div>
           <button
             onClick={onClose}
