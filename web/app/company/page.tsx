@@ -198,24 +198,20 @@ export default function CompanyDashboard() {
       });
       
       if (response.ok) {
-        // If restoring from archive, switch to active tab
+        // Only auto-switch when restoring from archive
         if (!archived && chatFilter === "archived") {
           setChatFilter("active");
         }
-        // If archiving from active, switch to archived tab to show where it went
-        else if (archived && chatFilter === "active") {
-          setChatFilter("archived");
-        }
-        // Otherwise just refresh the current list
+        // When archiving, just refresh the current list
         else if (company?.id) {
           fetchChats(company.id);
         }
         
         // Show feedback message
         if (archived) {
-          alert('Chat wurde archiviert und in "Archivierte Chats" verschoben.');
+          alert('Chat wurde archiviert. Sie finden ihn unter "Archivierte Chats".');
         } else {
-          alert('Chat wurde wiederhergestellt und in "Aktive Chats" verschoben.');
+          alert('Chat wurde wiederhergestellt.');
         }
       }
     } catch (error) {
