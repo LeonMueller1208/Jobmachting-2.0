@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma migrate deploy && prisma generate && next build",
-    "build:vercel": "prisma migrate resolve --rolled-back 20250101000000_add_new_culture_fit_fields 2>/dev/null || true; prisma migrate resolve --applied 20250104000000_add_chat_templates 2>/dev/null || true; prisma migrate resolve --applied 0_init_baseline 2>/dev/null || true; prisma migrate deploy && prisma generate && next build",
+    "build:vercel": "prisma migrate resolve --rolled-back 20250101000000_add_new_culture_fit_fields 2>/dev/null || true; prisma migrate resolve --applied 20250104000000_add_chat_templates 2>/dev/null || true; prisma migrate deploy && prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx seed-frankfurt.ts",
