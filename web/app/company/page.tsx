@@ -712,6 +712,15 @@ export default function CompanyDashboard() {
                       </svg>
                       Chat starten
                     </button>
+                    <button 
+                      onClick={() => setApplicantDetailsModal({ isOpen: true, applicant: interest.applicant, job: interest.job, matchScore: interest.matchScore, culturalFit: interest.culturalFit })}
+                      className="ds-button-secondary text-sm sm:text-base flex-1 sm:flex-initial"
+                    >
+                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Details
+                    </button>
                     
                     {/* Conditional buttons based on status */}
                     {interest.status === "INTERESTED" ? (
