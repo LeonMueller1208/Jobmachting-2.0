@@ -1271,6 +1271,67 @@ export default function CompanyDashboard() {
                 }
               });
               
+              const getScoreColor = (score: number) => {
+                if (score >= 80) return { bg: 'bg-green-500', text: 'text-green-700', bgLight: 'bg-green-50', border: 'border-green-200' };
+                if (score >= 60) return { bg: 'bg-yellow-500', text: 'text-yellow-700', bgLight: 'bg-yellow-50', border: 'border-yellow-200' };
+                return { bg: 'bg-red-500', text: 'text-red-700', bgLight: 'bg-red-50', border: 'border-red-200' };
+              };
+
+              const getScoreIcon = (score: number) => {
+                if (score >= 80) {
+                  return (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  );
+                }
+                if (score >= 60) {
+                  return (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  );
+                }
+                return (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                );
+              };
+
+              const culturalFitFactors = [
+                { key: 'hierarchy', label: 'Hierarchie', icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                ) },
+                { key: 'autonomy', label: 'Autonomie', icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                ) },
+                { key: 'teamwork', label: 'Teamwork', icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                ) },
+                { key: 'workStructure', label: 'Arbeitsstruktur', icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                ) },
+                { key: 'feedback', label: 'Feedback & Kommunikation', icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                  </svg>
+                ) },
+                { key: 'flexibility', label: 'Flexibilität', icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ) },
+              ];
+
               return detailedFit && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -1279,91 +1340,48 @@ export default function CompanyDashboard() {
                     </svg>
                     Detaillierte Kultur-Fit Aufschlüsselung
                   </h3>
-                  <div className="space-y-3">
-                    {detailedFit.hierarchy !== undefined && (
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-700">Hierarchie</span>
-                          <span className="text-gray-600">{Math.round(detailedFit.hierarchy)}%</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {culturalFitFactors.map((factor) => {
+                      const score = detailedFit[factor.key as keyof typeof detailedFit];
+                      if (score === undefined) return null;
+                      const colors = getScoreColor(score);
+                      const roundedScore = Math.round(score);
+                      
+                      return (
+                        <div
+                          key={factor.key}
+                          className={`p-4 rounded-lg border-2 ${colors.border} ${colors.bgLight} transition-all hover:shadow-md`}
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2 rounded-lg ${colors.bg} text-white`}>
+                                {factor.icon}
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-gray-900">{factor.label}</h4>
+                                <p className="text-xs text-gray-500 mt-0.5">Kultur-Fit Faktor</p>
+                              </div>
+                            </div>
+                            <div className={`flex items-center gap-1 ${colors.text} font-bold text-lg`}>
+                              {getScoreIcon(score)}
+                              <span>{roundedScore}%</span>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="w-full bg-white/60 rounded-full h-2.5 overflow-hidden">
+                              <div
+                                className={`${colors.bg} h-2.5 rounded-full transition-all duration-700 ease-out shadow-sm`}
+                                style={{ width: `${score}%` }}
+                              ></div>
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-500">
+                              <span>Niedrig</span>
+                              <span>Hoch</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${detailedFit.hierarchy}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-                    {detailedFit.autonomy !== undefined && (
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-700">Autonomie</span>
-                          <span className="text-gray-600">{Math.round(detailedFit.autonomy)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${detailedFit.autonomy}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-                    {detailedFit.teamwork !== undefined && (
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-700">Teamwork</span>
-                          <span className="text-gray-600">{Math.round(detailedFit.teamwork)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${detailedFit.teamwork}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-                    {detailedFit.workStructure !== undefined && (
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-700">Arbeitsstruktur</span>
-                          <span className="text-gray-600">{Math.round(detailedFit.workStructure)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${detailedFit.workStructure}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-                    {detailedFit.feedback !== undefined && (
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-700">Feedback & Kommunikation</span>
-                          <span className="text-gray-600">{Math.round(detailedFit.feedback)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${detailedFit.feedback}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-                    {detailedFit.flexibility !== undefined && (
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium text-gray-700">Flexibilität</span>
-                          <span className="text-gray-600">{Math.round(detailedFit.flexibility)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${detailedFit.flexibility}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
+                      );
+                    })}
                   </div>
                 </div>
               );
