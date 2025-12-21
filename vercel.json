@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd web && npx prisma migrate resolve --applied 20250104000000_add_chat_templates 2>/dev/null || true; npx prisma migrate deploy && npx prisma generate && npm run build",
+  "buildCommand": "cd web && npm run build:vercel",
   "outputDirectory": "web/.next",
   "installCommand": "cd web && npm install",
   "framework": "nextjs",

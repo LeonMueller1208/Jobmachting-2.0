@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx prisma migrate resolve --rolled-back 20250101000000_add_new_culture_fit_fields 2>/dev/null || true; npx prisma migrate resolve --applied 20250104000000_add_chat_templates 2>/dev/null || true; npx prisma migrate deploy && npx prisma generate && npm run build",
+  "buildCommand": "npm run build:vercel",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "rewrites": [
