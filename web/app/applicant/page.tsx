@@ -1182,13 +1182,13 @@ export default function ApplicantDashboard() {
                 <h2 className="text-2xl ds-heading mb-2">{jobDetailsModal.job.title}</h2>
                 <div className="flex flex-wrap items-center gap-2 text-sm ds-body-light">
                   <button
-                    onClick={() => setCompanyProfileModal({ isOpen: true, companyId: jobDetailsModal.job.company.id })}
+                    onClick={() => jobDetailsModal.job && setCompanyProfileModal({ isOpen: true, companyId: jobDetailsModal.job.company.id })}
                     className="flex items-center gap-1 hover:text-blue-600 transition-colors text-left"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
-                    <span className="underline">{jobDetailsModal.job.company.name}</span>
+                    <span className="underline">{jobDetailsModal.job?.company.name}</span>
                   </button>
                   <span className="text-gray-400">•</span>
                   <span className="flex items-center gap-1">
