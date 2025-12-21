@@ -1184,9 +1184,10 @@ export default function ApplicantDashboard() {
                   <button
                     onClick={() => {
                       if (jobDetailsModal.job) {
+                        const companyId = jobDetailsModal.job.company.id;
                         setJobDetailsModal({ isOpen: false, job: null });
                         setTimeout(() => {
-                          setCompanyProfileModal({ isOpen: true, companyId: jobDetailsModal.job.company.id });
+                          setCompanyProfileModal({ isOpen: true, companyId });
                         }, 100);
                       }
                     }}
