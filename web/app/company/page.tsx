@@ -1334,98 +1334,48 @@ export default function CompanyDashboard() {
 
               return detailedFit && (
                 <div className="mb-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                      <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                      </div>
-                      Kultur-Fit Analyse
-                    </h3>
-                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Kultur-Fit Analyse
+                  </h3>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {culturalFitFactors.map((factor) => {
                       const score = detailedFit[factor.key as keyof typeof detailedFit];
                       if (score === undefined) return null;
                       const colors = getScoreColor(score);
                       const roundedScore = Math.round(score);
                       
-                      // Determine gradient colors based on score
-                      const gradientColors = score >= 80 
-                        ? 'from-green-400 to-emerald-500' 
-                        : score >= 60 
-                        ? 'from-yellow-400 to-orange-500' 
-                        : 'from-red-400 to-pink-500';
-                      
                       return (
                         <div
                           key={factor.key}
-                          className="group relative bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                          className="bg-white rounded-lg border border-gray-200 p-4 hover:border-gray-300 transition-colors"
                         >
-                          {/* Score Badge */}
-                          <div className="absolute top-4 right-4">
-                            <div className={`relative w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br ${gradientColors} shadow-lg`}>
-                              <span className="text-white font-bold text-sm">{roundedScore}%</span>
-                              <div className="absolute inset-0 rounded-full bg-white/20 animate-ping opacity-75"></div>
-                            </div>
-                          </div>
-                          
-                          {/* Icon */}
-                          <div className="mb-4">
-                            <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${gradientColors} shadow-md`}>
-                              <div className="text-white">
-                                {factor.icon}
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <div className={`p-1.5 rounded-md ${colors.bgLight}`}>
+                                <div className={`${colors.text}`}>
+                                  {factor.icon}
+                                </div>
                               </div>
+                              <span className="font-medium text-gray-900">{factor.label}</span>
                             </div>
+                            <span className={`font-semibold ${colors.text}`}>
+                              {roundedScore}%
+                            </span>
                           </div>
-                          
-                          {/* Label */}
-                          <h4 className="font-bold text-gray-900 mb-3 text-lg">{factor.label}</h4>
-                          
-                          {/* Progress Bar */}
-                          <div className="space-y-2">
-                            <div className="relative w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-                              <div
-                                className={`absolute top-0 left-0 h-full bg-gradient-to-r ${gradientColors} rounded-full transition-all duration-1000 ease-out shadow-inner`}
-                                style={{ width: `${score}%` }}
-                              >
-                                <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
-                              </div>
-                            </div>
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-gray-500 font-medium">Passung</span>
-                              <span className={`font-bold ${colors.text}`}>
-                                {score >= 80 ? 'Sehr gut' : score >= 60 ? 'Gut' : 'Ausbaufähig'}
-                              </span>
-                            </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2">
+                            <div
+                              className={`${colors.bg} h-2 rounded-full transition-all duration-500`}
+                              style={{ width: `${score}%` }}
+                            ></div>
                           </div>
-                          
-                          {/* Decorative corner */}
-                          <div className={`absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-br ${gradientColors} opacity-5 rounded-tl-full`}></div>
                         </div>
                       );
                     })}
                   </div>
-                  
-                  {/* Summary Card */}
-                  {applicantDetailsModal.culturalFit !== null && applicantDetailsModal.culturalFit !== undefined && (
-                    <div className="mt-6 p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="text-lg font-bold text-gray-900 mb-1">Gesamt Kultur-Fit</h4>
-                          <p className="text-sm text-gray-600">Durchschnittliche Übereinstimmung aller Faktoren</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                            {Math.round(applicantDetailsModal.culturalFit)}%
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">Kultur-Fit Score</div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               );
             })()}
