@@ -1246,10 +1246,21 @@ export default function CompanyDashboard() {
                   flexibility: applicantDetailsModal.applicant.flexibility ?? undefined,
                 },
                 job: {
-                  requiredSkills: applicantDetailsModal.job.requiredSkills || [],
-                  minExperience: applicantDetailsModal.job.minExperience || 0,
-                  location: applicantDetailsModal.job.location || '',
-                  title: applicantDetailsModal.job.title || '',
+                  requiredSkills: (() => {
+                    const skills = applicantDetailsModal.job.requiredSkills;
+                    if (Array.isArray(skills)) return skills;
+                    if (typeof skills === 'object' && skills !== null) {
+                      try {
+                        return Object.values(skills) as string[];
+                      } catch {
+                        return [];
+                      }
+                    }
+                    return [];
+                  })(),
+                  minExperience: applicantDetailsModal.job.minExperience ?? 0,
+                  location: applicantDetailsModal.job.location ?? '',
+                  title: applicantDetailsModal.job.title,
                   industry: applicantDetailsModal.job.industry ?? undefined,
                   hierarchy: applicantDetailsModal.job.hierarchy ?? undefined,
                   autonomy: applicantDetailsModal.job.autonomy ?? undefined,
