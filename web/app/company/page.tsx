@@ -49,7 +49,10 @@ type Interest = {
   }; 
   job: { 
     id: string; 
-    title: string; 
+    title: string;
+    requiredSkills?: string[] | Json;
+    minExperience?: number;
+    location?: string;
     industry?: string | null;
     hierarchy?: number | null;
     autonomy?: number | null;
