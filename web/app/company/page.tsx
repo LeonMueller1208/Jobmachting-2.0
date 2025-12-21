@@ -50,7 +50,7 @@ type Interest = {
   job: { 
     id: string; 
     title: string;
-    requiredSkills?: string[] | Json;
+    requiredSkills?: string[] | any;
     minExperience?: number;
     location?: string;
     industry?: string | null;
