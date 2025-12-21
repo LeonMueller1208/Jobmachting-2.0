@@ -122,7 +122,9 @@ export function computeMatchingScore({ applicant, job }: MatchingInput): number 
   );
   total = total * underqualificationPenalty;
   
-  return Math.round(total * 1000) / 10; // percentage with 0.1 precision
+  // Ensure score is between 0 and 100 (cap at 100%)
+  const finalScore = Math.min(Math.max(total, 0), 1) * 100;
+  return Math.round(finalScore * 10) / 10; // percentage with 0.1 precision
 }
 
 function computeSkillsScore(applicantSkills: string[], requiredSkills: string[]): number {
