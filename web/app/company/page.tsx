@@ -1410,7 +1410,7 @@ export default function CompanyDashboard() {
                   </div>
                   
                   {/* Summary Card */}
-                  {applicantDetailsModal.culturalFit !== null && (
+                  {applicantDetailsModal.culturalFit !== null && applicantDetailsModal.culturalFit !== undefined && (
                     <div className="mt-6 p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
                       <div className="flex items-center justify-between">
                         <div>
