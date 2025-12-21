@@ -16,6 +16,10 @@ export async function GET(request: Request) {
           email: true,
           industry: true,
           location: true,
+          description: true,
+          website: true,
+          companySize: true,
+          foundedYear: true,
           createdAt: true,
           updatedAt: true,
         }
@@ -30,6 +34,10 @@ export async function GET(request: Request) {
         email: true,
         industry: true,
         location: true,
+        description: true,
+        website: true,
+        companySize: true,
+        foundedYear: true,
         createdAt: true,
         updatedAt: true,
         jobs: {
@@ -68,7 +76,7 @@ import { hashPassword, validatePassword } from "@/lib/auth";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password, name, industry, location } = body ?? {};
+    const { email, password, name, industry, location, description, website, companySize, foundedYear } = body ?? {};
     
     if (!email || !name || !industry || !location) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
@@ -112,6 +120,12 @@ export async function POST(request: Request) {
       industry, 
       location,
     };
+    
+    // Add optional fields if provided
+    if (description !== undefined) createData.description = description;
+    if (website !== undefined) createData.website = website;
+    if (companySize !== undefined) createData.companySize = companySize;
+    if (foundedYear !== undefined) createData.foundedYear = foundedYear;
     
     // Only add passwordHash if it exists (migration might not be applied yet)
     if (passwordHash !== null) {

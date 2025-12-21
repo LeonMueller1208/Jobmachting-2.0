@@ -26,6 +26,10 @@ export default function MultiStepCompanyForm() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [industry, setIndustry] = useState("");
   const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const [website, setWebsite] = useState("");
+  const [companySize, setCompanySize] = useState("");
+  const [foundedYear, setFoundedYear] = useState("");
 
   // Scroll to top on initial load
   useEffect(() => {
@@ -66,12 +70,16 @@ export default function MultiStepCompanyForm() {
         email,
         industry,
         location,
+        description,
+        website,
+        companySize,
+        foundedYear,
         currentStep,
         timestamp: Date.now()
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [name, email, industry, location, currentStep]);
+  }, [name, email, industry, location, description, website, companySize, foundedYear, currentStep]);
 
   function loadDraft() {
     const draft = localStorage.getItem(DRAFT_KEY);
@@ -81,6 +89,10 @@ export default function MultiStepCompanyForm() {
       setEmail(parsed.email || "");
       setIndustry(parsed.industry || "");
       setLocation(parsed.location || "");
+      setDescription(parsed.description || "");
+      setWebsite(parsed.website || "");
+      setCompanySize(parsed.companySize || "");
+      setFoundedYear(parsed.foundedYear || "");
       setCurrentStep(parsed.currentStep || 1);
     }
     setShowDraftModal(false);
@@ -141,7 +153,17 @@ export default function MultiStepCompanyForm() {
       const res = await fetch("/api/companies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, industry, location }),
+        body: JSON.stringify({ 
+          name, 
+          email, 
+          password, 
+          industry, 
+          location,
+          description: description || null,
+          website: website || null,
+          companySize: companySize || null,
+          foundedYear: foundedYear ? parseInt(foundedYear) : null,
+        }),
       });
 
       if (res.ok) {
@@ -163,7 +185,7 @@ export default function MultiStepCompanyForm() {
     }
   }
 
-  const formData = { name, email, industry, location };
+  const formData = { name, email, industry, location, description, website, companySize, foundedYear };
 
   return (
     <>
@@ -190,7 +212,18 @@ export default function MultiStepCompanyForm() {
               <CompanyStep2Industry industry={industry} setIndustry={setIndustry} />
             )}
             {currentStep === 3 && (
-              <CompanyStep3Location location={location} setLocation={setLocation} />
+              <CompanyStep3Location 
+                location={location} 
+                setLocation={setLocation}
+                description={description}
+                setDescription={setDescription}
+                website={website}
+                setWebsite={setWebsite}
+                companySize={companySize}
+                setCompanySize={setCompanySize}
+                foundedYear={foundedYear}
+                setFoundedYear={setFoundedYear}
+              />
             )}
             {currentStep === 4 && (
               <CompanyStep4Summary formData={formData} onEdit={goToStep} />

@@ -37,6 +37,10 @@ model Company {
   passwordHash String?        // Hashed password (optional for backward compatibility with existing accounts)
   industry     String
   location     String
+  description  String?       // Company description/bio
+  website      String?       // Company website URL
+  companySize  String?       // Company size: "1-10", "11-50", "51-200", "201-500", "500+"
+  foundedYear  Int?          // Year the company was founded
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   jobs         Job[]

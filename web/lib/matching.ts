@@ -760,3 +760,90 @@ export function computeCulturalFit({ applicant, job }: MatchingInput): number | 
   const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
   return Math.round(averageScore * 10) / 10; // Round to 1 decimal place
 }
+
+/**
+ * Returns detailed cultural fit breakdown for company view
+ * @param applicant - Applicant with soft factor preferences
+ * @param job - Job with soft factor requirements
+ * @returns Object with individual scores for each factor, or null if no data available
+ */
+export function computeDetailedCulturalFit({ applicant, job }: MatchingInput): {
+  overall: number;
+  hierarchy?: number;
+  autonomy?: number;
+  teamwork?: number;
+  workStructure?: number;
+  feedback?: number;
+  flexibility?: number;
+} | null {
+  const details: {
+    hierarchy?: number;
+    autonomy?: number;
+    teamwork?: number;
+    workStructure?: number;
+    feedback?: number;
+    flexibility?: number;
+  } = {};
+  const scores: number[] = [];
+
+  // 1. Hierarchy (Multiple Choice: 1-4)
+  if (applicant.hierarchy !== undefined && applicant.hierarchy !== null && 
+      job.hierarchy !== undefined && job.hierarchy !== null) {
+    const score = calculateMultipleChoiceScore(applicant.hierarchy, job.hierarchy);
+    details.hierarchy = score;
+    scores.push(score);
+  }
+
+  // 2. Autonomy (Multiple Choice: 1-4)
+  if (applicant.autonomy !== undefined && applicant.autonomy !== null && 
+      job.autonomy !== undefined && job.autonomy !== null) {
+    const score = calculateMultipleChoiceScore(applicant.autonomy, job.autonomy);
+    details.autonomy = score;
+    scores.push(score);
+  }
+
+  // 3. Teamwork (Multiple Choice: 1-4)
+  if (applicant.teamwork !== undefined && applicant.teamwork !== null && 
+      job.teamwork !== undefined && job.teamwork !== null) {
+    const score = calculateMultipleChoiceScore(applicant.teamwork, job.teamwork);
+    details.teamwork = score;
+    scores.push(score);
+  }
+
+  // 4. Work Structure (Likert Scale: 1-5)
+  if (applicant.workStructure !== undefined && applicant.workStructure !== null && 
+      job.workStructure !== undefined && job.workStructure !== null) {
+    const score = calculateScaleScore(applicant.workStructure, job.workStructure);
+    details.workStructure = score;
+    scores.push(score);
+  }
+
+  // 5. Feedback & Communication (Likert Scale: 1-5)
+  if (applicant.feedback !== undefined && applicant.feedback !== null && 
+      job.feedback !== undefined && job.feedback !== null) {
+    const score = calculateScaleScore(applicant.feedback, job.feedback);
+    details.feedback = score;
+    scores.push(score);
+  }
+
+  // 6. Flexibility (Multiple Choice: 1-4)
+  if (applicant.flexibility !== undefined && applicant.flexibility !== null && 
+      job.flexibility !== undefined && job.flexibility !== null) {
+    const score = calculateMultipleChoiceScore(applicant.flexibility, job.flexibility);
+    details.flexibility = score;
+    scores.push(score);
+  }
+
+  // If no soft factors are available, return null
+  if (scores.length === 0) {
+    return null;
+  }
+
+  // Calculate overall average
+  const overall = Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10;
+
+  return {
+    overall,
+    ...details
+  };
+}

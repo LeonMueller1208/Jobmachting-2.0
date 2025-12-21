@@ -37,7 +37,7 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-/prisma/migrations/
+# /prisma/migrations/  # Commented out to allow migrations to be committed for Vercel deployment
 /prisma/dev.db
 /prisma/dev.db-journal
 

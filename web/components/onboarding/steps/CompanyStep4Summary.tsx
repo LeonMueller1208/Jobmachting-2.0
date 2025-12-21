@@ -6,6 +6,10 @@ interface CompanyStep4SummaryProps {
     email: string;
     industry: string;
     location: string;
+    description?: string;
+    website?: string;
+    companySize?: string;
+    foundedYear?: string;
   };
   onEdit: (step: number) => void;
 }
@@ -59,6 +63,35 @@ export default function CompanyStep4Summary({ formData, onEdit }: CompanyStep4Su
             <p><span className="font-medium text-gray-600">Standort:</span> {formData.location}</p>
           </div>
         </div>
+
+        {/* Optional Company Info */}
+        {(formData.description || formData.website || formData.companySize || formData.foundedYear) && (
+          <div className="ds-card p-5 hover:shadow-lg transition-shadow duration-300">
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="font-semibold text-gray-800 text-lg">ℹ️ Zusätzliche Informationen</h3>
+              <button
+                onClick={() => onEdit(3)}
+                className="text-sm text-green-600 hover:text-green-800 font-medium transition-colors"
+              >
+                Bearbeiten
+              </button>
+            </div>
+            <div className="space-y-2 text-sm">
+              {formData.description && (
+                <p><span className="font-medium text-gray-600">Beschreibung:</span> {formData.description.substring(0, 100)}{formData.description.length > 100 ? '...' : ''}</p>
+              )}
+              {formData.website && (
+                <p><span className="font-medium text-gray-600">Website:</span> {formData.website}</p>
+              )}
+              {formData.companySize && (
+                <p><span className="font-medium text-gray-600">Größe:</span> {formData.companySize}</p>
+              )}
+              {formData.foundedYear && (
+                <p><span className="font-medium text-gray-600">Gründungsjahr:</span> {formData.foundedYear}</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Success Message */}

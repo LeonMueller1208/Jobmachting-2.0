@@ -5,7 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import ChatModal from "@/components/ChatModal";
 import ChatTemplateManager from "@/components/ChatTemplateManager";
-import { computeMatchingScore } from "@/lib/matching";
+import { computeMatchingScore, computeDetailedCulturalFit } from "@/lib/matching";
 import { formatLastMessageTime, formatChatStartDate } from "@/lib/dateUtils";
 
 type Company = { 
@@ -36,18 +36,31 @@ type Interest = {
     name: string; 
     skills: string[]; 
     experience: number; 
-    education?: string | null;
+    education?: string | null; 
     location: string; 
     bio?: string | null; 
-    industry?: string | null 
+    industry?: string | null;
+    hierarchy?: number | null;
+    autonomy?: number | null;
+    teamwork?: number | null;
+    workStructure?: number | null;
+    feedback?: number | null;
+    flexibility?: number | null;
   }; 
   job: { 
     id: string; 
     title: string; 
-    industry?: string | null 
+    industry?: string | null;
+    hierarchy?: number | null;
+    autonomy?: number | null;
+    teamwork?: number | null;
+    workStructure?: number | null;
+    feedback?: number | null;
+    flexibility?: number | null;
   }; 
   status: "INTERESTED" | "NOT_INTERESTED" | "COMPANY_REJECTED"; 
   matchScore: number; 
+  culturalFit?: number | null;
   passes: boolean;
   companyNote?: string | null;
   updatedAt?: string;
@@ -84,11 +97,13 @@ export default function CompanyDashboard() {
     applicant: Interest['applicant'] | null;
     job: Interest['job'] | null;
     matchScore: number;
+    culturalFit?: number | null;
   }>({
     isOpen: false,
     applicant: null,
     job: null,
-    matchScore: 0
+    matchScore: 0,
+    culturalFit: null
   });
   const [interestFilter, setInterestFilter] = useState<"active" | "archived">("active");
   const [chatFilter, setChatFilter] = useState<"active" | "archived">("active");
@@ -691,7 +706,7 @@ export default function CompanyDashboard() {
                       Chat starten
                     </button>
                     <button 
-                      onClick={() => setApplicantDetailsModal({ isOpen: true, applicant: interest.applicant, job: interest.job, matchScore: interest.matchScore })}
+                      onClick={() => setApplicantDetailsModal({ isOpen: true, applicant: interest.applicant, job: interest.job, matchScore: interest.matchScore, culturalFit: interest.culturalFit })}
                       className="ds-button-secondary text-sm sm:text-base flex-1 sm:flex-initial"
                     >
                       <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1168,7 +1183,7 @@ export default function CompanyDashboard() {
                 <p className="ds-body-light">Bewerberdetails für: {applicantDetailsModal.job?.title}</p>
               </div>
               <button
-                onClick={() => setApplicantDetailsModal({ isOpen: false, applicant: null, job: null, matchScore: 0 })}
+                onClick={() => setApplicantDetailsModal({ isOpen: false, applicant: null, job: null, matchScore: 0, culturalFit: null })}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1177,19 +1192,143 @@ export default function CompanyDashboard() {
               </button>
             </div>
 
-            {/* Match Score */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 mb-6">
-              <div className="flex items-center justify-between">
-                <span className="text-sm ds-body-light">Match Score</span>
-                <span className="text-3xl font-bold text-green-600">{Math.round(applicantDetailsModal.matchScore)}%</span>
+            {/* Match Scores */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              {/* Skills Match Score */}
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">🎯 Skills Match</span>
+                  <span className="text-3xl font-bold text-green-600">{Math.round(applicantDetailsModal.matchScore)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div
+                    className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${applicantDetailsModal.matchScore}%` }}
+                  ></div>
+                </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mt-2">
-                <div
-                  className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${applicantDetailsModal.matchScore}%` }}
-                ></div>
-              </div>
+
+              {/* Cultural Fit Score */}
+              {applicantDetailsModal.culturalFit !== null && applicantDetailsModal.culturalFit !== undefined && (
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">🤝 Kultur-Fit</span>
+                    <span className="text-3xl font-bold text-purple-600">{Math.round(applicantDetailsModal.culturalFit)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${applicantDetailsModal.culturalFit}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Detailed Cultural Fit Breakdown */}
+            {applicantDetailsModal.applicant && applicantDetailsModal.job && (() => {
+              const detailedFit = computeDetailedCulturalFit({
+                applicant: applicantDetailsModal.applicant,
+                job: applicantDetailsModal.job
+              });
+              
+              return detailedFit && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Detaillierte Kultur-Fit Aufschlüsselung
+                  </h3>
+                  <div className="space-y-3">
+                    {detailedFit.hierarchy !== undefined && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="font-medium text-gray-700">Hierarchie</span>
+                          <span className="text-gray-600">{Math.round(detailedFit.hierarchy)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${detailedFit.hierarchy}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    {detailedFit.autonomy !== undefined && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="font-medium text-gray-700">Autonomie</span>
+                          <span className="text-gray-600">{Math.round(detailedFit.autonomy)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${detailedFit.autonomy}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    {detailedFit.teamwork !== undefined && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="font-medium text-gray-700">Teamwork</span>
+                          <span className="text-gray-600">{Math.round(detailedFit.teamwork)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${detailedFit.teamwork}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    {detailedFit.workStructure !== undefined && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="font-medium text-gray-700">Arbeitsstruktur</span>
+                          <span className="text-gray-600">{Math.round(detailedFit.workStructure)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${detailedFit.workStructure}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    {detailedFit.feedback !== undefined && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="font-medium text-gray-700">Feedback & Kommunikation</span>
+                          <span className="text-gray-600">{Math.round(detailedFit.feedback)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${detailedFit.feedback}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    {detailedFit.flexibility !== undefined && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="font-medium text-gray-700">Flexibilität</span>
+                          <span className="text-gray-600">{Math.round(detailedFit.flexibility)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${detailedFit.flexibility}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Info Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -1288,7 +1427,7 @@ export default function CompanyDashboard() {
                 Chat starten
               </button>
               <button
-                onClick={() => setApplicantDetailsModal({ isOpen: false, applicant: null, job: null, matchScore: 0 })}
+                onClick={() => setApplicantDetailsModal({ isOpen: false, applicant: null, job: null, matchScore: 0, culturalFit: null })}
                 className="flex-1 ds-button-secondary"
               >
                 Schließen

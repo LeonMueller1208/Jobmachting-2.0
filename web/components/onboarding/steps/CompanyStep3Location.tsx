@@ -9,9 +9,28 @@ const availableLocations = [
 interface CompanyStep3LocationProps {
   location: string;
   setLocation: (value: string) => void;
+  description: string;
+  setDescription: (value: string) => void;
+  website: string;
+  setWebsite: (value: string) => void;
+  companySize: string;
+  setCompanySize: (value: string) => void;
+  foundedYear: string;
+  setFoundedYear: (value: string) => void;
 }
 
-export default function CompanyStep3Location({ location, setLocation }: CompanyStep3LocationProps) {
+export default function CompanyStep3Location({ 
+  location, 
+  setLocation,
+  description,
+  setDescription,
+  website,
+  setWebsite,
+  companySize,
+  setCompanySize,
+  foundedYear,
+  setFoundedYear,
+}: CompanyStep3LocationProps) {
   return (
     <div className="space-y-6">
       {/* Icon & Title */}
@@ -50,6 +69,66 @@ export default function CompanyStep3Location({ location, setLocation }: CompanyS
           <p className="text-sm text-green-800">
             Der Standort wird Bewerbern aus Ihrer Region angezeigt. Sie können später auch Remote-Jobs anbieten.
           </p>
+        </div>
+      </div>
+
+      {/* Optional Company Profile Fields */}
+      <div className="border-t border-gray-200 pt-6 mt-6">
+        <h3 className="text-lg font-semibold mb-4 text-gray-700">Zusätzliche Firmeninformationen (optional)</h3>
+        <p className="text-sm text-gray-600 mb-4">Diese Informationen helfen Bewerbern, Ihr Unternehmen besser kennenzulernen.</p>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="ds-label">Firmenbeschreibung</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="ds-input ds-input-focus-green"
+              placeholder="Beschreiben Sie Ihr Unternehmen..."
+              rows={4}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="ds-label">Website</label>
+              <input
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="ds-input ds-input-focus-green"
+                placeholder="https://www.unternehmen.de"
+              />
+            </div>
+            <div>
+              <label className="ds-label">Unternehmensgröße</label>
+              <select
+                value={companySize}
+                onChange={(e) => setCompanySize(e.target.value)}
+                className="ds-input ds-input-focus-green"
+              >
+                <option value="">Größe wählen</option>
+                <option value="1-10">1-10 Mitarbeiter</option>
+                <option value="11-50">11-50 Mitarbeiter</option>
+                <option value="51-200">51-200 Mitarbeiter</option>
+                <option value="201-500">201-500 Mitarbeiter</option>
+                <option value="500+">500+ Mitarbeiter</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="ds-label">Gründungsjahr</label>
+            <input
+              type="number"
+              value={foundedYear}
+              onChange={(e) => setFoundedYear(e.target.value)}
+              className="ds-input ds-input-focus-green"
+              placeholder="z.B. 2020"
+              min="1800"
+              max={new Date().getFullYear()}
+            />
+          </div>
         </div>
       </div>
     </div>
