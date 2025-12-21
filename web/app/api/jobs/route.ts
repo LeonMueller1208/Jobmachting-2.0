@@ -9,20 +9,42 @@ export async function GET(request: Request) {
     if (companyId) {
       const jobs = await prisma.job.findMany({
         where: { companyId },
-        include: { company: true },
+        include: { 
+          company: {
+            select: {
+              id: true,
+              name: true,
+              location: true,
+            }
+          }
+        },
         orderBy: { createdAt: "desc" },
       });
       return NextResponse.json(jobs);
     }
     
     const jobs = await prisma.job.findMany({ 
-      include: { company: true }, 
+      include: { 
+        company: {
+          select: {
+            id: true,
+            name: true,
+            location: true,
+          }
+        }
+      }, 
       orderBy: { createdAt: "desc" } 
     });
     return NextResponse.json(jobs);
   } catch (e) {
     console.error("GET jobs error:", e);
-    return NextResponse.json({ error: "internal", details: e instanceof Error ? e.message : "Unknown error" }, { status: 500 });
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+    console.error("Full error details:", JSON.stringify(e, null, 2));
+    return NextResponse.json({ 
+      error: "internal", 
+      details: errorMessage,
+      message: "Failed to fetch jobs"
+    }, { status: 500 });
   }
 }
 

@@ -120,8 +120,13 @@ export async function GET(
     return NextResponse.json(response);
   } catch (error) {
     console.error("Preferences analytics error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Full error details:", JSON.stringify(error, null, 2));
     return NextResponse.json(
-      { error: "Failed to fetch preferences" }, 
+      { 
+        error: "Failed to fetch preferences",
+        details: errorMessage
+      }, 
       { status: 500 }
     );
   }
