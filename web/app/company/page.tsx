@@ -643,7 +643,11 @@ export default function CompanyDashboard() {
           ) : (
             <div className="grid gap-4">
               {filteredInterests.map(interest => (
-                <div key={interest.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
+                <div 
+                  key={interest.id} 
+                  onClick={() => setApplicantDetailsModal({ isOpen: true, applicant: interest.applicant, job: interest.job, matchScore: interest.matchScore, culturalFit: interest.culturalFit })}
+                  className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 cursor-pointer"
+                >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
                   <div className="min-w-0 flex-1">
                     <h3 className="text-base sm:text-lg ds-subheading mb-2 break-words">{interest.applicant.name}</h3>
@@ -691,7 +695,7 @@ export default function CompanyDashboard() {
                   </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3" onClick={(e) => e.stopPropagation()}>
                   <div className="text-xs sm:text-sm ds-body-light">
                     Status: {interest.status === "INTERESTED" ? "Interessiert" : interest.status === "COMPANY_REJECTED" ? "Archiviert" : "Nicht interessiert"}
                     {interest.status === "COMPANY_REJECTED" && interest.updatedAt && (
@@ -707,15 +711,6 @@ export default function CompanyDashboard() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
                       Chat starten
-                    </button>
-                    <button 
-                      onClick={() => setApplicantDetailsModal({ isOpen: true, applicant: interest.applicant, job: interest.job, matchScore: interest.matchScore, culturalFit: interest.culturalFit })}
-                      className="ds-button-secondary text-sm sm:text-base flex-1 sm:flex-initial"
-                    >
-                      <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Details
                     </button>
                     
                     {/* Conditional buttons based on status */}

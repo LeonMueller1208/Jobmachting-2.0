@@ -607,7 +607,11 @@ export default function ApplicantDashboard() {
 
         <div className="grid gap-4 sm:gap-5">
           {matchedJobs.map(job => (
-            <div key={job.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)] overflow-hidden">
+            <div 
+              key={job.id} 
+              onClick={() => setJobDetailsModal({ isOpen: true, job })}
+              className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-blue)] overflow-hidden cursor-pointer"
+            >
               {/* Header Section */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-3">
                 <div className="min-w-0 flex-1">
@@ -743,24 +747,8 @@ export default function ApplicantDashboard() {
                 </div>
               </div>
 
-              {/* Details Button - Subtle but Clear */}
-              <div className="mb-4">
-                <button
-                  onClick={() => setJobDetailsModal({ isOpen: true, job })}
-                  className="w-full bg-white hover:bg-blue-50 text-blue-600 font-medium py-2.5 px-4 rounded-lg border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Vollständige Details anzeigen</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-              
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t border-gray-100">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => handleInterest(job.id, "INTERESTED")}
                   className={`text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-2.5 inline-flex items-center justify-center flex-1 rounded-lg font-medium transition-all duration-300 ${
