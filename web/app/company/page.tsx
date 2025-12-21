@@ -674,7 +674,7 @@ export default function CompanyDashboard() {
                     </div>
                   </div>
                   <div className="text-center sm:text-right shrink-0">
-                    <div className="text-2xl sm:text-3xl font-bold ds-link-green mb-1">{interest.matchScore}%</div>
+                    <div className="text-2xl sm:text-3xl font-bold ds-link-green mb-1">{Math.min(Math.round(interest.matchScore), 100)}%</div>
                     <div className="text-xs sm:text-sm ds-body-light">Match Score</div>
                   </div>
                 </div>
@@ -1205,12 +1205,12 @@ export default function CompanyDashboard() {
               <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700">🎯 Skills Match</span>
-                  <span className="text-3xl font-bold text-green-600">{Math.round(applicantDetailsModal.matchScore)}%</span>
+                  <span className="text-3xl font-bold text-green-600">{Math.min(Math.round(applicantDetailsModal.matchScore), 100)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
                   <div
                     className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${applicantDetailsModal.matchScore}%` }}
+                      style={{ width: `${Math.min(applicantDetailsModal.matchScore, 100)}%` }}
                   ></div>
                 </div>
               </div>
