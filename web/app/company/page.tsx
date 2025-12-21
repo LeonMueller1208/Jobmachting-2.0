@@ -242,6 +242,10 @@ export default function CompanyDashboard() {
   function filterInterestsByJob(jobId: string | null) {
     setSelectedJobId(jobId);
     applyFilters(jobId, interestFilter);
+    // Wechsel zum Interests-Tab wenn ein Job gefiltert wird
+    if (jobId !== null) {
+      setActiveTab("interests");
+    }
   }
 
   function applyFilters(jobId: string | null, statusFilter: "active" | "archived") {
