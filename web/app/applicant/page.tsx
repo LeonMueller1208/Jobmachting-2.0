@@ -1174,7 +1174,7 @@ export default function ApplicantDashboard() {
 
       {/* Job Details Modal */}
       {jobDetailsModal.isOpen && jobDetailsModal.job && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-4">
           <div className="ds-card p-6 sm:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-start justify-between mb-6">
@@ -1184,11 +1184,7 @@ export default function ApplicantDashboard() {
                   <button
                     onClick={() => {
                       if (jobDetailsModal.job) {
-                        const companyId = jobDetailsModal.job.company.id;
-                        setJobDetailsModal({ isOpen: false, job: null });
-                        setTimeout(() => {
-                          setCompanyProfileModal({ isOpen: true, companyId });
-                        }, 100);
+                        setCompanyProfileModal({ isOpen: true, companyId: jobDetailsModal.job.company.id });
                       }
                     }}
                     className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 transition-all font-medium border border-blue-200 hover:border-blue-300"
