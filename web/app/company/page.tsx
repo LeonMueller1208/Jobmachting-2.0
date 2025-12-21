@@ -1228,8 +1228,16 @@ export default function CompanyDashboard() {
             {/* Detailed Cultural Fit Breakdown */}
             {applicantDetailsModal.applicant && applicantDetailsModal.job && (() => {
               const detailedFit = computeDetailedCulturalFit({
-                applicant: applicantDetailsModal.applicant,
-                job: applicantDetailsModal.job
+                applicant: {
+                  ...applicantDetailsModal.applicant,
+                  education: applicantDetailsModal.applicant.education ?? undefined,
+                  bio: applicantDetailsModal.applicant.bio ?? undefined,
+                  industry: applicantDetailsModal.applicant.industry ?? undefined,
+                },
+                job: {
+                  ...applicantDetailsModal.job,
+                  industry: applicantDetailsModal.job.industry ?? undefined,
+                }
               });
               
               return detailedFit && (
