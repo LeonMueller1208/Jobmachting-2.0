@@ -33,29 +33,48 @@ export async function GET(
     }
 
     // Get all templates for this company
-    const templates = await prisma.chatTemplate.findMany({
-      where: { companyId },
-      orderBy: [
-        { isDefault: "desc" }, // Default templates first
-        { createdAt: "asc" }, // Then by creation date
-      ],
-    });
+    let templates;
+    try {
+      templates = await prisma.chatTemplate.findMany({
+        where: { companyId },
+        orderBy: [
+          { isDefault: "desc" }, // Default templates first
+          { createdAt: "asc" }, // Then by creation date
+        ],
+      });
+    } catch (error: any) {
+      // If table doesn't exist, return empty array (migration might not be applied yet)
+      if (error?.code === 'P2021' || error?.message?.includes('does not exist')) {
+        console.warn("ChatTemplate table does not exist yet, returning empty array");
+        return NextResponse.json([]);
+      }
+      throw error;
+    }
 
-    // If no templates exist, create default ones
+    // If no templates exist, try to create default ones
     if (templates.length === 0) {
-      const createdTemplates = await Promise.all(
-        DEFAULT_TEMPLATES.map((template) =>
-          prisma.chatTemplate.create({
-            data: {
-              companyId,
-              name: template.name,
-              content: template.content,
-              isDefault: template.isDefault,
-            },
-          })
-        )
-      );
-      return NextResponse.json(createdTemplates);
+      try {
+        const createdTemplates = await Promise.all(
+          DEFAULT_TEMPLATES.map((template) =>
+            prisma.chatTemplate.create({
+              data: {
+                companyId,
+                name: template.name,
+                content: template.content,
+                isDefault: template.isDefault,
+              },
+            })
+          )
+        );
+        return NextResponse.json(createdTemplates);
+      } catch (error: any) {
+        // If table doesn't exist, return empty array
+        if (error?.code === 'P2021' || error?.message?.includes('does not exist')) {
+          console.warn("ChatTemplate table does not exist yet, returning empty array");
+          return NextResponse.json([]);
+        }
+        throw error;
+      }
     }
 
     return NextResponse.json(templates);
