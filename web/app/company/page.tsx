@@ -1229,14 +1229,31 @@ export default function CompanyDashboard() {
             {applicantDetailsModal.applicant && applicantDetailsModal.job && (() => {
               const detailedFit = computeDetailedCulturalFit({
                 applicant: {
-                  ...applicantDetailsModal.applicant,
+                  skills: applicantDetailsModal.applicant.skills,
+                  experience: applicantDetailsModal.applicant.experience,
+                  location: applicantDetailsModal.applicant.location,
                   education: applicantDetailsModal.applicant.education ?? undefined,
                   bio: applicantDetailsModal.applicant.bio ?? undefined,
                   industry: applicantDetailsModal.applicant.industry ?? undefined,
+                  hierarchy: applicantDetailsModal.applicant.hierarchy ?? undefined,
+                  autonomy: applicantDetailsModal.applicant.autonomy ?? undefined,
+                  teamwork: applicantDetailsModal.applicant.teamwork ?? undefined,
+                  workStructure: applicantDetailsModal.applicant.workStructure ?? undefined,
+                  feedback: applicantDetailsModal.applicant.feedback ?? undefined,
+                  flexibility: applicantDetailsModal.applicant.flexibility ?? undefined,
                 },
                 job: {
-                  ...applicantDetailsModal.job,
+                  requiredSkills: applicantDetailsModal.job.requiredSkills || [],
+                  minExperience: applicantDetailsModal.job.minExperience || 0,
+                  location: applicantDetailsModal.job.location || '',
+                  title: applicantDetailsModal.job.title || '',
                   industry: applicantDetailsModal.job.industry ?? undefined,
+                  hierarchy: applicantDetailsModal.job.hierarchy ?? undefined,
+                  autonomy: applicantDetailsModal.job.autonomy ?? undefined,
+                  teamwork: applicantDetailsModal.job.teamwork ?? undefined,
+                  workStructure: applicantDetailsModal.job.workStructure ?? undefined,
+                  feedback: applicantDetailsModal.job.feedback ?? undefined,
+                  flexibility: applicantDetailsModal.job.flexibility ?? undefined,
                 }
               });
               
