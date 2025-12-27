@@ -8,8 +8,9 @@ import CompanyStep1Basics from "./steps/CompanyStep1Basics";
 import CompanyStep2Industry from "./steps/CompanyStep2Industry";
 import CompanyStep3Location from "./steps/CompanyStep3Location";
 import CompanyStep4Summary from "./steps/CompanyStep4Summary";
+import CompanyStep5EmailPassword from "./steps/CompanyStep5EmailPassword";
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 const DRAFT_KEY = "company_onboarding_draft";
 
 export default function MultiStepCompanyForm() {
@@ -106,8 +107,14 @@ export default function MultiStepCompanyForm() {
   function nextStep() {
     // Validation per step
     if (currentStep === 1) {
-      if (!name || !email) {
-        alert("Bitte Name und E-Mail eingeben");
+      if (!name) {
+        alert("Bitte geben Sie den Unternehmensnamen ein");
+        return;
+      }
+    }
+    if (currentStep === 5) {
+      if (!email) {
+        alert("Bitte geben Sie die E-Mail-Adresse ein");
         return;
       }
       if (!password || password.length < 8) {
@@ -199,13 +206,7 @@ export default function MultiStepCompanyForm() {
             {currentStep === 1 && (
               <CompanyStep1Basics 
                 name={name} 
-                email={email} 
-                password={password}
-                passwordConfirm={passwordConfirm}
                 setName={setName} 
-                setEmail={setEmail}
-                setPassword={setPassword}
-                setPasswordConfirm={setPasswordConfirm}
               />
             )}
             {currentStep === 2 && (
@@ -226,6 +227,16 @@ export default function MultiStepCompanyForm() {
               />
             )}
             {currentStep === 4 && (
+              <CompanyStep5EmailPassword
+                email={email}
+                password={password}
+                passwordConfirm={passwordConfirm}
+                setEmail={setEmail}
+                setPassword={setPassword}
+                setPasswordConfirm={setPasswordConfirm}
+              />
+            )}
+            {currentStep === 5 && (
               <CompanyStep4Summary formData={formData} onEdit={goToStep} />
             )}
           </StepTransition>
