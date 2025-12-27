@@ -308,36 +308,53 @@ export default function ApplicantDashboard() {
   }
 
   async function handleAuthSuccess() {
-    // Reload session
+    // Reload session from localStorage
     const session = localStorage.getItem("applicantSession");
     if (session) {
-      const applicantData = JSON.parse(session);
-      setApplicant(applicantData);
-      fetchChats(applicantData.id);
-      fetchPreferences(applicantData.id);
+      try {
+        const applicantData = JSON.parse(session);
+        setApplicant(applicantData);
+        
+        // Only fetch chats and preferences if applicant has an ID
+        if (applicantData.id) {
+          fetchChats(applicantData.id);
+          fetchPreferences(applicantData.id);
+        }
+      } catch (error) {
+        console.error("Error parsing session:", error);
+      }
     }
 
-    // Execute pending action if any
+    // Execute pending action if any (with small delay to ensure state is updated)
     if (pendingAction) {
-      if (pendingAction.type === "interest" && pendingAction.jobId && pendingAction.status) {
-        // Small delay to ensure state is updated
-        setTimeout(() => {
-          handleInterest(pendingAction.jobId!, pendingAction.status!);
-        }, 100);
-      } else if (pendingAction.type === "chat" && pendingAction.chatId) {
-        // Open chat modal
-        const chat = chats.find(c => c.id === pendingAction.chatId);
-        if (chat) {
-          setChatModal({
-            isOpen: true,
-            chatId: chat.id,
-            companyName: chat.companyName || "",
-            jobTitle: chat.jobTitle || "",
-            chatCreatedAt: chat.createdAt
-          });
+      setTimeout(() => {
+        if (pendingAction.type === "interest" && pendingAction.jobId && pendingAction.status) {
+          handleInterest(pendingAction.jobId, pendingAction.status);
+        } else if (pendingAction.type === "chat" && pendingAction.chatId) {
+          // Reload chats first to get the updated chat
+          const session = localStorage.getItem("applicantSession");
+          if (session) {
+            const applicantData = JSON.parse(session);
+            if (applicantData.id) {
+              fetch(`/api/chats?applicantId=${applicantData.id}`)
+                .then(res => res.json())
+                .then(chatsData => {
+                  const chat = chatsData.find((c: any) => c.id === pendingAction.chatId);
+                  if (chat) {
+                    setChatModal({
+                      isOpen: true,
+                      chatId: chat.id,
+                      companyName: chat.companyName || "",
+                      jobTitle: chat.jobTitle || "",
+                      chatCreatedAt: chat.createdAt
+                    });
+                  }
+                });
+            }
+          }
         }
-      }
-      setPendingAction(null);
+        setPendingAction(null);
+      }, 200);
     }
   }
 

@@ -109,6 +109,7 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
         }
       }
 
+      // Priority 1: Update existing profile without email
       if (existingProfile && existingProfile.id && !existingProfile.email) {
         // User has profile but no email/password - update existing profile
         const res = await fetch(`/api/${userType === "applicant" ? "applicants" : "companies"}/${existingProfile.id}`, {
@@ -123,8 +124,30 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
         if (res.ok) {
           const data = await res.json();
           localStorage.setItem(`${userType}Session`, JSON.stringify(data));
-          onAuthSuccess();
-          onClose();
+          onClose(); // Close modal first
+          onAuthSuccess(); // Then update state and execute pending action
+        } else {
+          const errorData = await res.json();
+          setError(errorData.error || "Fehler beim Setzen von E-Mail und Passwort");
+        }
+      } 
+      // Priority 2: Create new profile with prefillData (if provided)
+      else if (prefillData && Object.keys(prefillData).length > 1 && prefillData.id) {
+        // Update existing profile with email/password
+        const res = await fetch(`/api/${userType === "applicant" ? "applicants" : "companies"}/${prefillData.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem(`${userType}Session`, JSON.stringify(data));
+          onClose(); // Close modal first
+          onAuthSuccess(); // Then update state and execute pending action
         } else {
           const errorData = await res.json();
           setError(errorData.error || "Fehler beim Setzen von E-Mail und Passwort");
@@ -145,8 +168,8 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
           const data = await res.json();
           localStorage.setItem(`${userType}Session`, JSON.stringify(data));
           localStorage.removeItem(`${userType}Draft`); // Clear draft
-          onAuthSuccess();
-          onClose();
+          onClose(); // Close modal first
+          onAuthSuccess(); // Then update state and execute pending action
         } else {
           const errorData = await res.json();
           setError(errorData.error || "Fehler bei der Registrierung");
