@@ -43,7 +43,7 @@ export default function CompanyLogin() {
 
   return (
     <div className="ds-background min-h-screen">
-      <Header title="Unternehmen Anmeldung" showBackButton={true} backHref="/company/choose" />
+      <Header title="Unternehmen Anmeldung" showBackButton={true} backHref="/company" />
       
       <main className="max-w-md mx-auto px-6 py-12">
         <div className="ds-card p-8">
@@ -115,9 +115,9 @@ export default function CompanyLogin() {
           <div className="mt-6 text-center">
             <p className="ds-body-light text-sm">
               Noch nicht registriert?{" "}
-              <a href="/company/register" className="ds-link-green">
-                Hier registrieren
-              </a>
+              <span className="text-gray-500">
+                Registrierung erfolgt automatisch bei Interaktion mit Bewerbern
+              </span>
             </p>
           </div>
         </div>

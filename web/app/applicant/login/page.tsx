@@ -43,7 +43,7 @@ export default function ApplicantLogin() {
 
   return (
     <div className="ds-background min-h-screen">
-      <Header title="Bewerber Anmeldung" showBackButton={true} backHref="/applicant/choose" />
+      <Header title="Bewerber Anmeldung" showBackButton={true} backHref="/applicant" />
       
       <main className="max-w-md mx-auto px-6 py-12">
         <div className="ds-card p-8">
@@ -115,9 +115,9 @@ export default function ApplicantLogin() {
           <div className="mt-6 text-center">
             <p className="ds-body-light text-sm">
               Noch kein Konto?{" "}
-              <a href="/applicant/register" className="ds-link-blue">
-                Hier registrieren
-              </a>
+              <span className="text-gray-500">
+                Registrierung erfolgt automatisch bei Interaktion mit Stellen
+              </span>
             </p>
           </div>
         </div>
