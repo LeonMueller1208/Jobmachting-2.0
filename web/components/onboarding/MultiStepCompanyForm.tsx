@@ -150,8 +150,8 @@ export default function MultiStepCompanyForm() {
   }
 
   async function handleSubmit() {
-    if (!name || !industry || !location) {
-      alert("Bitte alle Pflichtfelder ausfüllen");
+    if (!name || !email || !password || password.length < 8 || password !== passwordConfirm || !industry || !location) {
+      alert("Bitte alle Pflichtfelder ausfüllen und Passwort bestätigen");
       return;
     }
 
@@ -161,8 +161,9 @@ export default function MultiStepCompanyForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          name, 
-          // email and password will be set later when user interacts
+          name,
+          email,
+          password,
           industry, 
           location,
           description: description || null,
@@ -177,7 +178,7 @@ export default function MultiStepCompanyForm() {
         localStorage.setItem("companySession", JSON.stringify(data));
         localStorage.removeItem(DRAFT_KEY);
         localStorage.setItem("company_welcome_shown", "pending"); // Trigger welcome modal on first dashboard visit
-        alert("Unternehmen erfolgreich registriert! Sie können jetzt Stellen erstellen. Bei Interaktion wird E-Mail und Passwort abgefragt.");
+        alert("Unternehmen erfolgreich registriert!");
         router.push("/company");
       } else {
         const error = await res.json();
