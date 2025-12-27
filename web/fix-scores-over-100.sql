@@ -28,3 +28,5 @@ SELECT
     COUNT(*) FILTER (WHERE "matchScore" > 100) as "Noch vorhandene Scores > 100"
 FROM "Interest";
 
+
+
