@@ -1,15 +1,15 @@
 "use client";
 
-import Header from "@/components/Header";
-import MultiStepApplicantForm from "@/components/onboarding/MultiStepApplicantForm";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ApplicantRegister() {
-  return (
-    <div className="ds-background min-h-screen">
-      <Header title="Bewerber Registrierung" showBackButton={true} backHref="/applicant/choose" />
-      <main>
-        <MultiStepApplicantForm />
-      </main>
-    </div>
-  );
+  const router = useRouter();
+  
+  useEffect(() => {
+    // Weiterleitung zum Dashboard - Registrierung erfolgt über AuthModal bei Interaktion
+    router.push("/applicant");
+  }, [router]);
+
+  return null;
 }
