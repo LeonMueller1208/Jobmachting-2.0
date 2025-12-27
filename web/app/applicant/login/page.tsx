@@ -115,9 +115,9 @@ export default function ApplicantLogin() {
           <div className="mt-6 text-center">
             <p className="ds-body-light text-sm">
               Noch kein Konto?{" "}
-              <span className="text-gray-500">
-                Registrierung erfolgt automatisch bei Interaktion mit Stellen
-              </span>
+              <a href="/applicant/register" className="ds-link-blue">
+                Hier registrieren
+              </a>
             </p>
           </div>
         </div>

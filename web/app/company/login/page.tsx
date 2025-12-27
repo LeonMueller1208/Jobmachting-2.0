@@ -115,9 +115,9 @@ export default function CompanyLogin() {
           <div className="mt-6 text-center">
             <p className="ds-body-light text-sm">
               Noch nicht registriert?{" "}
-              <span className="text-gray-500">
-                Registrierung erfolgt automatisch bei Interaktion mit Bewerbern
-              </span>
+              <a href="/company/register" className="ds-link-green">
+                Hier registrieren
+              </a>
             </p>
           </div>
         </div>

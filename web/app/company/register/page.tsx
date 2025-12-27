@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Header from "@/components/Header";
+import MultiStepCompanyForm from "@/components/onboarding/MultiStepCompanyForm";
 
 export default function CompanyRegister() {
-  const router = useRouter();
-  
-  useEffect(() => {
-    // Weiterleitung zum Dashboard - Registrierung erfolgt über AuthModal bei Interaktion
-    router.push("/company");
-  }, [router]);
-
-  return null;
+  return (
+    <div className="ds-background min-h-screen">
+      <Header title="Unternehmen Registrierung" showBackButton={true} backHref="/company/choose" />
+      <main>
+        <MultiStepCompanyForm />
+      </main>
+    </div>
+  );
 }
