@@ -18,8 +18,9 @@ import Step11Feedback from "./steps/Step11Feedback";
 import Step12Flexibility from "./steps/Step12Flexibility";
 import Step13Bio from "./steps/Step7Bio";
 import Step14Summary from "./steps/Step8Summary";
+import Step15EmailPassword from "./steps/Step15EmailPassword";
 
-const TOTAL_STEPS = 14;
+const TOTAL_STEPS = 15;
 const DRAFT_KEY = "applicant_onboarding_draft";
 
 export default function MultiStepApplicantForm() {
@@ -135,8 +136,14 @@ export default function MultiStepApplicantForm() {
   function nextStep() {
     // Validation per step
     if (currentStep === 1) {
-      if (!name || !email) {
-        alert("Bitte Name und E-Mail eingeben");
+      if (!name) {
+        alert("Bitte gib deinen Namen ein");
+        return;
+      }
+    }
+    if (currentStep === 14) {
+      if (!email) {
+        alert("Bitte gib deine E-Mail-Adresse ein");
         return;
       }
       if (!password || password.length < 8) {
@@ -263,13 +270,7 @@ export default function MultiStepApplicantForm() {
             {currentStep === 1 && (
               <Step1Basics 
                 name={name} 
-                email={email} 
-                password={password}
-                passwordConfirm={passwordConfirm}
                 setName={setName} 
-                setEmail={setEmail}
-                setPassword={setPassword}
-                setPasswordConfirm={setPasswordConfirm}
               />
             )}
             {currentStep === 2 && (
@@ -309,6 +310,16 @@ export default function MultiStepApplicantForm() {
               <Step13Bio bio={bio} setBio={setBio} onSkip={skipStep} />
             )}
             {currentStep === 14 && (
+              <Step15EmailPassword
+                email={email}
+                password={password}
+                passwordConfirm={passwordConfirm}
+                setEmail={setEmail}
+                setPassword={setPassword}
+                setPasswordConfirm={setPasswordConfirm}
+              />
+            )}
+            {currentStep === 15 && (
               <Step14Summary formData={formData} onEdit={goToStep} />
             )}
           </StepTransition>

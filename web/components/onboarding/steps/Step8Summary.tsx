@@ -87,16 +87,23 @@ export default function Step8Summary({ formData, onEdit }: Step8SummaryProps) {
         <div className="ds-card p-5 hover:shadow-lg transition-shadow duration-300">
           <div className="flex justify-between items-start mb-3">
             <h3 className="font-semibold text-gray-800 text-lg">📋 Basics</h3>
-            <button
-              onClick={() => onEdit(1)}
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-            >
-              Bearbeiten
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => onEdit(1)}
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              >
+                Name
+              </button>
+              <button
+                onClick={() => onEdit(14)}
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              >
+                E-Mail/Passwort
+              </button>
+            </div>
           </div>
           <div className="space-y-2 text-sm">
             <p><span className="font-medium text-gray-600">Name:</span> {formData.name}</p>
-            <p><span className="font-medium text-gray-600">E-Mail:</span> {formData.email}</p>
           </div>
         </div>
 
