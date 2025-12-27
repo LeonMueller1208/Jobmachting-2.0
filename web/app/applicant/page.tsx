@@ -12,7 +12,7 @@ import { formatLastMessageTime, formatChatStartDate } from "@/lib/dateUtils";
 type Applicant = { 
   id: string; 
   name: string; 
-  email: string; 
+  email?: string | null; 
   skills: string[]; 
   location: string; 
   experience: number; 
@@ -260,10 +260,10 @@ export default function ApplicantDashboard() {
   }
 
   async function handleInterest(jobId: string, status: "INTERESTED" | "NOT_INTERESTED") {
-    if (!applicant) {
-      // Open auth modal instead of showing error
+    if (!applicant || !applicant.email) {
+      // Open auth modal if not logged in or if account has no email/password
       setPendingAction({ type: "interest", jobId, status });
-      setAuthModal({ isOpen: true, prefillData: undefined });
+      setAuthModal({ isOpen: true, prefillData: applicant || undefined });
       return;
     }
     
@@ -457,10 +457,10 @@ export default function ApplicantDashboard() {
   }).sort((a, b) => b.matchScore - a.matchScore).slice(0, 20); // Show only top 20 matches
 
   function openChat(chat: any) {
-    if (!applicant) {
-      // Open auth modal instead
+    if (!applicant || !applicant.email) {
+      // Open auth modal if not logged in or if account has no email/password
       setPendingAction({ type: "chat", chatId: chat.id, companyName: chat.companyName || chat.company?.name, jobTitle: chat.jobTitle || chat.job?.title });
-      setAuthModal({ isOpen: true, prefillData: undefined });
+      setAuthModal({ isOpen: true, prefillData: applicant || undefined });
       return;
     }
     setChatModal({

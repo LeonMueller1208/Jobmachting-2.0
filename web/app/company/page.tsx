@@ -12,7 +12,7 @@ import { formatLastMessageTime, formatChatStartDate } from "@/lib/dateUtils";
 type Company = { 
   id: string; 
   name: string; 
-  email: string; 
+  email?: string | null; 
   industry: string; 
   location: string 
 };
@@ -300,8 +300,8 @@ export default function CompanyDashboard() {
   }, [company?.id, chatFilter]);
 
   function openChat(interest: Interest) {
-    if (!company) {
-      // Open auth modal instead
+    if (!company || !company.email) {
+      // Open auth modal if not logged in or if account has no email/password
       setPendingAction({ 
         type: "chat", 
         interestId: interest.id,
@@ -310,7 +310,7 @@ export default function CompanyDashboard() {
         jobId: interest.job.id,
         jobTitle: interest.job.title
       });
-      setAuthModal({ isOpen: true, prefillData: undefined });
+      setAuthModal({ isOpen: true, prefillData: company || undefined });
       return;
     }
     setChatModal({
