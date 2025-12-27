@@ -37,8 +37,6 @@ export async function GET(
   }
 }
 
-import { hashPassword, validatePassword } from "@/lib/auth";
-
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
