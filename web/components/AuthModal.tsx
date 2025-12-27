@@ -15,7 +15,7 @@ type AuthModalProps = {
 };
 
 export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, prefillData }: AuthModalProps) {
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<"login" | "register">("register");
   const [email, setEmail] = useState(prefillData?.email || "");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
@@ -37,7 +37,7 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
       setPassword("");
       setPasswordConfirm("");
       setError("");
-      setMode("login");
+      setMode("register");
     }
   }, [isOpen, prefillData]);
 
@@ -277,12 +277,12 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
                   setPassword("");
                   setPasswordConfirm("");
                 }}
-                className="text-sm text-gray-600 hover:text-gray-800 underline"
+                className="text-xs text-gray-500 hover:text-gray-700 underline"
                 disabled={loading}
               >
-                {mode === "login"
-                  ? "Noch kein Konto? Jetzt registrieren"
-                  : "Bereits registriert? Jetzt anmelden"}
+                {mode === "register"
+                  ? "Bereits registriert? Jetzt anmelden"
+                  : "Noch kein Konto? Jetzt registrieren"}
               </button>
             </div>
 
