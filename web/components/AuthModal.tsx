@@ -109,10 +109,12 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
         }
       }
 
-      // Priority 1: Update existing profile without email
-      if (existingProfile && existingProfile.id && !existingProfile.email) {
-        // User has profile but no email/password - update existing profile
-        const res = await fetch(`/api/${userType === "applicant" ? "applicants" : "companies"}/${existingProfile.id}`, {
+      // Determine which profile to update (priority: existingSession > prefillData)
+      const profileToUpdate = existingProfile?.id ? existingProfile : (prefillData?.id ? prefillData : null);
+
+      // If we have a profile ID, update it with email/password
+      if (profileToUpdate && profileToUpdate.id) {
+        const res = await fetch(`/api/${userType === "applicant" ? "applicants" : "companies"}/${profileToUpdate.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -124,35 +126,20 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
         if (res.ok) {
           const data = await res.json();
           localStorage.setItem(`${userType}Session`, JSON.stringify(data));
+          setLoading(false);
           onClose(); // Close modal first
           onAuthSuccess(); // Then update state and execute pending action
+          return; // Exit early to prevent further execution
         } else {
           const errorData = await res.json();
           setError(errorData.error || "Fehler beim Setzen von E-Mail und Passwort");
+          setLoading(false);
+          return;
         }
-      } 
-      // Priority 2: Create new profile with prefillData (if provided)
-      else if (prefillData && Object.keys(prefillData).length > 1 && prefillData.id) {
-        // Update existing profile with email/password
-        const res = await fetch(`/api/${userType === "applicant" ? "applicants" : "companies"}/${prefillData.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          localStorage.setItem(`${userType}Session`, JSON.stringify(data));
-          onClose(); // Close modal first
-          onAuthSuccess(); // Then update state and execute pending action
-        } else {
-          const errorData = await res.json();
-          setError(errorData.error || "Fehler beim Setzen von E-Mail und Passwort");
-        }
-      } else if (prefillData && Object.keys(prefillData).length > 1) {
+      }
+      
+      // If we have prefillData with multiple fields (new profile creation)
+      if (prefillData && Object.keys(prefillData).length > 1 && !prefillData.id) {
         // Complete registration with all data (new profile)
         const res = await fetch(`/api/${userType === "applicant" ? "applicants" : "companies"}`, {
           method: "POST",
@@ -168,17 +155,22 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
           const data = await res.json();
           localStorage.setItem(`${userType}Session`, JSON.stringify(data));
           localStorage.removeItem(`${userType}Draft`); // Clear draft
+          setLoading(false);
           onClose(); // Close modal first
           onAuthSuccess(); // Then update state and execute pending action
+          return; // Exit early
         } else {
           const errorData = await res.json();
           setError(errorData.error || "Fehler bei der Registrierung");
+          setLoading(false);
+          return;
         }
-      } else {
-        // Simple registration - just email and password, user will complete profile later
-        setError("Bitte vervollständigen Sie zuerst Ihr Profil");
-        setMode("login");
       }
+      
+      // Fallback: No profile to update and no prefillData - show error
+      setError("Bitte vervollständigen Sie zuerst Ihr Profil");
+      setMode("login");
+      setLoading(false);
     } catch (error) {
       console.error("Registration error:", error);
       setError("Fehler bei der Registrierung");
