@@ -122,6 +122,21 @@ export default function CompanyDashboard() {
   });
   const [rejectNote, setRejectNote] = useState("");
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [authModal, setAuthModal] = useState<{
+    isOpen: boolean;
+    prefillData?: any;
+  }>({
+    isOpen: false,
+    prefillData: undefined
+  });
+  const [pendingAction, setPendingAction] = useState<{
+    type: "chat";
+    interestId?: string;
+    applicantId?: string;
+    applicantName?: string;
+    jobId?: string;
+    jobTitle?: string;
+  } | null>(null);
 
   useEffect(() => {
     const session = localStorage.getItem("companySession");
