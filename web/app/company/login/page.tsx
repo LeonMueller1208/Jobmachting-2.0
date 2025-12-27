@@ -43,7 +43,7 @@ export default function CompanyLogin() {
 
   return (
     <div className="ds-background min-h-screen">
-      <Header title="Unternehmen Anmeldung" showBackButton={true} backHref="/company" />
+      <Header title="Unternehmen Anmeldung" showBackButton={true} backHref="/company/choose" />
       
       <main className="max-w-md mx-auto px-6 py-12">
         <div className="ds-card p-8">

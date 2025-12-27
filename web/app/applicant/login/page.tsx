@@ -43,7 +43,7 @@ export default function ApplicantLogin() {
 
   return (
     <div className="ds-background min-h-screen">
-      <Header title="Bewerber Anmeldung" showBackButton={true} backHref="/applicant" />
+      <Header title="Bewerber Anmeldung" showBackButton={true} backHref="/applicant/choose" />
       
       <main className="max-w-md mx-auto px-6 py-12">
         <div className="ds-card p-8">
