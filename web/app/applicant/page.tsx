@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import ApplicantChatModal from "@/components/ApplicantChatModal";
 import CompanyProfileModal from "@/components/CompanyProfileModal";
+import AuthModal from "@/components/AuthModal";
 import { computeMatchingScore, computePreferenceBoost, applyPreferenceBoost, computeCulturalFit, type UserPreferences } from "@/lib/matching";
 import { formatLastMessageTime, formatChatStartDate } from "@/lib/dateUtils";
 
@@ -90,6 +91,21 @@ export default function ApplicantDashboard() {
     isOpen: false,
     companyId: ''
   });
+  const [authModal, setAuthModal] = useState<{
+    isOpen: boolean;
+    prefillData?: any;
+  }>({
+    isOpen: false,
+    prefillData: undefined
+  });
+  const [pendingAction, setPendingAction] = useState<{
+    type: "interest" | "chat";
+    jobId?: string;
+    status?: "INTERESTED" | "NOT_INTERESTED";
+    chatId?: string;
+    companyName?: string;
+    jobTitle?: string;
+  } | null>(null);
 
   useEffect(() => {
     const session = localStorage.getItem("applicantSession");
@@ -245,8 +261,9 @@ export default function ApplicantDashboard() {
 
   async function handleInterest(jobId: string, status: "INTERESTED" | "NOT_INTERESTED") {
     if (!applicant) {
-      setErrorMessage("Bitte melden Sie sich an");
-      setShowError(true);
+      // Open auth modal instead of showing error
+      setPendingAction({ type: "interest", jobId, status });
+      setAuthModal({ isOpen: true, prefillData: undefined });
       return;
     }
     
@@ -287,6 +304,40 @@ export default function ApplicantDashboard() {
       console.error("Error updating interest:", error);
       setErrorMessage(error instanceof Error ? error.message : "Netzwerkfehler beim Aktualisieren des Interesses");
       setShowError(true);
+    }
+  }
+
+  async function handleAuthSuccess() {
+    // Reload session
+    const session = localStorage.getItem("applicantSession");
+    if (session) {
+      const applicantData = JSON.parse(session);
+      setApplicant(applicantData);
+      fetchChats(applicantData.id);
+      fetchPreferences(applicantData.id);
+    }
+
+    // Execute pending action if any
+    if (pendingAction) {
+      if (pendingAction.type === "interest" && pendingAction.jobId && pendingAction.status) {
+        // Small delay to ensure state is updated
+        setTimeout(() => {
+          handleInterest(pendingAction.jobId!, pendingAction.status!);
+        }, 100);
+      } else if (pendingAction.type === "chat" && pendingAction.chatId) {
+        // Open chat modal
+        const chat = chats.find(c => c.id === pendingAction.chatId);
+        if (chat) {
+          setChatModal({
+            isOpen: true,
+            chatId: chat.id,
+            companyName: chat.companyName || "",
+            jobTitle: chat.jobTitle || "",
+            chatCreatedAt: chat.createdAt
+          });
+        }
+      }
+      setPendingAction(null);
     }
   }
 
@@ -406,11 +457,17 @@ export default function ApplicantDashboard() {
   }).sort((a, b) => b.matchScore - a.matchScore).slice(0, 20); // Show only top 20 matches
 
   function openChat(chat: any) {
+    if (!applicant) {
+      // Open auth modal instead
+      setPendingAction({ type: "chat", chatId: chat.id, companyName: chat.companyName || chat.company?.name, jobTitle: chat.jobTitle || chat.job?.title });
+      setAuthModal({ isOpen: true, prefillData: undefined });
+      return;
+    }
     setChatModal({
       isOpen: true,
       chatId: chat.id,
-      companyName: chat.company.name,
-      jobTitle: chat.job.title,
+      companyName: chat.companyName || chat.company?.name || "",
+      jobTitle: chat.jobTitle || chat.job?.title || "",
       chatCreatedAt: chat.createdAt
     });
   }
@@ -1158,22 +1215,36 @@ export default function ApplicantDashboard() {
       )}
 
       {/* Chat Modal */}
-      <ApplicantChatModal
-        isOpen={chatModal.isOpen}
-        onClose={closeChat}
-        chatId={chatModal.chatId}
-        companyName={chatModal.companyName}
-        jobTitle={chatModal.jobTitle}
-        applicantId={applicant.id}
-        chatCreatedAt={chatModal.chatCreatedAt || new Date().toISOString()}
-        onMessagesRead={() => fetchChats(applicant.id)}
-      />
+      {applicant && (
+        <ApplicantChatModal
+          isOpen={chatModal.isOpen}
+          onClose={closeChat}
+          chatId={chatModal.chatId}
+          companyName={chatModal.companyName}
+          jobTitle={chatModal.jobTitle}
+          applicantId={applicant.id}
+          chatCreatedAt={chatModal.chatCreatedAt || new Date().toISOString()}
+          onMessagesRead={() => fetchChats(applicant.id)}
+        />
+      )}
 
       {/* Company Profile Modal */}
       <CompanyProfileModal
         isOpen={companyProfileModal.isOpen}
         onClose={() => setCompanyProfileModal({ isOpen: false, companyId: '' })}
         companyId={companyProfileModal.companyId}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModal.isOpen}
+        onClose={() => {
+          setAuthModal({ isOpen: false, prefillData: undefined });
+          setPendingAction(null);
+        }}
+        userType="applicant"
+        onAuthSuccess={handleAuthSuccess}
+        prefillData={authModal.prefillData}
       />
 
       {/* Job Details Modal */}

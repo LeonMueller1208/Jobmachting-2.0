@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import ChatModal from "@/components/ChatModal";
 import ChatTemplateManager from "@/components/ChatTemplateManager";
+import AuthModal from "@/components/AuthModal";
 import { computeMatchingScore, computeDetailedCulturalFit } from "@/lib/matching";
 import { formatLastMessageTime, formatChatStartDate } from "@/lib/dateUtils";
 
@@ -279,6 +280,19 @@ export default function CompanyDashboard() {
   }, [company?.id, chatFilter]);
 
   function openChat(interest: Interest) {
+    if (!company) {
+      // Open auth modal instead
+      setPendingAction({ 
+        type: "chat", 
+        interestId: interest.id,
+        applicantId: interest.applicant.id,
+        applicantName: interest.applicant.name,
+        jobId: interest.job.id,
+        jobTitle: interest.job.title
+      });
+      setAuthModal({ isOpen: true, prefillData: undefined });
+      return;
+    }
     setChatModal({
       isOpen: true,
       applicantId: interest.applicant.id,
@@ -298,6 +312,37 @@ export default function CompanyDashboard() {
       jobTitle: '',
       chatCreatedAt: undefined
     });
+  }
+
+  async function handleAuthSuccess() {
+    // Reload session
+    const session = localStorage.getItem("companySession");
+    if (session) {
+      try {
+        const companyData = JSON.parse(session);
+        setCompany(companyData);
+        fetchAnalytics(companyData.id);
+        fetchData();
+      } catch (error) {
+        console.error("Error parsing company session:", error);
+      }
+    }
+
+    // Execute pending action if any
+    if (pendingAction && pendingAction.type === "chat" && pendingAction.applicantId && pendingAction.jobId) {
+      // Small delay to ensure state is updated
+      setTimeout(() => {
+        // Find the interest and open chat
+        const interest = interests.find(i => 
+          i.applicant.id === pendingAction?.applicantId && 
+          i.job.id === pendingAction?.jobId
+        );
+        if (interest) {
+          openChat(interest);
+        }
+      }, 100);
+      setPendingAction(null);
+    }
   }
 
   async function handleRejectApplicant() {
@@ -1675,6 +1720,17 @@ export default function CompanyDashboard() {
         </div>
       )}
 
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModal.isOpen}
+        onClose={() => {
+          setAuthModal({ isOpen: false, prefillData: undefined });
+          setPendingAction(null);
+        }}
+        userType="company"
+        onAuthSuccess={handleAuthSuccess}
+        prefillData={authModal.prefillData}
+      />
     </div>
   );
 }
