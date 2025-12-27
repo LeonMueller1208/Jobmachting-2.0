@@ -125,7 +125,7 @@ export default function ApplicantDashboard() {
 
   useEffect(() => {
     fetchJobs();
-  }, [applicant?.id]);
+  }, []);
 
   // Reload chats when chatFilter changes
   useEffect(() => {
@@ -483,7 +483,6 @@ export default function ApplicantDashboard() {
   }
 
   if (loading) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Lade...</div></div>;
-  if (!applicant) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Bitte melden Sie sich an</div></div>;
 
   return (
     <div className="ds-background min-h-screen">
@@ -491,23 +490,32 @@ export default function ApplicantDashboard() {
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 w-full overflow-x-hidden">
         {/* Welcome Card - Mobile Optimized */}
-        <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2 truncate">Willkommen, {applicant.name}!</h1>
-              <p className="ds-body-light text-sm sm:text-base lg:text-lg">Hier sind Ihre passenden Stellenangebote</p>
+        {applicant ? (
+          <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2 truncate">Willkommen, {applicant.name}!</h1>
+                <p className="ds-body-light text-sm sm:text-base lg:text-lg">Hier sind Ihre passenden Stellenangebote</p>
+              </div>
+              <Link 
+                href="/applicant/edit"
+                className="ds-button-secondary text-sm sm:text-base shrink-0 justify-center sm:justify-start"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Profil bearbeiten
+              </Link>
             </div>
-            <Link 
-              href="/applicant/edit"
-              className="ds-button-secondary text-sm sm:text-base shrink-0 justify-center sm:justify-start"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              Profil bearbeiten
-            </Link>
           </div>
-        </div>
+        ) : (
+          <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
+            <div className="text-center">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2">Stellenangebote durchsuchen</h1>
+              <p className="ds-body-light text-sm sm:text-base lg:text-lg">Sie können Stellen ansehen und bei Interesse registrieren oder anmelden</p>
+            </div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="ds-card p-2 mb-6 sm:mb-8 overflow-hidden">
@@ -523,32 +531,36 @@ export default function ApplicantDashboard() {
               <span className="hidden sm:inline">💼 Stellenangebote</span>
               <span className="sm:hidden">💼 Stellen</span>
             </button>
-            <button
-              onClick={() => setActiveTab("chats")}
-              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all relative text-sm sm:text-base whitespace-nowrap min-w-0 ${
-                activeTab === "chats"
-                  ? "bg-[var(--accent-blue)] text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              💬 Chats
-              {chats.length > 0 && chats.some((chat: any) => chat._count && chat._count.messages > 0) && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {chats.reduce((sum: number, chat: any) => sum + (chat._count?.messages || 0), 0)}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("preferences")}
-              className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base whitespace-nowrap min-w-0 ${
-                activeTab === "preferences"
-                  ? "bg-[var(--accent-blue)] text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <span className="hidden sm:inline">📊 Meine Präferenzen</span>
-              <span className="sm:hidden">📊 Präferenzen</span>
-            </button>
+            {applicant && (
+              <>
+                <button
+                  onClick={() => setActiveTab("chats")}
+                  className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all relative text-sm sm:text-base whitespace-nowrap min-w-0 ${
+                    activeTab === "chats"
+                      ? "bg-[var(--accent-blue)] text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  💬 Chats
+                  {chats.length > 0 && chats.some((chat: any) => chat._count && chat._count.messages > 0) && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      {chats.reduce((sum: number, chat: any) => sum + (chat._count?.messages || 0), 0)}
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab("preferences")}
+                  className={`flex-1 px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base whitespace-nowrap min-w-0 ${
+                    activeTab === "preferences"
+                      ? "bg-[var(--accent-blue)] text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="hidden sm:inline">📊 Meine Präferenzen</span>
+                  <span className="sm:hidden">📊 Präferenzen</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 

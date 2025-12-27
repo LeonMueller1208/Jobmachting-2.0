@@ -167,27 +167,32 @@ export default function CompanyDashboard() {
   async function fetchData() {
     try {
       const session = localStorage.getItem("companySession");
-      const company = session ? JSON.parse(session) : null;
+      const companyData = session ? JSON.parse(session) : null;
       
-      if (!company || !company.id) {
-        setLoading(false);
-        return;
+      if (companyData && companyData.id) {
+        const [jobsRes, interestsRes] = await Promise.all([
+          fetch(`/api/jobs?companyId=${companyData.id}`),
+          fetch(`/api/interests?companyId=${companyData.id}`)
+        ]);
+        
+        const jobsData = await jobsRes.json();
+        const interestsData = await interestsRes.json();
+        
+        setJobs(Array.isArray(jobsData) ? jobsData : []);
+        setInterests(Array.isArray(interestsData) ? interestsData : []);
+        setFilteredInterests(Array.isArray(interestsData) ? interestsData : []);
+        
+        // Fetch chats separately with filter
+        fetchChats(companyData.id);
+      } else {
+        // Load all jobs for guest browsing
+        const jobsRes = await fetch(`/api/jobs`);
+        const jobsData = await jobsRes.json();
+        setJobs(Array.isArray(jobsData) ? jobsData : []);
+        setInterests([]);
+        setFilteredInterests([]);
+        setChats([]);
       }
-      
-      const [jobsRes, interestsRes] = await Promise.all([
-        fetch(`/api/jobs?companyId=${company.id}`),
-        fetch(`/api/interests?companyId=${company.id}`)
-      ]);
-      
-      const jobsData = await jobsRes.json();
-      const interestsData = await interestsRes.json();
-      
-      setJobs(Array.isArray(jobsData) ? jobsData : []);
-      setInterests(Array.isArray(interestsData) ? interestsData : []);
-      setFilteredInterests(Array.isArray(interestsData) ? interestsData : []);
-      
-      // Fetch chats separately with filter
-      fetchChats(company.id);
     } catch (error) {
       console.error("Error fetching data:", error);
       setJobs([]);
@@ -411,7 +416,6 @@ export default function CompanyDashboard() {
 
 
   if (loading) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Lade...</div></div>;
-  if (!company) return <div className="ds-background min-h-screen flex items-center justify-center"><div className="text-lg">Bitte melden Sie sich an</div></div>;
 
   return (
     <div className="ds-background min-h-screen">
@@ -419,28 +423,37 @@ export default function CompanyDashboard() {
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 w-full overflow-x-hidden">
         {/* Welcome Card - Mobile Optimized */}
-        <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2 truncate">Willkommen, {company.name}!</h1>
-              <p className="ds-body-light text-sm sm:text-base lg:text-lg">Verwalten Sie Ihre Stellenangebote und Bewerbungen</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-              <Link href="/company/create-job" className="ds-button-primary-green text-sm sm:text-base whitespace-nowrap">
-                <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                <span className="truncate">Neue Stelle erstellen</span>
-              </Link>
-              <Link href="/company/edit" className="px-4 sm:px-6 py-2 sm:py-3 bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 font-semibold rounded-[var(--border-radius-button)] border-2 border-gray-300 hover:border-gray-400 transition-all duration-300 inline-flex items-center justify-center text-sm sm:text-base whitespace-nowrap">
-                <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                <span className="truncate">Profil bearbeiten</span>
-              </Link>
+        {company ? (
+          <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2 truncate">Willkommen, {company.name}!</h1>
+                <p className="ds-body-light text-sm sm:text-base lg:text-lg">Verwalten Sie Ihre Stellenangebote und Bewerbungen</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                <Link href="/company/create-job" className="ds-button-primary-green text-sm sm:text-base whitespace-nowrap">
+                  <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span className="truncate">Neue Stelle erstellen</span>
+                </Link>
+                <Link href="/company/edit" className="px-4 sm:px-6 py-2 sm:py-3 bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 font-semibold rounded-[var(--border-radius-button)] border-2 border-gray-300 hover:border-gray-400 transition-all duration-300 inline-flex items-center justify-center text-sm sm:text-base whitespace-nowrap">
+                  <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span className="truncate">Profil bearbeiten</span>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="ds-card p-4 sm:p-6 mb-6 sm:mb-8">
+            <div className="text-center">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl ds-heading mb-2">Stellenangebote durchsuchen</h1>
+              <p className="ds-body-light text-sm sm:text-base lg:text-lg">Sie können Stellen ansehen und bei Interaktion registrieren oder anmelden</p>
+            </div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="ds-card p-2 mb-6 sm:mb-8">
@@ -456,44 +469,48 @@ export default function CompanyDashboard() {
               <span className="hidden sm:inline">💼 Meine Stellen</span>
               <span className="sm:hidden">💼 Stellen</span>
             </button>
-            <button
-              onClick={() => setActiveTab("interests")}
-              className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
-                activeTab === "interests"
-                  ? "bg-[var(--accent-green)] text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <span className="hidden sm:inline">👥 Interessenten</span>
-              <span className="sm:hidden">👥 Bewerber</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("chats")}
-              className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base relative ${
-                activeTab === "chats"
-                  ? "bg-[var(--accent-green)] text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <span className="hidden sm:inline">💬 Chats</span>
-              <span className="sm:hidden">💬</span>
-              {chats.length > 0 && chats.some((chat: any) => chat._count && chat._count.messages > 0) && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {chats.reduce((sum: number, chat: any) => sum + (chat._count?.messages || 0), 0)}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("analytics")}
-              className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
-                activeTab === "analytics"
-                  ? "bg-[var(--accent-green)] text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <span className="hidden sm:inline">📊 Analytics</span>
-              <span className="sm:hidden">📊 Stats</span>
-            </button>
+            {company && (
+              <>
+                <button
+                  onClick={() => setActiveTab("interests")}
+                  className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
+                    activeTab === "interests"
+                      ? "bg-[var(--accent-green)] text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="hidden sm:inline">👥 Interessenten</span>
+                  <span className="sm:hidden">👥 Bewerber</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("chats")}
+                  className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base relative ${
+                    activeTab === "chats"
+                      ? "bg-[var(--accent-green)] text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="hidden sm:inline">💬 Chats</span>
+                  <span className="sm:hidden">💬</span>
+                  {chats.length > 0 && chats.some((chat: any) => chat._count && chat._count.messages > 0) && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      {chats.reduce((sum: number, chat: any) => sum + (chat._count?.messages || 0), 0)}
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab("analytics")}
+                  className={`px-2 sm:px-4 py-2 rounded-lg font-medium transition-all text-xs sm:text-base ${
+                    activeTab === "analytics"
+                      ? "bg-[var(--accent-green)] text-white"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="hidden sm:inline">📊 Analytics</span>
+                  <span className="sm:hidden">📊 Stats</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -502,7 +519,9 @@ export default function CompanyDashboard() {
           <>
             {/* Jobs List - Enhanced Design */}
             <div className="mb-6 sm:mb-8">
-              <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">Ihre Stellenangebote</h2>
+              <h2 className="text-lg sm:text-xl lg:text-2xl ds-subheading mb-4">
+                {company ? "Ihre Stellenangebote" : "Stellenangebote"}
+              </h2>
               <div className="grid gap-4 sm:gap-5">
                 {jobs.map(job => (
                   <div key={job.id} className="ds-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 border-l-4 border-[var(--accent-green)] overflow-hidden">
