@@ -337,9 +337,10 @@ export default function CompanyDashboard() {
   async function handleAuthSuccess() {
     // Reload session
     const session = localStorage.getItem("companySession");
+    let companyData = null;
     if (session) {
       try {
-        const companyData = JSON.parse(session);
+        companyData = JSON.parse(session);
         setCompany(companyData);
         fetchAnalytics(companyData.id);
         fetchData();
@@ -348,19 +349,24 @@ export default function CompanyDashboard() {
       }
     }
 
-    // Execute pending action if any
-    if (pendingAction && pendingAction.type === "chat" && pendingAction.applicantId && pendingAction.jobId) {
-      // Small delay to ensure state is updated
-      setTimeout(() => {
-        // Find the interest and open chat
-        const interest = interests.find(i => 
-          i.applicant.id === pendingAction?.applicantId && 
-          i.job.id === pendingAction?.jobId
-        );
-        if (interest) {
-          openChat(interest);
-        }
-      }, 100);
+    // Execute pending action if any - use companyData directly from localStorage to avoid state timing issues
+    if (pendingAction && companyData && companyData.id && companyData.email) {
+      const action = pendingAction; // Store reference before clearing
+      setPendingAction(null); // Clear immediately to prevent re-triggering
+      
+      if (action.type === "chat" && action.applicantId && action.jobId) {
+        // Open chat directly without going through openChat check
+        setChatModal({
+          isOpen: true,
+          applicantId: action.applicantId,
+          applicantName: action.applicantName || "",
+          jobId: action.jobId,
+          jobTitle: action.jobTitle || "",
+          chatCreatedAt: undefined
+        });
+      }
+    } else if (pendingAction) {
+      // If we still don't have email, clear pending action to prevent loop
       setPendingAction(null);
     }
   }

@@ -310,9 +310,10 @@ export default function ApplicantDashboard() {
   async function handleAuthSuccess() {
     // Reload session from localStorage
     const session = localStorage.getItem("applicantSession");
+    let applicantData = null;
     if (session) {
       try {
-        const applicantData = JSON.parse(session);
+        applicantData = JSON.parse(session);
         setApplicant(applicantData);
         
         // Only fetch chats and preferences if applicant has an ID
@@ -325,36 +326,62 @@ export default function ApplicantDashboard() {
       }
     }
 
-    // Execute pending action if any (with small delay to ensure state is updated)
-    if (pendingAction) {
-      setTimeout(() => {
-        if (pendingAction.type === "interest" && pendingAction.jobId && pendingAction.status) {
-          handleInterest(pendingAction.jobId, pendingAction.status);
-        } else if (pendingAction.type === "chat" && pendingAction.chatId) {
-          // Reload chats first to get the updated chat
-          const session = localStorage.getItem("applicantSession");
-          if (session) {
-            const applicantData = JSON.parse(session);
-            if (applicantData.id) {
-              fetch(`/api/chats?applicantId=${applicantData.id}`)
-                .then(res => res.json())
-                .then(chatsData => {
-                  const chat = chatsData.find((c: any) => c.id === pendingAction.chatId);
-                  if (chat) {
-                    setChatModal({
-                      isOpen: true,
-                      chatId: chat.id,
-                      companyName: chat.companyName || "",
-                      jobTitle: chat.jobTitle || "",
-                      chatCreatedAt: chat.createdAt
-                    });
-                  }
-                });
-            }
+    // Execute pending action if any - use applicantData directly from localStorage to avoid state timing issues
+    if (pendingAction && applicantData && applicantData.id && applicantData.email) {
+      const action = pendingAction; // Store reference before clearing
+      setPendingAction(null); // Clear immediately to prevent re-triggering
+      
+      if (action.type === "interest" && action.jobId && action.status) {
+        // Execute interest directly without going through handleInterest check
+        try {
+          const res = await fetch("/api/interests", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ applicantId: applicantData.id, jobId: action.jobId, status: action.status }),
+          });
+          
+          if (res.ok) {
+            const responseData = await res.json();
+            const message = action.status === "INTERESTED" ? "Interesse erfolgreich bekundet!" : "Interesse zurückgezogen!";
+            setSuccessMessage(message);
+            setShowSuccess(true);
+            
+            const updatedStatus = responseData?.status || action.status;
+            setJobs(prevJobs => 
+              prevJobs.map(job => 
+                job.id === action.jobId 
+                  ? { ...job, interestStatus: updatedStatus }
+                  : job
+              )
+            );
+            
+            setTimeout(() => {
+              setShowSuccess(false);
+            }, 3000);
           }
+        } catch (error) {
+          console.error("Error updating interest:", error);
         }
-        setPendingAction(null);
-      }, 200);
+      } else if (action.type === "chat" && action.chatId) {
+        // Reload chats first to get the updated chat
+        fetch(`/api/chats?applicantId=${applicantData.id}`)
+          .then(res => res.json())
+          .then(chatsData => {
+            const chat = chatsData.find((c: any) => c.id === action.chatId);
+            if (chat) {
+              setChatModal({
+                isOpen: true,
+                chatId: chat.id,
+                companyName: chat.companyName || "",
+                jobTitle: chat.jobTitle || "",
+                chatCreatedAt: chat.createdAt
+              });
+            }
+          });
+      }
+    } else if (pendingAction) {
+      // If we still don't have email, clear pending action to prevent loop
+      setPendingAction(null);
     }
   }
 
