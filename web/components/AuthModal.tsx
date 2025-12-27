@@ -98,10 +98,39 @@ export default function AuthModal({ isOpen, onClose, userType, onAuthSuccess, pr
         return;
       }
 
-      // If we have prefillData, we need to complete registration with password
-      // Otherwise, just create account with email and password
-      if (prefillData && Object.keys(prefillData).length > 1) {
-        // Complete registration with all data
+      // Check if user has an existing session (profile without email/password)
+      const existingSession = localStorage.getItem(`${userType}Session`);
+      let existingProfile = null;
+      if (existingSession) {
+        try {
+          existingProfile = JSON.parse(existingSession);
+        } catch (e) {
+          // Invalid session, ignore
+        }
+      }
+
+      if (existingProfile && existingProfile.id && !existingProfile.email) {
+        // User has profile but no email/password - update existing profile
+        const res = await fetch(`/api/${userType === "applicant" ? "applicants" : "companies"}/${existingProfile.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem(`${userType}Session`, JSON.stringify(data));
+          onAuthSuccess();
+          onClose();
+        } else {
+          const errorData = await res.json();
+          setError(errorData.error || "Fehler beim Setzen von E-Mail und Passwort");
+        }
+      } else if (prefillData && Object.keys(prefillData).length > 1) {
+        // Complete registration with all data (new profile)
         const res = await fetch(`/api/${userType === "applicant" ? "applicants" : "companies"}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

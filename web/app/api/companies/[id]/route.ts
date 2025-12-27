@@ -36,31 +36,77 @@ export async function GET(
   }
 }
 
+import { hashPassword, validatePassword } from "@/lib/auth";
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const { name, email, industry, location, description, website, companySize, foundedYear } = await request.json();
+    const body = await request.json();
+    const { name, email, password, industry, location, description, website, companySize, foundedYear } = body;
+
+    const updateData: any = {};
+
+    // Update basic fields if provided
+    if (name !== undefined) updateData.name = name;
+    if (industry !== undefined) updateData.industry = industry;
+    if (location !== undefined) updateData.location = location;
+    if (description !== undefined) updateData.description = description;
+    if (website !== undefined) updateData.website = website;
+    if (companySize !== undefined) updateData.companySize = companySize;
+    if (foundedYear !== undefined) updateData.foundedYear = foundedYear;
+
+    // Handle email update
+    if (email !== undefined) {
+      // Check if email is already taken by another user
+      const existing = await prisma.company.findUnique({ where: { email } });
+      if (existing && existing.id !== id) {
+        return NextResponse.json({ error: "Diese E-Mail ist bereits registriert" }, { status: 409 });
+      }
+      updateData.email = email;
+    }
+
+    // Handle password update
+    if (password !== undefined && password !== null && password !== "") {
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.isValid) {
+        return NextResponse.json(
+          { error: passwordValidation.error },
+          { status: 400 }
+        );
+      }
+      try {
+        updateData.passwordHash = await hashPassword(password);
+      } catch (error) {
+        console.error("Password hashing error:", error);
+        return NextResponse.json(
+          { error: "Fehler beim Verschlüsseln des Passworts" },
+          { status: 500 }
+        );
+      }
+    }
 
     const updatedCompany = await prisma.company.update({
       where: { id },
-      data: {
-        name,
-        email,
-        industry,
-        location,
-        description: description !== undefined ? description : undefined,
-        website: website !== undefined ? website : undefined,
-        companySize: companySize !== undefined ? companySize : undefined,
-        foundedYear: foundedYear !== undefined ? foundedYear : undefined,
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        industry: true,
+        location: true,
+        description: true,
+        website: true,
+        companySize: true,
+        foundedYear: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
     
-    // Remove passwordHash from response
-    const { passwordHash: _, ...companyWithoutPassword } = updatedCompany;
-    return NextResponse.json(companyWithoutPassword);
+    return NextResponse.json(updatedCompany);
   } catch (error) {
     console.error("Update company error:", error);
     return NextResponse.json({ error: "Failed to update company" }, { status: 500 });

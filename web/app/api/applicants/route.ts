@@ -68,12 +68,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { email, password, name, skills, location, experience, education, bio, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility } = body ?? {};
     
-    if (!email || !name || !Array.isArray(skills) || skills.length === 0 || !location) {
+    if (!name || !Array.isArray(skills) || skills.length === 0 || !location) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
     }
     
-    // Validate password if provided (required for new accounts)
-    if (password !== undefined) {
+    // Validate password if provided
+    if (password !== undefined && password !== null && password !== "") {
       const passwordValidation = validatePassword(password);
       if (!passwordValidation.isValid) {
         return NextResponse.json(
@@ -97,8 +97,8 @@ export async function POST(request: Request) {
       }
     }
     
-    // Build update and create objects
-    const updateData: any = { 
+    // Build create/update data
+    const data: any = { 
       name, 
       skills, 
       location, 
@@ -114,41 +114,33 @@ export async function POST(request: Request) {
       flexibility: flexibility ? Number(flexibility) : null,
     };
     
-    // Only add passwordHash if it exists (migration might not be applied yet)
-    if (passwordHash !== null) {
-      updateData.passwordHash = passwordHash;
+    // Add email if provided
+    if (email) {
+      data.email = email;
     }
     
-    const createData: any = { 
-      email, 
-      name,
-      skills, 
-      location, 
-      experience: Number(experience) || 0, 
-      education: education || null,
-      bio: bio || null, 
-      industry: industry || null,
-      hierarchy: hierarchy ? Number(hierarchy) : null,
-      autonomy: autonomy ? Number(autonomy) : null,
-      teamwork: teamwork ? Number(teamwork) : null,
-      workStructure: workStructure ? Number(workStructure) : null,
-      feedback: feedback ? Number(feedback) : null,
-      flexibility: flexibility ? Number(flexibility) : null
-    };
-    
-    // Only add passwordHash if it exists (migration might not be applied yet)
+    // Add passwordHash if provided
     if (passwordHash !== null) {
-      createData.passwordHash = passwordHash;
+      data.passwordHash = passwordHash;
     }
     
-    const upserted = await prisma.applicant.upsert({
-      where: { email },
-      update: updateData,
-      create: createData,
-    });
+    // If email is provided, use upsert. Otherwise, create new account.
+    let applicant;
+    if (email) {
+      applicant = await prisma.applicant.upsert({
+        where: { email },
+        update: data,
+        create: data,
+      });
+    } else {
+      // Create new account without email (email will be set later when user interacts)
+      applicant = await prisma.applicant.create({
+        data,
+      });
+    }
     
     // Remove passwordHash from response (security)
-    const { passwordHash: _, ...applicantWithoutPassword } = upserted;
+    const { passwordHash: _, ...applicantWithoutPassword } = applicant;
     
     return NextResponse.json(applicantWithoutPassword, { status: 201 });
   } catch (e) {

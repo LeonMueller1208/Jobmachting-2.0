@@ -18,9 +18,8 @@ import Step11Feedback from "./steps/Step11Feedback";
 import Step12Flexibility from "./steps/Step12Flexibility";
 import Step13Bio from "./steps/Step7Bio";
 import Step14Summary from "./steps/Step8Summary";
-import Step15EmailPassword from "./steps/Step15EmailPassword";
 
-const TOTAL_STEPS = 15;
+const TOTAL_STEPS = 14;
 const DRAFT_KEY = "applicant_onboarding_draft";
 
 export default function MultiStepApplicantForm() {
@@ -208,8 +207,8 @@ export default function MultiStepApplicantForm() {
   }
 
   async function handleSubmit() {
-    if (!name || !email || !password || password.length < 8 || password !== passwordConfirm || skills.length === 0 || !location || !hierarchy || !autonomy || !teamwork || !workStructure || !feedback || !flexibility) {
-      alert("Bitte alle Pflichtfelder ausfüllen und Passwort bestätigen");
+    if (!name || skills.length === 0 || !location || !hierarchy || !autonomy || !teamwork || !workStructure || !feedback || !flexibility) {
+      alert("Bitte alle Pflichtfelder ausfüllen");
       return;
     }
 
@@ -220,8 +219,7 @@ export default function MultiStepApplicantForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           name, 
-          email,
-          password,
+          // email and password will be set later when user interacts
           skills, 
           location, 
           experience, 
@@ -242,7 +240,7 @@ export default function MultiStepApplicantForm() {
         localStorage.setItem("applicantSession", JSON.stringify(data));
         localStorage.removeItem(DRAFT_KEY); // Clear draft
         localStorage.setItem("applicant_welcome_shown", "pending"); // Trigger welcome modal on first dashboard visit
-        alert("Profil erfolgreich erstellt!");
+        alert("Profil erfolgreich erstellt! Sie können jetzt Stellen durchsuchen. Bei Interaktion wird E-Mail und Passwort abgefragt.");
         router.push("/applicant");
       } else {
         const error = await res.json();
@@ -310,16 +308,6 @@ export default function MultiStepApplicantForm() {
               <Step13Bio bio={bio} setBio={setBio} onSkip={skipStep} />
             )}
             {currentStep === 14 && (
-              <Step15EmailPassword
-                email={email}
-                password={password}
-                passwordConfirm={passwordConfirm}
-                setEmail={setEmail}
-                setPassword={setPassword}
-                setPasswordConfirm={setPasswordConfirm}
-              />
-            )}
-            {currentStep === 15 && (
               <Step14Summary formData={formData} onEdit={goToStep} />
             )}
           </StepTransition>

@@ -10,8 +10,8 @@ datasource db {
 model Applicant {
   id              String     @id @default(cuid())
   name            String
-  email           String     @unique
-  passwordHash    String?    // Hashed password (optional for backward compatibility with existing accounts)
+  email           String?    @unique
+  passwordHash    String?    // Hashed password (optional - set when user interacts)
   skills          Json
   location        String
   experience      Int
@@ -33,8 +33,8 @@ model Applicant {
 model Company {
   id           String        @id @default(cuid())
   name         String
-  email        String        @unique
-  passwordHash String?        // Hashed password (optional for backward compatibility with existing accounts)
+  email        String?       @unique
+  passwordHash String?       // Hashed password (optional - set when user interacts)
   industry     String
   location     String
   description  String?       // Company description/bio

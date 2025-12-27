@@ -78,12 +78,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { email, password, name, industry, location, description, website, companySize, foundedYear } = body ?? {};
     
-    if (!email || !name || !industry || !location) {
+    if (!name || !industry || !location) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
     }
     
-    // Validate password if provided (required for new accounts)
-    if (password !== undefined) {
+    // Validate password if provided
+    if (password !== undefined && password !== null && password !== "") {
       const passwordValidation = validatePassword(password);
       if (!passwordValidation.isValid) {
         return NextResponse.json(
@@ -93,10 +93,12 @@ export async function POST(request: Request) {
       }
     }
     
-    // Check if company already exists
-    const existing = await prisma.company.findUnique({ where: { email } });
-    if (existing) {
-      return NextResponse.json({ error: "Company with this email already exists" }, { status: 409 });
+    // Check if company already exists (only if email is provided)
+    if (email) {
+      const existing = await prisma.company.findUnique({ where: { email } });
+      if (existing) {
+        return NextResponse.json({ error: "Company with this email already exists" }, { status: 409 });
+      }
     }
     
     // Hash password if provided
@@ -113,28 +115,43 @@ export async function POST(request: Request) {
       }
     }
     
-    // Build create data object
-    const createData: any = { 
-      email, 
+    // Build create/update data
+    const data: any = { 
       name, 
       industry, 
       location,
     };
     
-    // Add optional fields if provided
-    if (description !== undefined) createData.description = description;
-    if (website !== undefined) createData.website = website;
-    if (companySize !== undefined) createData.companySize = companySize;
-    if (foundedYear !== undefined) createData.foundedYear = foundedYear;
-    
-    // Only add passwordHash if it exists (migration might not be applied yet)
-    if (passwordHash !== null) {
-      createData.passwordHash = passwordHash;
+    // Add email if provided
+    if (email) {
+      data.email = email;
     }
     
-    const company = await prisma.company.create({
-      data: createData,
-    });
+    // Add optional fields if provided
+    if (description !== undefined) data.description = description;
+    if (website !== undefined) data.website = website;
+    if (companySize !== undefined) data.companySize = companySize;
+    if (foundedYear !== undefined) data.foundedYear = foundedYear;
+    
+    // Add passwordHash if provided
+    if (passwordHash !== null) {
+      data.passwordHash = passwordHash;
+    }
+    
+    // If email is provided, use upsert. Otherwise, create new account.
+    let company;
+    if (email) {
+      company = await prisma.company.upsert({
+        where: { email },
+        update: data,
+        create: data,
+      });
+    } else {
+      // Create new account without email (email will be set later when user interacts)
+      company = await prisma.company.create({
+        data,
+      });
+    }
     
     // Remove passwordHash from response (security)
     const { passwordHash: _, ...companyWithoutPassword } = company;
