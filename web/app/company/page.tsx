@@ -334,40 +334,40 @@ export default function CompanyDashboard() {
     });
   }
 
-  async function handleAuthSuccess() {
+  function handleAuthSuccess() {
     // Reload session
     const session = localStorage.getItem("companySession");
-    let companyData = null;
     if (session) {
       try {
-        companyData = JSON.parse(session);
+        const companyData = JSON.parse(session);
         setCompany(companyData);
         fetchAnalytics(companyData.id);
         fetchData();
+
+        // Execute pending action with delay to ensure UI has updated
+        if (pendingAction && companyData.email) {
+          const action = { ...pendingAction }; // Copy before clearing
+          setPendingAction(null);
+          
+          setTimeout(() => {
+            if (action.type === "chat" && action.applicantId && action.jobId) {
+              setChatModal({
+                isOpen: true,
+                applicantId: action.applicantId,
+                applicantName: action.applicantName || "",
+                jobId: action.jobId,
+                jobTitle: action.jobTitle || "",
+                chatCreatedAt: undefined
+              });
+            }
+          }, 300);
+        } else if (pendingAction) {
+          setPendingAction(null);
+        }
       } catch (error) {
         console.error("Error parsing company session:", error);
+        setPendingAction(null);
       }
-    }
-
-    // Execute pending action if any - use companyData directly from localStorage to avoid state timing issues
-    if (pendingAction && companyData && companyData.id && companyData.email) {
-      const action = pendingAction; // Store reference before clearing
-      setPendingAction(null); // Clear immediately to prevent re-triggering
-      
-      if (action.type === "chat" && action.applicantId && action.jobId) {
-        // Open chat directly without going through openChat check
-        setChatModal({
-          isOpen: true,
-          applicantId: action.applicantId,
-          applicantName: action.applicantName || "",
-          jobId: action.jobId,
-          jobTitle: action.jobTitle || "",
-          chatCreatedAt: undefined
-        });
-      }
-    } else if (pendingAction) {
-      // If we still don't have email, clear pending action to prevent loop
-      setPendingAction(null);
     }
   }
 
