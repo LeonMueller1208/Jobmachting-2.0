@@ -1,9 +1,8 @@
 "use client";
 
 const availableLocations = [
-  'Berlin', 'München', 'Hamburg', 'Kassel', 'Kassel Umgebung', 'Köln', 'Frankfurt', 'Stuttgart', 
-  'Düsseldorf', 'Dortmund', 'Essen', 'Leipzig', 'Bremen', 'Dresden', 
-  'Hannover', 'Nürnberg', 'Remote'
+  'Kassel', 
+  'Kassel Umgebung'
 ];
 
 interface CompanyStep3LocationProps {
