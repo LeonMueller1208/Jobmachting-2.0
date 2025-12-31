@@ -53,7 +53,7 @@ export default function JobStep7Hierarchy({ hierarchy, setHierarchy }: Props) {
             className={`
               w-full p-6 rounded-xl border-2 transition-all duration-300 text-left
               ${hierarchy === option.value
-                ? 'border-green-500 bg-green-50 shadow-lg scale-105'
+                ? 'border-green-500 bg-green-50 shadow-lg'
                 : 'border-gray-200 bg-white hover:border-green-300 hover:shadow-md'
               }
             `}
