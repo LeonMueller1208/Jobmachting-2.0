@@ -16,6 +16,8 @@ model Applicant {
   location        String
   experience      Int
   education       String?    // Highest degree: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion"
+  fieldOfStudy    String?    // Field of study (nur bei Uni-Abschluss): "BWL", "VWL", etc.
+  fieldOfStudyCategory String? // Category: "Wirtschaft", "Ingenieurwesen", "Sonstige"
   bio             String?
   industry        String?
   hierarchy       Int?       // 1-4: "very_flat" | "rather_flat" | "rather_clear" | "very_clear"
@@ -56,6 +58,7 @@ model Job {
   location          String
   minExperience     Int
   requiredEducation String?    // Minimum required: "Hauptschulabschluss", "Realschulabschluss", "Abitur", "Bachelor", "Master", "Promotion", "Keine Angabe"
+  requiredFieldsOfStudy Json?  // Array of required fields: ["BWL", "VWL"], empty/null = all accepted
   jobType           String?    // Job type: "Vollzeit", "Teilzeit", "Praktikum", "Werkstudent", "Minijob", "Freelance", "Ausbildung"
   companyId         String
   createdAt         DateTime   @default(now())

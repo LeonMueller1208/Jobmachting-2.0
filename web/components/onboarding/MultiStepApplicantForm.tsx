@@ -37,6 +37,8 @@ export default function MultiStepApplicantForm() {
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState(0);
   const [education, setEducation] = useState("");
+  const [fieldOfStudyCategory, setFieldOfStudyCategory] = useState("");
+  const [fieldOfStudy, setFieldOfStudy] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [industry, setIndustry] = useState("");
   const [hierarchy, setHierarchy] = useState<number>(0);
@@ -88,6 +90,8 @@ export default function MultiStepApplicantForm() {
         location,
         experience,
         education,
+        fieldOfStudyCategory,
+        fieldOfStudy,
         skills,
         industry,
         hierarchy,
@@ -102,7 +106,7 @@ export default function MultiStepApplicantForm() {
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [name, email, location, experience, education, skills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, bio, currentStep]);
+  }, [name, email, location, experience, education, fieldOfStudyCategory, fieldOfStudy, skills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, bio, currentStep]);
 
   function loadDraft() {
     const draft = localStorage.getItem(DRAFT_KEY);
@@ -113,6 +117,8 @@ export default function MultiStepApplicantForm() {
       setLocation(parsed.location || "");
       setExperience(parsed.experience || 0);
       setEducation(parsed.education || "");
+      setFieldOfStudyCategory(parsed.fieldOfStudyCategory || "");
+      setFieldOfStudy(parsed.fieldOfStudy || "");
       setSkills(parsed.skills || []);
       setIndustry(parsed.industry || "");
       setHierarchy(parsed.hierarchy || 0);
@@ -223,7 +229,9 @@ export default function MultiStepApplicantForm() {
           skills, 
           location, 
           experience, 
-          education, 
+          education,
+          fieldOfStudyCategory,
+          fieldOfStudy,
           bio, 
           industry,
           hierarchy,
@@ -254,7 +262,7 @@ export default function MultiStepApplicantForm() {
     }
   }
 
-  const formData = { name, email, location, experience, education, skills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, bio };
+  const formData = { name, email, location, experience, education, fieldOfStudyCategory, fieldOfStudy, skills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, bio };
 
   return (
     <>
@@ -278,7 +286,15 @@ export default function MultiStepApplicantForm() {
               <Step3Experience experience={experience} setExperience={setExperience} />
             )}
             {currentStep === 4 && (
-              <Step4Education education={education} setEducation={setEducation} onSkip={skipStep} />
+              <Step4Education 
+                education={education} 
+                setEducation={setEducation}
+                fieldOfStudyCategory={fieldOfStudyCategory}
+                setFieldOfStudyCategory={setFieldOfStudyCategory}
+                fieldOfStudy={fieldOfStudy}
+                setFieldOfStudy={setFieldOfStudy}
+                onSkip={skipStep} 
+              />
             )}
             {currentStep === 5 && (
               <Step5Skills skills={skills} setSkills={setSkills} />

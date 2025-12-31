@@ -10,17 +10,71 @@ const availableEducation = [
   "Promotion"
 ];
 
+const fieldsOfStudy = {
+  "Wirtschaft": [
+    "BWL (Betriebswirtschaftslehre)",
+    "VWL (Volkswirtschaftslehre)",
+    "Wirtschaftswissenschaften",
+    "Wirtschaftsinformatik",
+    "Wirtschaftsingenieurwesen",
+    "International Business",
+    "Finance / Banking",
+    "Marketing / Vertrieb",
+    "Wirtschaftsrecht"
+  ],
+  "Ingenieurwesen": [
+    "Maschinenbau",
+    "Elektrotechnik / Elektronik",
+    "Informatik",
+    "Bauingenieurwesen",
+    "Wirtschaftsingenieurwesen",
+    "Mechatronik",
+    "Verfahrenstechnik / Chemieingenieurwesen",
+    "Produktions- und Automatisierungstechnik",
+    "Umwelt- und Energietechnik"
+  ],
+  "Sonstige": [
+    "Andere Fachrichtung"
+  ]
+};
+
+const requiresFieldOfStudy = (education: string) => {
+  return ["Bachelor", "Master", "Diplom", "Promotion"].includes(education);
+};
+
 interface JobStep5EducationProps {
   requiredEducation: string;
   setRequiredEducation: (value: string) => void;
+  requiredFieldsOfStudy: string[];
+  setRequiredFieldsOfStudy: (value: string[]) => void;
   onSkip: () => void;
 }
 
 export default function JobStep5Education({ 
   requiredEducation, 
-  setRequiredEducation, 
+  setRequiredEducation,
+  requiredFieldsOfStudy,
+  setRequiredFieldsOfStudy,
   onSkip 
 }: JobStep5EducationProps) {
+  
+  const showFieldsOfStudy = requiresFieldOfStudy(requiredEducation);
+
+  const handleEducationChange = (value: string) => {
+    setRequiredEducation(value);
+    if (!requiresFieldOfStudy(value)) {
+      setRequiredFieldsOfStudy([]);
+    }
+  };
+
+  const toggleFieldOfStudy = (field: string) => {
+    if (requiredFieldsOfStudy.includes(field)) {
+      setRequiredFieldsOfStudy(requiredFieldsOfStudy.filter(f => f !== field));
+    } else {
+      setRequiredFieldsOfStudy([...requiredFieldsOfStudy, field]);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Icon & Title */}
@@ -41,7 +95,7 @@ export default function JobStep5Education({
         <label className="ds-label">Mindest-Abschluss (optional)</label>
         <select
           value={requiredEducation}
-          onChange={(e) => setRequiredEducation(e.target.value)}
+          onChange={(e) => handleEducationChange(e.target.value)}
           className="ds-input ds-input-focus-green text-lg"
         >
           <option value="">Abschluss wählen...</option>
@@ -50,6 +104,51 @@ export default function JobStep5Education({
           ))}
         </select>
       </div>
+
+      {/* Fields of Study - Only for University Degrees */}
+      {showFieldsOfStudy && (
+        <div className="space-y-4 pt-4 border-t-2 border-green-200">
+          <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+            <p className="text-sm text-green-800 font-medium mb-2">
+              📚 Gewünschte Fachrichtungen (optional, Mehrfachauswahl)
+            </p>
+            <p className="text-xs text-green-700">
+              Wenn Sie keine Fachrichtung auswählen, werden alle Fachrichtungen akzeptiert.
+            </p>
+          </div>
+
+          {/* Checkboxes by Category */}
+          {Object.entries(fieldsOfStudy).map(([category, fields]) => (
+            <div key={category} className="space-y-2">
+              <h3 className="font-semibold text-gray-700 text-sm uppercase tracking-wide border-b border-gray-300 pb-1">
+                {category}
+              </h3>
+              <div className="space-y-2 pl-2">
+                {fields.map(field => (
+                  <label key={field} className="flex items-start gap-3 cursor-pointer hover:bg-green-50 p-2 rounded transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={requiredFieldsOfStudy.includes(field)}
+                      onChange={() => toggleFieldOfStudy(field)}
+                      className="mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <span className="text-sm text-gray-700">{field}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          {/* Selected Count */}
+          {requiredFieldsOfStudy.length > 0 && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-800">
+                ✓ <strong>{requiredFieldsOfStudy.length}</strong> Fachrichtung{requiredFieldsOfStudy.length !== 1 ? 'en' : ''} ausgewählt
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Skip Button */}
       <button

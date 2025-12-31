@@ -9,13 +9,81 @@ const availableEducation = [
   "Promotion"
 ];
 
+const fieldCategories = [
+  "Wirtschaft",
+  "Ingenieurwesen",
+  "Sonstige"
+];
+
+const fieldsByCategory: Record<string, string[]> = {
+  "Wirtschaft": [
+    "BWL (Betriebswirtschaftslehre)",
+    "VWL (Volkswirtschaftslehre)",
+    "Wirtschaftswissenschaften",
+    "Wirtschaftsinformatik",
+    "Wirtschaftsingenieurwesen",
+    "International Business",
+    "Finance / Banking",
+    "Marketing / Vertrieb",
+    "Wirtschaftsrecht"
+  ],
+  "Ingenieurwesen": [
+    "Maschinenbau",
+    "Elektrotechnik / Elektronik",
+    "Informatik",
+    "Bauingenieurwesen",
+    "Wirtschaftsingenieurwesen",
+    "Mechatronik",
+    "Verfahrenstechnik / Chemieingenieurwesen",
+    "Produktions- und Automatisierungstechnik",
+    "Umwelt- und Energietechnik"
+  ],
+  "Sonstige": [
+    "Andere Fachrichtung"
+  ]
+};
+
+const requiresFieldOfStudy = (education: string) => {
+  return ["Bachelor", "Master", "Diplom", "Promotion"].includes(education);
+};
+
 interface Step4EducationProps {
   education: string;
   setEducation: (value: string) => void;
+  fieldOfStudyCategory: string;
+  setFieldOfStudyCategory: (value: string) => void;
+  fieldOfStudy: string;
+  setFieldOfStudy: (value: string) => void;
   onSkip: () => void;
 }
 
-export default function Step4Education({ education, setEducation, onSkip }: Step4EducationProps) {
+export default function Step4Education({ 
+  education, 
+  setEducation, 
+  fieldOfStudyCategory,
+  setFieldOfStudyCategory,
+  fieldOfStudy,
+  setFieldOfStudy,
+  onSkip 
+}: Step4EducationProps) {
+  
+  const showFieldOfStudy = requiresFieldOfStudy(education);
+  
+  // Reset field of study when education changes to non-university
+  const handleEducationChange = (value: string) => {
+    setEducation(value);
+    if (!requiresFieldOfStudy(value)) {
+      setFieldOfStudyCategory("");
+      setFieldOfStudy("");
+    }
+  };
+
+  // Reset field when category changes
+  const handleCategoryChange = (value: string) => {
+    setFieldOfStudyCategory(value);
+    setFieldOfStudy("");
+  };
+
   return (
     <div className="space-y-6">
       {/* Icon & Title */}
@@ -53,7 +121,7 @@ export default function Step4Education({ education, setEducation, onSkip }: Step
         
         <select
           value={education}
-          onChange={(e) => setEducation(e.target.value)}
+          onChange={(e) => handleEducationChange(e.target.value)}
           className="ds-input ds-input-focus-blue text-lg"
         >
           <option value="">Abschluss wählen...</option>
@@ -62,6 +130,49 @@ export default function Step4Education({ education, setEducation, onSkip }: Step
           ))}
         </select>
       </div>
+
+      {/* Field of Study - Only for University Degrees */}
+      {showFieldOfStudy && (
+        <div className="space-y-4 pt-4 border-t-2 border-blue-200">
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+            <p className="text-sm text-blue-800 font-medium">
+              📚 Da du einen Hochschulabschluss angegeben hast, benötigen wir noch deine Fachrichtung.
+            </p>
+          </div>
+
+          {/* Category Dropdown */}
+          <div>
+            <label className="ds-label">Fachbereich *</label>
+            <select
+              value={fieldOfStudyCategory}
+              onChange={(e) => handleCategoryChange(e.target.value)}
+              className="ds-input ds-input-focus-blue text-lg"
+            >
+              <option value="">Fachbereich wählen...</option>
+              {fieldCategories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Field of Study Dropdown - Only when category selected */}
+          {fieldOfStudyCategory && (
+            <div>
+              <label className="ds-label">Fachrichtung *</label>
+              <select
+                value={fieldOfStudy}
+                onChange={(e) => setFieldOfStudy(e.target.value)}
+                className="ds-input ds-input-focus-blue text-lg"
+              >
+                <option value="">Fachrichtung wählen...</option>
+                {fieldsByCategory[fieldOfStudyCategory]?.map(field => (
+                  <option key={field} value={field}>{field}</option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Skip Button */}
       <button

@@ -4,6 +4,8 @@ export type MatchingInput = {
     experience: number; 
     location: string;
     education?: string;
+    fieldOfStudy?: string;
+    fieldOfStudyCategory?: string;
     bio?: string;
     industry?: string;
     hierarchy?: number;
@@ -18,6 +20,7 @@ export type MatchingInput = {
     minExperience: number; 
     location: string;
     requiredEducation?: string;
+    requiredFieldsOfStudy?: string[];
     title: string;
     description?: string;
     industry?: string;
@@ -81,6 +84,25 @@ const EDUCATION_LEVELS: { [key: string]: number } = {
   'master': 5,
   'promotion': 6
 };
+
+// Check if applicant meets field of study requirements (hard filter)
+export function meetsFieldOfStudyRequirement(
+  applicantFieldOfStudy: string | undefined,
+  requiredFieldsOfStudy: string[] | undefined
+): boolean {
+  // If job has no field of study requirements, all applicants pass
+  if (!requiredFieldsOfStudy || requiredFieldsOfStudy.length === 0) {
+    return true;
+  }
+  
+  // If job requires specific fields but applicant has none, they don't pass
+  if (!applicantFieldOfStudy) {
+    return false;
+  }
+  
+  // Check if applicant's field is in the required list
+  return requiredFieldsOfStudy.includes(applicantFieldOfStudy);
+}
 
 export function computeMatchingScore({ applicant, job }: MatchingInput): number {
   // Location is now handled by UI filter, not in scoring

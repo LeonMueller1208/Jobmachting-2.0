@@ -16,7 +16,9 @@ export async function PUT(
       skills, 
       location, 
       experience, 
-      education, 
+      education,
+      fieldOfStudy,
+      fieldOfStudyCategory,
       bio, 
       industry,
       hierarchy,
@@ -35,6 +37,8 @@ export async function PUT(
     if (location !== undefined) updateData.location = location;
     if (experience !== undefined) updateData.experience = Number(experience);
     if (education !== undefined) updateData.education = education || null;
+    if (fieldOfStudy !== undefined) updateData.fieldOfStudy = fieldOfStudy || null;
+    if (fieldOfStudyCategory !== undefined) updateData.fieldOfStudyCategory = fieldOfStudyCategory || null;
     if (bio !== undefined) updateData.bio = bio || null;
     if (industry !== undefined) updateData.industry = industry || null;
     if (hierarchy !== undefined) updateData.hierarchy = hierarchy ? Number(hierarchy) : null;
@@ -85,6 +89,8 @@ export async function PUT(
         location: true,
         experience: true,
         education: true,
+        fieldOfStudy: true,
+        fieldOfStudyCategory: true,
         bio: true,
         industry: true,
         hierarchy: true,

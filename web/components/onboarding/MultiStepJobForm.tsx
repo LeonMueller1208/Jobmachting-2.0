@@ -39,6 +39,7 @@ export default function MultiStepJobForm() {
   const [jobType, setJobType] = useState("");
   const [minExperience, setMinExperience] = useState(0);
   const [requiredEducation, setRequiredEducation] = useState("");
+  const [requiredFieldsOfStudy, setRequiredFieldsOfStudy] = useState<string[]>([]);
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
   const [industry, setIndustry] = useState("");
   const [hierarchy, setHierarchy] = useState<number>(0);
@@ -89,6 +90,7 @@ export default function MultiStepJobForm() {
         jobType,
         minExperience,
         requiredEducation,
+        requiredFieldsOfStudy,
         requiredSkills,
         industry,
         hierarchy,
@@ -102,7 +104,7 @@ export default function MultiStepJobForm() {
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [title, description, location, jobType, minExperience, requiredEducation, requiredSkills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, currentStep]);
+  }, [title, description, location, jobType, minExperience, requiredEducation, requiredFieldsOfStudy, requiredSkills, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility, currentStep]);
 
   function loadDraft() {
     const draft = localStorage.getItem(DRAFT_KEY);
@@ -114,6 +116,7 @@ export default function MultiStepJobForm() {
       setJobType(parsed.jobType || "");
       setMinExperience(parsed.minExperience || 0);
       setRequiredEducation(parsed.requiredEducation || "");
+      setRequiredFieldsOfStudy(parsed.requiredFieldsOfStudy || []);
       setRequiredSkills(parsed.requiredSkills || []);
       setIndustry(parsed.industry || "");
       setHierarchy(parsed.hierarchy || 0);
@@ -221,6 +224,7 @@ export default function MultiStepJobForm() {
           location,
           minExperience,
           requiredEducation,
+          requiredFieldsOfStudy,
           jobType,
           industry,
           hierarchy,
@@ -260,6 +264,7 @@ export default function MultiStepJobForm() {
     jobType,
     minExperience,
     requiredEducation,
+    requiredFieldsOfStudy,
     requiredSkills,
     industry,
     hierarchy,
@@ -299,7 +304,9 @@ export default function MultiStepJobForm() {
             {currentStep === 5 && (
               <JobStep5Education 
                 requiredEducation={requiredEducation} 
-                setRequiredEducation={setRequiredEducation} 
+                setRequiredEducation={setRequiredEducation}
+                requiredFieldsOfStudy={requiredFieldsOfStudy}
+                setRequiredFieldsOfStudy={setRequiredFieldsOfStudy}
                 onSkip={skipStep} 
               />
             )}

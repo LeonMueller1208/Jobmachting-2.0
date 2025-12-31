@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import ApplicantChatModal from "@/components/ApplicantChatModal";
 import CompanyProfileModal from "@/components/CompanyProfileModal";
 import AuthModal from "@/components/AuthModal";
-import { computeMatchingScore, computePreferenceBoost, applyPreferenceBoost, computeCulturalFit, type UserPreferences } from "@/lib/matching";
+import { computeMatchingScore, computePreferenceBoost, applyPreferenceBoost, computeCulturalFit, meetsFieldOfStudyRequirement, type UserPreferences } from "@/lib/matching";
 import { formatLastMessageTime, formatChatStartDate } from "@/lib/dateUtils";
 
 type Applicant = { 
@@ -17,6 +17,8 @@ type Applicant = {
   location: string; 
   experience: number; 
   education?: string | null;
+  fieldOfStudy?: string | null;
+  fieldOfStudyCategory?: string | null;
   bio?: string | null; 
   industry?: string | null;
   hierarchy?: number | null;
@@ -35,6 +37,7 @@ type Job = {
   location: string; 
   minExperience: number; 
   requiredEducation?: string | null;
+  requiredFieldsOfStudy?: string[] | null;
   jobType?: string | null;
   industry?: string | null; 
   hierarchy?: number | null;
@@ -388,7 +391,7 @@ export default function ApplicantDashboard() {
   const availableLocations = Array.from(new Set(jobs.map(job => job.location).filter(Boolean))).sort();
   const availableJobTypes = Array.from(new Set(jobs.map(job => job.jobType).filter((type): type is string => Boolean(type)))).sort();
 
-  // Filter jobs by location AND job type
+  // Filter jobs by location AND job type AND field of study
   const filteredJobs = jobs.filter(job => {
     // Location filter
     if (locationFilter !== "all") {
@@ -398,6 +401,14 @@ export default function ApplicantDashboard() {
     
     // Job type filter
     if (jobTypeFilter !== "all" && job.jobType !== jobTypeFilter) return false;
+    
+    // Field of study filter (hard requirement)
+    if (!meetsFieldOfStudyRequirement(
+      applicant?.fieldOfStudy || undefined,
+      job.requiredFieldsOfStudy || undefined
+    )) {
+      return false;
+    }
     
     return true;
   });
@@ -416,6 +427,8 @@ export default function ApplicantDashboard() {
         experience: applicant.experience || 0, 
         location: applicant.location || "",
         education: applicant.education || undefined,
+        fieldOfStudy: applicant.fieldOfStudy || undefined,
+        fieldOfStudyCategory: applicant.fieldOfStudyCategory || undefined,
         bio: applicant.bio || undefined,
         industry: applicant.industry || undefined,
         hierarchy: applicant.hierarchy || undefined,
@@ -430,6 +443,7 @@ export default function ApplicantDashboard() {
         minExperience: job.minExperience || 0, 
         location: job.location || "",
         requiredEducation: job.requiredEducation || undefined,
+        requiredFieldsOfStudy: job.requiredFieldsOfStudy || undefined,
         title: job.title || "",
         description: job.description || "",
         industry: job.industry || undefined,

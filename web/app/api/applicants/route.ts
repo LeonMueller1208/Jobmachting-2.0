@@ -19,6 +19,8 @@ export async function GET(request: Request) {
           location: true,
           experience: true,
           education: true,
+          fieldOfStudy: true,
+          fieldOfStudyCategory: true,
           bio: true,
           industry: true,
           hierarchy: true,
@@ -66,7 +68,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password, name, skills, location, experience, education, bio, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility } = body ?? {};
+    const { email, password, name, skills, location, experience, education, fieldOfStudy, fieldOfStudyCategory, bio, industry, hierarchy, autonomy, teamwork, workStructure, feedback, flexibility } = body ?? {};
     
     if (!name || !Array.isArray(skills) || skills.length === 0 || !location) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
@@ -104,6 +106,8 @@ export async function POST(request: Request) {
       location, 
       experience: Number(experience) || 0, 
       education: education || null,
+      fieldOfStudy: fieldOfStudy || null,
+      fieldOfStudyCategory: fieldOfStudyCategory || null,
       bio: bio || null, 
       industry: industry || null,
       hierarchy: hierarchy ? Number(hierarchy) : null,
