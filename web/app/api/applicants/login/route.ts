@@ -29,6 +29,8 @@ export async function POST(request: Request) {
         location: true,
         experience: true,
         education: true,
+        fieldOfStudy: true,
+        fieldOfStudyCategory: true,
         bio: true,
         industry: true,
         hierarchy: true,

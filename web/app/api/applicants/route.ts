@@ -45,6 +45,8 @@ export async function GET(request: Request) {
         location: true,
         experience: true,
         education: true,
+        fieldOfStudy: true,
+        fieldOfStudyCategory: true,
         bio: true,
         industry: true,
         hierarchy: true,
