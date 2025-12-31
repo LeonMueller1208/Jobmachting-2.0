@@ -31,6 +31,38 @@ const availableJobTypes = [
   "Ausbildung"
 ];
 
+const fieldsOfStudy = {
+  "Wirtschaft": [
+    "BWL (Betriebswirtschaftslehre)",
+    "VWL (Volkswirtschaftslehre)",
+    "Wirtschaftswissenschaften",
+    "Wirtschaftsinformatik",
+    "Wirtschaftsingenieurwesen",
+    "International Business",
+    "Finance / Banking",
+    "Marketing / Vertrieb",
+    "Wirtschaftsrecht"
+  ],
+  "Ingenieurwesen": [
+    "Maschinenbau",
+    "Elektrotechnik / Elektronik",
+    "Informatik",
+    "Bauingenieurwesen",
+    "Wirtschaftsingenieurwesen",
+    "Mechatronik",
+    "Verfahrenstechnik / Chemieingenieurwesen",
+    "Produktions- und Automatisierungstechnik",
+    "Umwelt- und Energietechnik"
+  ],
+  "Sonstige": [
+    "Andere Fachrichtung"
+  ]
+};
+
+const requiresFieldOfStudy = (education: string) => {
+  return ["Bachelor", "Master", "Diplom", "Promotion"].includes(education);
+};
+
 export default function EditJob() {
   const [job, setJob] = useState<any>(null);
   const [title, setTitle] = useState("");
@@ -39,6 +71,7 @@ export default function EditJob() {
   const [location, setLocation] = useState("");
   const [minExperience, setMinExperience] = useState(0);
   const [requiredEducation, setRequiredEducation] = useState("");
+  const [requiredFieldsOfStudy, setRequiredFieldsOfStudy] = useState<string[]>([]);
   const [jobType, setJobType] = useState("");
   const [industry, setIndustry] = useState("");
   const [hierarchy, setHierarchy] = useState<number>(0);
@@ -71,6 +104,7 @@ export default function EditJob() {
         setLocation(jobData.location || "");
         setMinExperience(jobData.minExperience || 0);
         setRequiredEducation(jobData.requiredEducation || "");
+        setRequiredFieldsOfStudy(jobData.requiredFieldsOfStudy || []);
         setJobType(jobData.jobType || "");
         setIndustry(jobData.industry || "");
         setHierarchy(jobData.hierarchy || 0);
@@ -111,6 +145,7 @@ export default function EditJob() {
           location, 
           minExperience: Number(minExperience) || 0, 
           requiredEducation,
+          requiredFieldsOfStudy,
           jobType,
           industry,
           hierarchy,
@@ -219,7 +254,7 @@ export default function EditJob() {
                   className="ds-input ds-input-focus-green"
                 >
                   <option value="">Standort wählen</option>
-                  {['Berlin','München','Hamburg','Kassel','Kassel Umgebung','Köln','Frankfurt','Stuttgart','Düsseldorf','Dortmund','Essen','Leipzig','Bremen','Dresden','Hannover','Nürnberg','Remote'].map(city => (
+                  {['Kassel', 'Kassel Umgebung'].map(city => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
@@ -257,7 +292,12 @@ export default function EditJob() {
                 <label className="ds-label">Erforderlicher Abschluss</label>
                 <select
                   value={requiredEducation}
-                  onChange={(e) => setRequiredEducation(e.target.value)}
+                  onChange={(e) => {
+                    setRequiredEducation(e.target.value);
+                    if (!requiresFieldOfStudy(e.target.value)) {
+                      setRequiredFieldsOfStudy([]);
+                    }
+                  }}
                   className="ds-input ds-input-focus-green"
                 >
                   <option value="">Abschluss wählen (optional)</option>
@@ -280,6 +320,57 @@ export default function EditJob() {
                 </select>
               </div>
             </div>
+
+            {/* Fields of Study - Only for University Degrees */}
+            {requiresFieldOfStudy(requiredEducation) && (
+              <div className="space-y-4 pt-4 border-t-2 border-green-200">
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+                  <p className="text-sm text-green-800 font-medium mb-2">
+                    📚 Gewünschte Fachrichtungen (optional, Mehrfachauswahl)
+                  </p>
+                  <p className="text-xs text-green-700">
+                    Wenn Sie keine Fachrichtung auswählen, werden alle Fachrichtungen akzeptiert.
+                  </p>
+                </div>
+
+                {/* Checkboxes by Category */}
+                {Object.entries(fieldsOfStudy).map(([category, fields]) => (
+                  <div key={category} className="space-y-2">
+                    <h3 className="font-semibold text-gray-700 text-sm uppercase tracking-wide border-b border-gray-300 pb-1">
+                      {category}
+                    </h3>
+                    <div className="space-y-2 pl-2">
+                      {fields.map(field => (
+                        <label key={field} className="flex items-start gap-3 cursor-pointer hover:bg-green-50 p-2 rounded transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={requiredFieldsOfStudy.includes(field)}
+                            onChange={() => {
+                              if (requiredFieldsOfStudy.includes(field)) {
+                                setRequiredFieldsOfStudy(requiredFieldsOfStudy.filter(f => f !== field));
+                              } else {
+                                setRequiredFieldsOfStudy([...requiredFieldsOfStudy, field]);
+                              }
+                            }}
+                            className="mt-1 w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                          />
+                          <span className="text-sm text-gray-700">{field}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Selected Count */}
+                {requiredFieldsOfStudy.length > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-sm text-blue-800">
+                      ✓ <strong>{requiredFieldsOfStudy.length}</strong> Fachrichtung{requiredFieldsOfStudy.length !== 1 ? 'en' : ''} ausgewählt
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>

@@ -136,13 +136,13 @@ export default function Step4Education({
         <div className="space-y-4 pt-4 border-t-2 border-blue-200">
           <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
             <p className="text-sm text-blue-800 font-medium">
-              📚 Da du einen Hochschulabschluss angegeben hast, benötigen wir noch deine Fachrichtung.
+              📚 Da du einen Hochschulabschluss angegeben hast, benötigen wir noch deine Fachrichtung (Pflichtfeld).
             </p>
           </div>
 
           {/* Category Dropdown */}
           <div>
-            <label className="ds-label">Fachbereich *</label>
+            <label className="ds-label text-red-600">Fachbereich *</label>
             <select
               value={fieldOfStudyCategory}
               onChange={(e) => handleCategoryChange(e.target.value)}
@@ -158,7 +158,7 @@ export default function Step4Education({
           {/* Field of Study Dropdown - Only when category selected */}
           {fieldOfStudyCategory && (
             <div>
-              <label className="ds-label">Fachrichtung *</label>
+              <label className="ds-label text-red-600">Fachrichtung *</label>
               <select
                 value={fieldOfStudy}
                 onChange={(e) => setFieldOfStudy(e.target.value)}

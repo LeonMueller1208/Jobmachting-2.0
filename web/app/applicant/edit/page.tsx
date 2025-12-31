@@ -20,6 +20,44 @@ const availableEducation = [
   "Promotion"
 ];
 
+const fieldCategories = [
+  "Wirtschaft",
+  "Ingenieurwesen",
+  "Sonstige"
+];
+
+const fieldsByCategory: Record<string, string[]> = {
+  "Wirtschaft": [
+    "BWL (Betriebswirtschaftslehre)",
+    "VWL (Volkswirtschaftslehre)",
+    "Wirtschaftswissenschaften",
+    "Wirtschaftsinformatik",
+    "Wirtschaftsingenieurwesen",
+    "International Business",
+    "Finance / Banking",
+    "Marketing / Vertrieb",
+    "Wirtschaftsrecht"
+  ],
+  "Ingenieurwesen": [
+    "Maschinenbau",
+    "Elektrotechnik / Elektronik",
+    "Informatik",
+    "Bauingenieurwesen",
+    "Wirtschaftsingenieurwesen",
+    "Mechatronik",
+    "Verfahrenstechnik / Chemieingenieurwesen",
+    "Produktions- und Automatisierungstechnik",
+    "Umwelt- und Energietechnik"
+  ],
+  "Sonstige": [
+    "Andere Fachrichtung"
+  ]
+};
+
+const requiresFieldOfStudy = (education: string) => {
+  return ["Bachelor", "Master", "Diplom", "Promotion"].includes(education);
+};
+
 export default function EditApplicant() {
   const [applicant, setApplicant] = useState<any>(null);
   const [name, setName] = useState("");
@@ -27,6 +65,8 @@ export default function EditApplicant() {
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState(0);
   const [education, setEducation] = useState("");
+  const [fieldOfStudyCategory, setFieldOfStudyCategory] = useState("");
+  const [fieldOfStudy, setFieldOfStudy] = useState("");
   const [bio, setBio] = useState("");
   const [industry, setIndustry] = useState("");
   const [hierarchy, setHierarchy] = useState<number>(0);
@@ -53,6 +93,8 @@ export default function EditApplicant() {
       setLocation(data.location || "");
       setExperience(data.experience || 0);
       setEducation(data.education || "");
+      setFieldOfStudyCategory(data.fieldOfStudyCategory || "");
+      setFieldOfStudy(data.fieldOfStudy || "");
       setBio(data.bio || "");
       setIndustry(data.industry || "");
       setHierarchy(data.hierarchy || 0);
@@ -71,6 +113,13 @@ export default function EditApplicant() {
       setShowError(true);
       return;
     }
+    
+    // Validate field of study if university degree is selected
+    if (requiresFieldOfStudy(education) && (!fieldOfStudyCategory || !fieldOfStudy)) {
+      setErrorMessage("Bitte wähle für deinen Hochschulabschluss einen Fachbereich und eine Fachrichtung aus.");
+      setShowError(true);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -82,7 +131,9 @@ export default function EditApplicant() {
           skills, 
           location, 
           experience: Number(experience) || 0, 
-          education, 
+          education,
+          fieldOfStudyCategory,
+          fieldOfStudy,
           bio, 
           industry,
           hierarchy,
@@ -185,7 +236,7 @@ export default function EditApplicant() {
                   className="ds-input ds-input-focus-blue"
                 >
                   <option value="">Standort wählen</option>
-                  {['Berlin','München','Hamburg','Kassel','Kassel Umgebung','Köln','Frankfurt','Stuttgart','Düsseldorf','Dortmund','Essen','Leipzig','Bremen','Dresden','Hannover','Nürnberg','Remote'].map(city => (
+                  {['Kassel', 'Kassel Umgebung'].map(city => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
@@ -240,7 +291,13 @@ export default function EditApplicant() {
                 </label>
                 <select
                   value={education}
-                  onChange={(e) => setEducation(e.target.value)}
+                  onChange={(e) => {
+                    setEducation(e.target.value);
+                    if (!requiresFieldOfStudy(e.target.value)) {
+                      setFieldOfStudyCategory("");
+                      setFieldOfStudy("");
+                    }
+                  }}
                   className="ds-input ds-input-focus-blue"
                 >
                   <option value="">Abschluss wählen (optional)</option>
@@ -250,6 +307,54 @@ export default function EditApplicant() {
                 </select>
               </div>
             </div>
+
+            {/* Field of Study - Only for University Degrees */}
+            {requiresFieldOfStudy(education) && (
+              <div className="space-y-4 pt-4 border-t-2 border-blue-200">
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+                  <p className="text-sm text-blue-800 font-medium">
+                    📚 Da du einen Hochschulabschluss angegeben hast, benötigen wir noch deine Fachrichtung (Pflichtfeld).
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Category Dropdown */}
+                  <div>
+                    <label className="ds-label text-red-600">Fachbereich *</label>
+                    <select
+                      value={fieldOfStudyCategory}
+                      onChange={(e) => {
+                        setFieldOfStudyCategory(e.target.value);
+                        setFieldOfStudy("");
+                      }}
+                      className="ds-input ds-input-focus-blue"
+                    >
+                      <option value="">Fachbereich wählen...</option>
+                      {fieldCategories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Field of Study Dropdown - Only when category selected */}
+                  {fieldOfStudyCategory && (
+                    <div>
+                      <label className="ds-label text-red-600">Fachrichtung *</label>
+                      <select
+                        value={fieldOfStudy}
+                        onChange={(e) => setFieldOfStudy(e.target.value)}
+                        className="ds-input ds-input-focus-blue"
+                      >
+                        <option value="">Fachrichtung wählen...</option>
+                        {fieldsByCategory[fieldOfStudyCategory]?.map(field => (
+                          <option key={field} value={field}>{field}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>

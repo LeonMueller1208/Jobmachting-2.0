@@ -164,6 +164,14 @@ export default function MultiStepApplicantForm() {
       alert("Bitte Standort wählen");
       return;
     }
+    if (currentStep === 4) {
+      // If university degree is selected, field of study is required
+      const requiresField = ["Bachelor", "Master", "Diplom", "Promotion"].includes(education);
+      if (requiresField && (!fieldOfStudyCategory || !fieldOfStudy)) {
+        alert("Bitte wähle für deinen Hochschulabschluss einen Fachbereich und eine Fachrichtung aus");
+        return;
+      }
+    }
     if (currentStep === 5 && skills.length === 0) {
       alert("Bitte mindestens 1 Skill auswählen");
       return;
